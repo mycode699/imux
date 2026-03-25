@@ -24,6 +24,7 @@ export default function middleware(request: NextRequest) {
   const hasLocale = routing.locales.includes(maybeLocale as typeof routing.locales[number]);
   const normalizedParts = hasLocale ? pathParts.slice(1) : pathParts;
   const firstSegment = normalizedParts[0] ?? "";
+  const directPages = new Set(["guide", "changelog"]);
   const legacySections = new Set([
     "blog",
     "docs",
@@ -34,6 +35,10 @@ export default function middleware(request: NextRequest) {
     "terms-of-service",
     "eula",
   ]);
+
+  if (!hasLocale && directPages.has(firstSegment)) {
+    return NextResponse.next();
+  }
 
   if (legacySections.has(firstSegment)) {
     url.pathname = hasLocale ? `/${maybeLocale}` : "/";
