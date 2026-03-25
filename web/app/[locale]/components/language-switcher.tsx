@@ -1,20 +1,35 @@
 "use client";
 
-import { useLocale } from "next-intl";
-import { useRouter, usePathname } from "../../../i18n/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { locales, localeNames, type Locale } from "../../../i18n/routing";
 
-export function LanguageSwitcher() {
-  const locale = useLocale() as Locale;
+function localizePathname(pathname: string, nextLocale: Locale): string {
+  const segments = pathname.split("/").filter(Boolean);
+  const maybeLocale = segments[0];
+  const hasLocale = locales.includes(maybeLocale as Locale);
+  const rest = hasLocale ? segments.slice(1) : segments;
+  const nextSegments = nextLocale === "en" ? rest : [nextLocale, ...rest];
+
+  return nextSegments.length === 0 ? "/" : `/${nextSegments.join("/")}`;
+}
+
+export function LanguageSwitcher({
+  currentLocale = "en",
+  label = "Language",
+}: {
+  currentLocale?: string;
+  label?: string;
+}) {
+  const locale = locales.includes(currentLocale as Locale) ? (currentLocale as Locale) : "en";
   const router = useRouter();
   const pathname = usePathname();
 
   function onChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const newLocale = e.target.value as Locale;
-    const qs = typeof window !== "undefined"
-      ? window.location.search + window.location.hash
-      : "";
-    router.replace(pathname + qs, { locale: newLocale });
+    const nextPath = localizePathname(pathname, newLocale);
+    const qs = typeof window !== "undefined" ? window.location.search : "";
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    router.replace(`${nextPath}${qs}${hash}`);
   }
 
   return (
@@ -39,7 +54,7 @@ export function LanguageSwitcher() {
         value={locale}
         onChange={onChange}
         className="text-xs text-muted bg-transparent border-none cursor-pointer hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-        aria-label="Language"
+        aria-label={label}
       >
         {locales.map((loc) => (
           <option key={loc} value={loc}>

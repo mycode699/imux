@@ -6,6 +6,7 @@ import {
 } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "../../i18n/routing";
+import { getLocalizedHomePath, getMarketingCopy } from "../marketing-copy";
 import { siteConfig } from "../site-config";
 
 export async function generateMetadata({
@@ -14,11 +15,18 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const url =
-    locale === "en" ? siteConfig.canonicalUrl : `${siteConfig.canonicalUrl}/${locale}`;
+  const path = getLocalizedHomePath(locale);
+  const url = path === "/" ? siteConfig.canonicalUrl : `${siteConfig.canonicalUrl}${path}`;
+  const copy = getMarketingCopy(locale);
+  const alternates = Object.fromEntries(
+    routing.locales.map((item) => [
+      item,
+      item === "en" ? siteConfig.canonicalUrl : `${siteConfig.canonicalUrl}/${item}`,
+    ]),
+  );
   return {
-    title: `${siteConfig.name} — ${siteConfig.descriptor}`,
-    description: siteConfig.description,
+    title: copy.metaTitle,
+    description: copy.metaDescription,
     keywords: [
       "icc",
       "AI command center",
@@ -33,17 +41,24 @@ export async function generateMetadata({
       "browser operator",
       "supervisor",
     ],
+    alternates: {
+      canonical: url,
+      languages: {
+        ...alternates,
+        "x-default": siteConfig.canonicalUrl,
+      },
+    },
     openGraph: {
-      title: `${siteConfig.name} — ${siteConfig.descriptor}`,
-      description: siteConfig.description,
+      title: copy.metaTitle,
+      description: copy.metaDescription,
       url,
       siteName: siteConfig.name,
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${siteConfig.name} — ${siteConfig.descriptor}`,
-      description: siteConfig.description,
+      title: copy.metaTitle,
+      description: copy.metaDescription,
     },
     metadataBase: new URL(siteConfig.canonicalUrl),
   };
@@ -93,7 +108,7 @@ export default async function LocaleLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <NextIntlClientProvider messages={messages}>
-        <div dir={dir}>
+        <div dir={dir} lang={locale}>
           {children}
         </div>
       </NextIntlClientProvider>

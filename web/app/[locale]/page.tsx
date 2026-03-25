@@ -1,5 +1,11 @@
 import MarketingHome from "../marketing-home";
 
-export default function Home() {
-  return <MarketingHome />;
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  return <MarketingHome locale={locale} />;
 }

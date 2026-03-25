@@ -3,21 +3,53 @@
 import { DownloadButton } from "./download-button";
 import { ThemeToggle } from "../theme";
 import { GitHubStarsBadge } from "./github-stars";
+import { LanguageSwitcher } from "./language-switcher";
 import {
   useMobileDrawer,
   MobileDrawerOverlay,
   MobileDrawerToggle,
 } from "./mobile-drawer";
 import { siteConfig } from "../../site-config";
+import { getLocalizedHomePath } from "../../marketing-copy";
 
 export function SiteHeader({
   section,
   hideLogo,
+  locale = "en",
+  homeHref,
+  descriptor = siteConfig.descriptor,
+  nav,
+  downloadLabel = "Download for macOS",
 }: {
   section?: string;
   hideLogo?: boolean;
+  locale?: string;
+  homeHref?: string;
+  descriptor?: string;
+  nav?: {
+    capabilities: string;
+    workflow: string;
+    faq: string;
+    github: string;
+    language: string;
+    toggleTheme: string;
+    openMenu: string;
+    closeMenu: string;
+  };
+  downloadLabel?: string;
 }) {
   const { open, toggle, close, drawerRef, buttonRef } = useMobileDrawer();
+  const labels = nav ?? {
+    capabilities: "Capabilities",
+    workflow: "Workflow",
+    faq: "FAQ",
+    github: "GitHub",
+    language: "Language",
+    toggleTheme: "Toggle theme",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+  };
+  const resolvedHomeHref = homeHref ?? getLocalizedHomePath(locale);
 
   return (
     <>
@@ -27,7 +59,7 @@ export function SiteHeader({
           <div className="flex flex-1 items-center gap-3 min-w-0">
             {!hideLogo && (
               <>
-                <a href="/" className="flex items-center gap-3">
+                <a href={resolvedHomeHref} className="flex items-center gap-3">
                   <img
                     src="/logo.png"
                     alt={siteConfig.name}
@@ -40,7 +72,7 @@ export function SiteHeader({
                       {siteConfig.name}
                     </span>
                     <span className="text-[11px] text-muted">
-                      {siteConfig.descriptor}
+                      {descriptor}
                     </span>
                   </div>
                 </a>
@@ -57,13 +89,13 @@ export function SiteHeader({
           {/* Center: nav links */}
           <nav className="hidden md:flex items-center justify-center gap-5 text-sm text-muted shrink-0">
             <a href="#capabilities" className="hover:text-foreground transition-colors">
-              Capabilities
+              {labels.capabilities}
             </a>
             <a href="#workflow" className="hover:text-foreground transition-colors">
-              Workflow
+              {labels.workflow}
             </a>
             <a href="#faq" className="hover:text-foreground transition-colors">
-              FAQ
+              {labels.faq}
             </a>
             <a
               href={siteConfig.repoUrl}
@@ -71,21 +103,26 @@ export function SiteHeader({
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
             >
-              GitHub
+              {labels.github}
             </a>
           </nav>
 
           {/* Right: GitHub stars + Download + theme + mobile */}
           <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
             <GitHubStarsBadge />
-            <div className="hidden md:block">
-              <DownloadButton size="sm" location="navbar" />
+            <div className="hidden md:flex items-center rounded-full border border-border/70 px-2.5 py-1">
+              <LanguageSwitcher currentLocale={locale} label={labels.language} />
             </div>
-            <ThemeToggle />
+            <div className="hidden md:block">
+              <DownloadButton size="sm" location="navbar" label={downloadLabel} />
+            </div>
+            <ThemeToggle label={labels.toggleTheme} />
             <MobileDrawerToggle
               open={open}
               onClick={toggle}
               buttonRef={buttonRef}
+              openLabel={labels.openMenu}
+              closeLabel={labels.closeMenu}
             />
           </div>
         </div>
@@ -102,11 +139,11 @@ export function SiteHeader({
         }`}
       >
         <div className="flex items-center justify-end gap-1 px-4 h-12">
-          <ThemeToggle />
+          <ThemeToggle label={labels.toggleTheme} />
           <button
             onClick={close}
             className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground transition-colors"
-            aria-label="Close menu"
+            aria-label={labels.closeMenu}
           >
             <svg
               width="16"
@@ -126,13 +163,13 @@ export function SiteHeader({
 
         <div className="flex flex-col gap-3 text-sm text-muted px-4 pb-4">
           <a href="#capabilities" onClick={close} className="hover:text-foreground transition-colors py-1">
-            Capabilities
+            {labels.capabilities}
           </a>
           <a href="#workflow" onClick={close} className="hover:text-foreground transition-colors py-1">
-            Workflow
+            {labels.workflow}
           </a>
           <a href="#faq" onClick={close} className="hover:text-foreground transition-colors py-1">
-            FAQ
+            {labels.faq}
           </a>
           <a
             href={siteConfig.repoUrl}
@@ -141,11 +178,14 @@ export function SiteHeader({
             onClick={close}
             className="hover:text-foreground transition-colors py-1"
           >
-            GitHub
+            {labels.github}
           </a>
+          <div className="pt-1">
+            <LanguageSwitcher currentLocale={locale} label={labels.language} />
+          </div>
           <GitHubStarsBadge location="mobile_drawer" />
           <div className="pt-2">
-            <DownloadButton size="sm" location="mobile_drawer" />
+            <DownloadButton size="sm" location="mobile_drawer" label={downloadLabel} />
           </div>
         </div>
       </nav>

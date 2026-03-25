@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import { join } from "path";
+import { getMarketingCopy } from "../marketing-copy";
 import { siteConfig } from "../site-config";
 
 export const runtime = "nodejs";
@@ -10,7 +11,13 @@ export const alt = "icc — AI Command Center for macOS";
 
 const S = 2; // render at 2x for sharper images on social platforms
 
-export default async function Image() {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const copy = getMarketingCopy(locale);
   const [logoData, geistRegular, geistSemiBold] =
     await Promise.all([
       readFile(join(process.cwd(), "public", "logo.png")),
@@ -87,7 +94,7 @@ export default async function Image() {
                     lineHeight: 1.2,
                   }}
                 >
-                  {siteConfig.descriptor}
+                  {copy.descriptor}
                 </div>
               </div>
             </div>
@@ -126,7 +133,7 @@ export default async function Image() {
                 lineHeight: 0.95,
               }}
             >
-              {siteConfig.tagline}
+              {copy.tagline}
             </div>
             <div
               style={{
@@ -136,8 +143,7 @@ export default async function Image() {
                 maxWidth: 820 * S,
               }}
             >
-              Native macOS workspace for terminal execution, local and remote files, browser tasks,
-              source control, and supervisor-driven next steps.
+              {copy.heroDescription}
             </div>
           </div>
 
@@ -147,14 +153,9 @@ export default async function Image() {
               gap: 16 * S,
             }}
           >
-            {[
-              "Terminal-first execution",
-              "Local + remote explorers",
-              "In-app file editing",
-              "Supervisor workflow",
-            ].map((item) => (
+            {copy.capabilities.items.slice(0, 4).map((item) => (
               <div
-                key={item}
+                key={item.title}
                 style={{
                   display: "flex",
                   borderRadius: 24 * S,
@@ -165,7 +166,7 @@ export default async function Image() {
                   fontSize: 14 * S,
                 }}
               >
-                {item}
+                {item.title}
               </div>
             ))}
           </div>

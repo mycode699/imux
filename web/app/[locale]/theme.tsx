@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes";
 import { flushSync } from "react-dom";
 
-export function ThemeToggle() {
+export function ThemeToggle({ label = "Toggle theme" }: { label?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
 
   const toggle = () => {
@@ -32,7 +32,7 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       className="inline-flex h-9 w-9 items-center justify-center text-muted hover:text-foreground transition-colors cursor-pointer"
-      aria-label="Toggle theme"
+      aria-label={label}
     >
       {/* Sun icon — visible in dark mode, hidden in light mode */}
       <svg

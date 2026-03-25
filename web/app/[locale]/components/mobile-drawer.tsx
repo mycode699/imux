@@ -83,11 +83,15 @@ export function MobileDrawerToggle({
   onClick,
   buttonRef,
   className,
+  openLabel = "Open menu",
+  closeLabel = "Close menu",
 }: {
   open: boolean;
   onClick: () => void;
   buttonRef: React.RefObject<HTMLButtonElement | null>;
   className?: string;
+  openLabel?: string;
+  closeLabel?: string;
 }) {
   return (
     <button
@@ -98,7 +102,7 @@ export function MobileDrawerToggle({
         className ??
         "md:hidden w-8 h-8 flex items-center justify-center text-muted hover:text-foreground transition-colors"
       }
-      aria-label={open ? "Close menu" : "Open menu"}
+      aria-label={open ? closeLabel : openLabel}
     >
       <svg
         width="16"
