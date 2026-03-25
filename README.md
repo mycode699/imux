@@ -1,273 +1,136 @@
-<h1 align="center">cmux</h1>
-<p align="center">A Ghostty-based macOS terminal with vertical tabs and notifications for AI coding agents</p>
+# icc
 
-<p align="center">
-  <a href="https://github.com/manaflow-ai/cmux/releases/latest/download/cmux-macos.dmg">
-    <img src="./docs/assets/macos-badge.png" alt="Download cmux for macOS" width="180" />
-  </a>
-</p>
+Native macOS terminal workspace software for AI execution. `icc` keeps Ghostty-grade terminal rendering, adds a right-side local and remote explorer, and gives every workspace a supervisor layer that can watch progress, prepare prompts, and coordinate parallel task windows.
 
-<p align="center">
-  English | <a href="README.ja.md">日本語</a> | <a href="README.vi.md">Tiếng Việt</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-TW.md">繁體中文</a> | <a href="README.ko.md">한국어</a> | <a href="README.de.md">Deutsch</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.it.md">Italiano</a> | <a href="README.da.md">Dansk</a> | <a href="README.pl.md">Polski</a> | <a href="README.ru.md">Русский</a> | <a href="README.bs.md">Bosanski</a> | <a href="README.ar.md">العربية</a> | <a href="README.no.md">Norsk</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.th.md">ไทย</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.km.md">ភាសាខ្មែរ</a>
-</p>
+Repository: <https://github.com/miounet11/icc>
 
-<p align="center">
-  <a href="https://x.com/manaflowai"><img src="https://img.shields.io/badge/@manaflow-555?logo=x" alt="X / Twitter" /></a>
-  <a href="https://discord.gg/xsgFEVrWCZ"><img src="https://img.shields.io/badge/Discord-555?logo=discord" alt="Discord" /></a>
-</p>
+Language docs: English | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [Dansk](README.da.md) | [Polski](README.pl.md) | [Русский](README.ru.md) | [Bosanski](README.bs.md) | [العربية](README.ar.md) | [Norsk](README.no.md) | [Português (Brasil)](README.pt-BR.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [ភាសាខ្មែរ](README.km.md) | [Tiếng Việt](README.vi.md)
 
-<p align="center">
-  <img src="./docs/assets/main-first-image.png" alt="cmux screenshot" width="900" />
-</p>
+## What icc ships today
 
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=i-WxO5YUTOs">▶ Demo video</a> · <a href="https://cmux.com/blog/zen-of-cmux">The Zen of cmux</a>
-</p>
-
-## Features
-
-<table>
-<tr>
-<td width="40%" valign="middle">
-<h3>Notification rings</h3>
-Panes get a blue ring and tabs light up when coding agents need your attention
-</td>
-<td width="60%">
-<img src="./docs/assets/notification-rings.png" alt="Notification rings" width="100%" />
-</td>
-</tr>
-<tr>
-<td width="40%" valign="middle">
-<h3>Notification panel</h3>
-See all pending notifications in one place, jump to the most recent unread
-</td>
-<td width="60%">
-<img src="./docs/assets/sidebar-notification-badge.png" alt="Sidebar notification badge" width="100%" />
-</td>
-</tr>
-<tr>
-<td width="40%" valign="middle">
-<h3>In-app browser</h3>
-Split a browser alongside your terminal with a scriptable API ported from <a href="https://github.com/vercel-labs/agent-browser">agent-browser</a>
-</td>
-<td width="60%">
-<img src="./docs/assets/built-in-browser.png" alt="Built-in browser" width="100%" />
-</td>
-</tr>
-<tr>
-<td width="40%" valign="middle">
-<h3>Vertical + horizontal tabs</h3>
-Sidebar shows git branch, linked PR status/number, working directory, listening ports, and latest notification text. Split horizontally and vertically.
-</td>
-<td width="60%">
-<img src="./docs/assets/vertical-horizontal-tabs-and-splits.png" alt="Vertical tabs and split panes" width="100%" />
-</td>
-</tr>
-</table>
-
-- **Scriptable** — CLI and socket API to create workspaces, split panes, send keystrokes, and automate the browser
-- **Native macOS app** — Built with Swift and AppKit, not Electron. Fast startup, low memory.
-- **Ghostty compatible** — Reads your existing `~/.config/ghostty/config` for themes, fonts, and colors
-- **GPU-accelerated** — Powered by libghostty for smooth rendering
+- Native Swift/AppKit macOS app built on `libghostty`, with low-latency terminal rendering and Ghostty-compatible theme and font behavior.
+- Workspace-first UI with a compact left rail and the main work surface centered on terminal conversations and split panes.
+- Right-side local file explorer for the current project, with tree navigation, drag-to-terminal path insertion, and in-app file open, edit, and save.
+- Right-side remote SSH explorer that reads `~/.ssh/config`, supports interactive login, remembers remote passwords in the macOS Keychain, and exposes remote files after connection.
+- Remote file open, edit, and save flow from the same explorer panel used for local work.
+- Built-in browser surface and socket/CLI automation for browser-assisted agent workflows.
+- Workspace supervisor panel that can infer project state from the current workspace, recent interaction notes, visited directories, remote status, and panel history.
+- LLM-backed supervisor mode: configure endpoint, model, and API key, then generate a startup plan, execution brief, panel handoffs, and looped reviews.
+- Notification and task-follow-up workflow for Claude Code, Codex, OpenCode, and other agent-driven terminal sessions.
+- WeChat channel settings for binding inbound conversations to a specific window or workspace.
 
 ## Install
 
-### DMG (recommended)
+### Release builds
 
-<a href="https://github.com/manaflow-ai/cmux/releases/latest/download/cmux-macos.dmg">
-  <img src="./docs/assets/macos-badge.png" alt="Download cmux for macOS" width="180" />
-</a>
+Release artifacts should be published on the GitHub Releases page:
 
-Open the `.dmg` and drag cmux to your Applications folder. cmux auto-updates via Sparkle, so you only need to download once.
+<https://github.com/miounet11/icc/releases>
 
-### Homebrew
+If you are validating the app before the first public release, build from source instead.
+
+### Build from source
+
+Prerequisites:
+
+- macOS 14 or later
+- Xcode 15 or later
+- Zig (`brew install zig`)
+
+Clone with submodules and run setup:
 
 ```bash
-brew tap manaflow-ai/cmux
-brew install --cask cmux
+git clone --recursive https://github.com/miounet11/icc.git
+cd icc
+./scripts/setup.sh
 ```
 
-To update later:
+Build and launch a tagged debug app:
 
 ```bash
-brew upgrade --cask cmux
+./scripts/reload.sh --tag local-dev
 ```
 
-On first launch, macOS may ask you to confirm opening an app from an identified developer. Click **Open** to proceed.
+Build and launch the release app:
 
-## Why cmux?
+```bash
+./scripts/reloadp.sh
+```
 
-I run a lot of Claude Code and Codex sessions in parallel. I was using Ghostty with a bunch of split panes, and relying on native macOS notifications to know when an agent needed me. But Claude Code's notification body is always just "Claude is waiting for your input" with no context, and with enough tabs open I couldn't even read the titles anymore.
+## Quick start
 
-I tried a few coding orchestrators but most of them were Electron/Tauri apps and the performance bugged me. I also just prefer the terminal since GUI orchestrators lock you into their workflow. So I built cmux as a native macOS app in Swift/AppKit. It uses libghostty for terminal rendering and reads your existing Ghostty config for themes, fonts, and colors.
+1. Launch `icc`.
+2. Open a local folder from the window toolbar or the file explorer action.
+3. Open the remote explorer to import hosts from `~/.ssh/config`.
+4. Connect to a host, then browse and edit remote files in the right-side panel.
+5. Open Settings and configure Automation if you want supervisor and LLM-assisted orchestration.
+6. Install the bundled CLI into `PATH` from the in-app shell command action if you want `icc` commands in Terminal.
 
-The main additions are the sidebar and notification system. The sidebar has vertical tabs that show git branch, linked PR status/number, working directory, listening ports, and the latest notification text for each workspace. The notification system picks up terminal sequences (OSC 9/99/777) and has a CLI (`cmux notify`) you can wire into agent hooks for Claude Code, OpenCode, etc. When an agent is waiting, its pane gets a blue ring and the tab lights up in the sidebar, so I can tell which one needs me across splits and tabs. Cmd+Shift+U jumps to the most recent unread.
+## CLI notes
 
-The in-app browser has a scriptable API ported from [agent-browser](https://github.com/vercel-labs/agent-browser). Agents can snapshot the accessibility tree, get element refs, click, fill forms, and evaluate JS. You can split a browser pane next to your terminal and have Claude Code interact with your dev server directly.
+The bundled executable is `icc`.
 
-Everything is scriptable through the CLI and socket API — create workspaces/tabs, split panes, send keystrokes, open URLs in the browser.
+Common examples:
 
-## The Zen of cmux
+```bash
+icc --help
+icc notify --title "Build complete" --body "Tests passed"
+icc list-notifications
+icc clear-notifications
+```
 
-cmux is not prescriptive about how developers hold their tools. It's a terminal and browser with a CLI, and the rest is up to you.
+Compatibility note:
 
-cmux is a primitive, not a solution. It gives you a terminal, a browser, notifications, workspaces, splits, tabs, and a CLI to control all of it. cmux doesn't force you into an opinionated way to use coding agents. What you build with the primitives is yours.
+- Some internal protocol names, environment variables, sockets, and daemon binaries still use legacy `cmux` or `CMUX_*` names. That is intentional for compatibility during the transition.
+- The user-facing app name and shipped CLI name are `icc`.
 
-The best developers have always built their own tools. Nobody has figured out the best way to work with agents yet, and the teams building closed products definitely haven't either. The developers closest to their own codebases will figure it out first.
+## Remote workflow
 
-Give a million developers composable primitives and they'll collectively find the most efficient workflows faster than any product team could design top-down.
+`icc` supports two complementary remote paths:
 
-## Documentation
+- UI-driven remote explorer: reads OpenSSH and VS Code-compatible host entries from `~/.ssh/config`, prompts for missing credentials, stores passwords in the local macOS Keychain, and reveals the remote file tree after connection.
+- CLI-driven SSH workspaces: `icc ssh ...` creates a managed remote workspace, bootstraps the remote helper, and reconnects browser and terminal state through the app.
 
-For more info on how to configure cmux, [head over to our docs](https://cmux.com/docs/getting-started?utm_source=readme).
+Remote compatibility details:
 
-## Keyboard Shortcuts
+- Managed SSH sessions can prefer `TERM=xterm-256color` for compatibility or keep Ghostty's TERM when the remote host has matching terminfo support.
+- Remote file interactions shown in the explorer are the remote host contents, not a local mirror.
 
-### Workspaces
+## Supervisor workflow
 
-| Shortcut | Action |
-|----------|--------|
-| ⌘ N | New workspace |
-| ⌘ 1–8 | Jump to workspace 1–8 |
-| ⌘ 9 | Jump to last workspace |
-| ⌃ ⌘ ] | Next workspace |
-| ⌃ ⌘ [ | Previous workspace |
-| ⌘ ⇧ W | Close workspace |
-| ⌘ ⇧ R | Rename workspace |
-| ⌘ B | Toggle sidebar |
+The supervisor panel is designed for fast startup after only a few user turns:
 
-### Surfaces
+- capture the workspace goal, done definition, constraints, and scope
+- track visited directories and current working context
+- infer a startup plan from recent interaction notes
+- generate an execution brief for the active terminal window
+- optionally call a configured LLM endpoint for deeper reviews and iteration loops
 
-| Shortcut | Action |
-|----------|--------|
-| ⌘ T | New surface |
-| ⌘ ⇧ ] | Next surface |
-| ⌘ ⇧ [ | Previous surface |
-| ⌃ Tab | Next surface |
-| ⌃ ⇧ Tab | Previous surface |
-| ⌃ 1–8 | Jump to surface 1–8 |
-| ⌃ 9 | Jump to last surface |
-| ⌘ W | Close surface |
+Open Settings → Automation to configure:
 
-### Split Panes
+- LLM endpoint
+- model
+- API key
+- socket control mode
+- Claude Code integration
 
-| Shortcut | Action |
-|----------|--------|
-| ⌘ D | Split right |
-| ⌘ ⇧ D | Split down |
-| ⌥ ⌘ ← → ↑ ↓ | Focus pane directionally |
-| ⌘ ⇧ H | Flash focused panel |
+## Documentation map
 
-### Browser
+- [CONTRIBUTING.md](CONTRIBUTING.md): local development workflow
+- [CHANGELOG.md](CHANGELOG.md): release history and rename note
+- [docs/notifications.md](docs/notifications.md): notification hooks and CLI usage
+- [docs/remote-daemon-spec.md](docs/remote-daemon-spec.md): managed SSH architecture and status
+- [docs/agent-browser-port-spec.md](docs/agent-browser-port-spec.md): browser automation contract
+- [docs/v2-api-migration.md](docs/v2-api-migration.md): v2 socket API notes
+- [docs/ghostty-fork.md](docs/ghostty-fork.md): Ghostty fork delta carried by this repo
+- [docs/release-update-rules.md](docs/release-update-rules.md): release tags, appcast URLs, and upgrade rules
 
-Browser developer-tool shortcuts follow Safari defaults and are customizable in `Settings → Keyboard Shortcuts`.
+## Development notes
 
-| Shortcut | Action |
-|----------|--------|
-| ⌘ ⇧ L | Open browser in split |
-| ⌘ L | Focus address bar |
-| ⌘ [ | Back |
-| ⌘ ] | Forward |
-| ⌘ R | Reload page |
-| ⌥ ⌘ I | Toggle Developer Tools (Safari default) |
-| ⌥ ⌘ C | Show JavaScript Console (Safari default) |
-
-### Notifications
-
-| Shortcut | Action |
-|----------|--------|
-| ⌘ I | Show notifications panel |
-| ⌘ ⇧ U | Jump to latest unread |
-
-### Find
-
-| Shortcut | Action |
-|----------|--------|
-| ⌘ F | Find |
-| ⌘ G / ⌘ ⇧ G | Find next / previous |
-| ⌘ ⇧ F | Hide find bar |
-| ⌘ E | Use selection for find |
-
-### Terminal
-
-| Shortcut | Action |
-|----------|--------|
-| ⌘ K | Clear scrollback |
-| ⌘ C | Copy (with selection) |
-| ⌘ V | Paste |
-| ⌘ + / ⌘ - | Increase / decrease font size |
-| ⌘ 0 | Reset font size |
-
-### Window
-
-| Shortcut | Action |
-|----------|--------|
-| ⌘ ⇧ N | New window |
-| ⌘ , | Settings |
-| ⌘ ⇧ , | Reload configuration |
-| ⌘ Q | Quit |
-
-## Nightly Builds
-
-[Download cmux NIGHTLY](https://github.com/manaflow-ai/cmux/releases/download/nightly/cmux-nightly-macos.dmg)
-
-cmux NIGHTLY is a separate app with its own bundle ID, so it runs alongside the stable version. Built automatically from the latest `main` commit and auto-updates via its own Sparkle feed.
-
-Report nightly bugs on [GitHub Issues](https://github.com/manaflow-ai/cmux/issues) or in [#nightly-bugs on Discord](https://discord.gg/xsgFEVrWCZ).
-
-## Session restore (current behavior)
-
-On relaunch, cmux currently restores app layout and metadata only:
-- Window/workspace/pane layout
-- Working directories
-- Terminal scrollback (best effort)
-- Browser URL and navigation history
-
-cmux does **not** restore live process state inside terminal apps. For example, active Claude Code/tmux/vim sessions are not resumed after restart yet.
-
-## Star History
-
-<a href="https://star-history.com/#manaflow-ai/cmux&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=manaflow-ai/cmux&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=manaflow-ai/cmux&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=manaflow-ai/cmux&type=Date" width="600" />
- </picture>
-</a>
-
-## Contributing
-
-Ways to get involved:
-
-- Follow us on X for updates [@manaflowai](https://x.com/manaflowai), [@lawrencecchen](https://x.com/lawrencecchen), and [@austinywang](https://x.com/austinywang)
-- Join the conversation on [Discord](https://discord.gg/xsgFEVrWCZ)
-- Create and participate in [GitHub issues](https://github.com/manaflow-ai/cmux/issues) and [discussions](https://github.com/manaflow-ai/cmux/discussions)
-- Let us know what you're building with cmux
-
-## Community
-
-- [Discord](https://discord.gg/xsgFEVrWCZ)
-- [GitHub](https://github.com/manaflow-ai/cmux)
-- [X / Twitter](https://twitter.com/manaflowai)
-- [YouTube](https://www.youtube.com/channel/UCAa89_j-TWkrXfk9A3CbASw)
-- [LinkedIn](https://www.linkedin.com/company/manaflow-ai/)
-- [Reddit](https://www.reddit.com/r/cmux/)
-
-## Founder's Edition
-
-cmux is free, open source, and always will be. If you'd like to support development and get early access to what's coming next:
-
-**[Get Founder's Edition](https://buy.stripe.com/3cI00j2Ld0it5OU33r5EY0q)**
-
-- **Prioritized feature requests/bug fixes**
-- **Early access: cmux AI that gives you context on every workspace, tab and panel**
-- **Early access: iOS app with terminals synced between desktop and phone**
-- **Early access: Cloud VMs**
-- **Early access: Voice mode**
-- **My personal iMessage/WhatsApp**
+- The repository name is now `icc`, and the product being released is `icc`.
+- Some Xcode target names, scripts, package identifiers, and helper binaries still use legacy `cmux` naming. Do not mass-rename those blindly; several are still part of the working build and protocol surface.
+- The Homebrew tap submodule is still legacy-named and should be treated as migration work, not the primary install path for this release.
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 or later (`AGPL-3.0-or-later`).
-
-See `LICENSE` for the full text.
+`icc` is licensed under `AGPL-3.0-or-later`. See [LICENSE](LICENSE).

@@ -1,102 +1,98 @@
-# Contributing to cmux
+# Contributing to icc
+
+`icc` is currently released from the `miounet11/icc` repository:
+
+<https://github.com/miounet11/icc>
+
+Historical note:
+
+- The shipped app and CLI are named `icc`.
+- Some Xcode targets, scripts, sockets, helpers, and internal protocols still use legacy `cmux` names.
+- Do not rename those blindly while contributing. Many are still part of the active build and automation surface.
 
 ## Prerequisites
 
 - macOS 14+
 - Xcode 15+
-- [Zig](https://ziglang.org/) (install via `brew install zig`)
+- Zig (`brew install zig`)
 
-## Getting Started
+## Getting started
 
-1. Clone the repository with submodules:
-   ```bash
-   git clone --recursive https://github.com/manaflow-ai/cmux.git
-   cd cmux
-   ```
+Clone with submodules:
 
-2. Run the setup script:
-   ```bash
-   ./scripts/setup.sh
-   ```
+```bash
+git clone --recursive https://github.com/miounet11/icc.git
+cd icc
+```
 
-   This will:
-   - Initialize git submodules (ghostty, homebrew-cmux)
-   - Build the GhosttyKit.xcframework from source
-   - Create the necessary symlinks
+Run setup once:
 
-3. Build and run the debug app:
-   ```bash
-   ./scripts/reload.sh
-   ```
+```bash
+./scripts/setup.sh
+```
 
-## Development Scripts
+This initializes submodules, builds `GhosttyKit.xcframework`, and prepares local symlinks used by the app and scripts.
 
-| Script | Description |
-|--------|-------------|
-| `./scripts/setup.sh` | One-time setup (submodules + xcframework) |
-| `./scripts/reload.sh` | Build and launch Debug app |
-| `./scripts/reloadp.sh` | Build and launch Release app |
-| `./scripts/reload2.sh` | Reload both Debug and Release |
+## Build and run
+
+Tagged debug build:
+
+```bash
+./scripts/reload.sh --tag my-change
+```
+
+Release build:
+
+```bash
+./scripts/reloadp.sh
+```
+
+Useful scripts:
+
+| Script | Purpose |
+| --- | --- |
+| `./scripts/setup.sh` | One-time setup for submodules and GhosttyKit |
+| `./scripts/reload.sh --tag <tag>` | Build and launch an isolated debug app |
+| `./scripts/reloadp.sh` | Build and launch the release app |
+| `./scripts/reload2.sh --tag <tag>` | Reload debug and release variants |
 | `./scripts/rebuild.sh` | Clean rebuild |
 
-## Rebuilding GhosttyKit
+## Working conventions
 
-If you make changes to the ghostty submodule, rebuild the xcframework:
+- Prefer tagged debug runs so your app instance does not collide with other local sessions.
+- Assume the repo may already contain unrelated user changes. Do not revert work you did not make.
+- Keep user-facing documentation and product references on `icc`, even when the underlying code still says `cmux`.
+- When changing Ghostty behavior, update [docs/ghostty-fork.md](docs/ghostty-fork.md) together with the submodule pointer.
 
-```bash
-cd ghostty
-zig build -Demit-xcframework=true -Doptimize=ReleaseFast
-```
+## Tests
 
-## Running Tests
+This repository uses VM- or CI-oriented integration coverage.
 
-### Basic tests (run on VM)
-
-```bash
-ssh cmux-vm 'cd /Users/cmux/GhosttyTabs && xcodebuild -project GhosttyTabs.xcodeproj -scheme cmux -configuration Debug -destination "platform=macOS" build && pkill -x "cmux DEV" || true && APP=$(find /Users/cmux/Library/Developer/Xcode/DerivedData -path "*/Build/Products/Debug/cmux DEV.app" -print -quit) && open "$APP" && for i in {1..20}; do [ -S /tmp/cmux.sock ] && break; sleep 0.5; done && python3 tests/test_update_timing.py && python3 tests/test_signals_auto.py && python3 tests/test_ctrl_socket.py && python3 tests/test_notifications.py'
-```
-
-### UI tests (run on VM)
+Recommended commands:
 
 ```bash
-ssh cmux-vm 'cd /Users/cmux/GhosttyTabs && xcodebuild -project GhosttyTabs.xcodeproj -scheme cmux -configuration Debug -destination "platform=macOS" -only-testing:cmuxUITests test'
+./scripts/run-tests-v1.sh
+./scripts/run-tests-v2.sh
+./scripts/test-unit.sh
 ```
 
-## Ghostty Submodule
+Historical note:
 
-The `ghostty` submodule points to [manaflow-ai/ghostty](https://github.com/manaflow-ai/ghostty), a fork of the upstream Ghostty project.
+- Several scripts, test suites, and bundle names still use legacy `cmux` naming internally.
+- That is expected until the deeper build/test rename is completed.
 
-### Making changes to ghostty
+## Ghostty fork
 
-```bash
-cd ghostty
-git checkout -b my-feature
-# make changes
-git add .
-git commit -m "Description of changes"
-git push manaflow my-feature
-```
+The `ghostty` submodule currently points to:
 
-### Keeping the fork updated
+<https://github.com/manaflow-ai/ghostty>
 
-```bash
-cd ghostty
-git fetch origin
-git checkout main
-git merge origin/main
-git push manaflow main
-```
+If you change the fork:
 
-Then update the parent repo:
-
-```bash
-cd ..
-git add ghostty
-git commit -m "Update ghostty submodule"
-```
-
-See `docs/ghostty-fork.md` for details on fork changes and conflict notes.
+1. Commit and push the submodule changes first.
+2. Update [docs/ghostty-fork.md](docs/ghostty-fork.md).
+3. Commit the parent repo with the new submodule SHA.
 
 ## License
 
-By contributing to this repository, you agree that your contributions are licensed under the project's GNU Affero General Public License v3.0 or later (`AGPL-3.0-or-later`).
+By contributing to this repository, you agree that your contributions are licensed under `AGPL-3.0-or-later`.

@@ -109,6 +109,22 @@ jobs:
           ref: ${{ needs.decide.outputs.head_sha }}
           submodules: recursive
 
+      - name: Load release config
+        run: |
+          source ./scripts/release-config.sh
+          {
+            echo "ICC_REPO_SLUG=$ICC_REPO_SLUG"
+            echo "ICC_APP_BUNDLE_NAME=$ICC_APP_BUNDLE_NAME"
+            echo "ICC_CLI_NAME=$ICC_CLI_NAME"
+            echo "ICC_NIGHTLY_APP_NAME=$ICC_NIGHTLY_APP_NAME"
+            echo "ICC_NIGHTLY_BUNDLE_ID=$ICC_NIGHTLY_BUNDLE_ID"
+            echo "ICC_NIGHTLY_DMG_NAME=$ICC_NIGHTLY_DMG_NAME"
+            echo "ICC_NIGHTLY_APPCAST_NAME=$ICC_NIGHTLY_APPCAST_NAME"
+            echo "ICC_NIGHTLY_COMPAT_APPCAST_NAME=$ICC_NIGHTLY_COMPAT_APPCAST_NAME"
+            echo "ICC_NIGHTLY_FEED_URL=$ICC_NIGHTLY_FEED_URL"
+            echo "ICC_REMOTE_DAEMON_REPO=$ICC_REMOTE_DAEMON_REPO"
+          } >> "$GITHUB_ENV"
+
       - name: Check whether build commit is still current main HEAD before build
         if: needs.decide.outputs.should_publish == 'true'
         id: current_head_prebuild
@@ -213,9 +229,9 @@ jobs:
         if: needs.decide.outputs.should_publish != 'true' || steps.current_head_prebuild.outputs.still_current == 'true'
         run: |
           set -euo pipefail
-          APP_BINARY="build-universal/Build/Products/Release/cmux.app/Contents/MacOS/cmux"
-          CLI_BINARY="build-universal/Build/Products/Release/cmux.app/Contents/Resources/bin/cmux"
-          HELPER_BINARY="build-universal/Build/Products/Release/cmux.app/Contents/Resources/bin/ghostty"
+          APP_BINARY="build-universal/Build/Products/Release/${ICC_APP_BUNDLE_NAME}/Contents/MacOS/${ICC_APP_NAME}"
+          CLI_BINARY="build-universal/Build/Products/Release/${ICC_APP_BUNDLE_NAME}/Contents/Resources/bin/${ICC_CLI_NAME}"
+          HELPER_BINARY="build-universal/Build/Products/Release/${ICC_APP_BUNDLE_NAME}/Contents/Resources/bin/ghostty"
           APP_ARCHS="$(lipo -archs "$APP_BINARY")"
           CLI_ARCHS="$(lipo -archs "$CLI_BINARY")"
           HELPER_ARCHS="$(lipo -archs "$HELPER_BINARY")"
@@ -230,8 +246,8 @@ jobs:
         if: needs.decide.outputs.should_publish != 'true' || steps.current_head_prebuild.outputs.still_current == 'true'
         run: |
           set -euo pipefail
-          CLI_BINARY="build-universal/Build/Products/Release/cmux.app/Contents/Resources/bin/cmux"
-          [ -x "$CLI_BINARY" ] || { echo "cmux CLI binary not found at $CLI_BINARY" >&2; exit 1; }
+          CLI_BINARY="build-universal/Build/Products/Release/${ICC_APP_BUNDLE_NAME}/Contents/Resources/bin/${ICC_CLI_NAME}"
+          [ -x "$CLI_BINARY" ] || { echo "icc CLI binary not found at $CLI_BINARY" >&2; exit 1; }
           CMUX_CLI_BIN="$CLI_BINARY" python3 tests/test_cli_version_memory_guard.py
 
       - name: Check whether build commit is still current main HEAD after build
@@ -262,7 +278,7 @@ jobs:
           SHORT_SHA="${{ needs.decide.outputs.short_sha }}"
           APP_DIR="build-universal/Build/Products/Release"
 
-          BASE_MARKETING=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${APP_DIR}/cmux.app/Contents/Info.plist")
+          BASE_MARKETING=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${APP_DIR}/${ICC_APP_BUNDLE_NAME}/Contents/Info.plist")
           NIGHTLY_DATE=$(date -u +%Y%m%d)
 
           # Build number: unique/monotonic per workflow run attempt so same-day
@@ -278,17 +294,17 @@ jobs:
           echo "NIGHTLY_MARKETING_VERSION=${NIGHTLY_MARKETING_VERSION}" >> "$GITHUB_ENV"
           echo "NIGHTLY_REMOTE_DAEMON_VERSION=${NIGHTLY_MARKETING_VERSION}" >> "$GITHUB_ENV"
 
-          NIGHTLY_DMG_IMMUTABLE="cmux-nightly-macos-${NIGHTLY_BUILD}.dmg"
+          NIGHTLY_DMG_IMMUTABLE="icc-nightly-macos-${NIGHTLY_BUILD}.dmg"
           echo "NIGHTLY_DMG_IMMUTABLE=${NIGHTLY_DMG_IMMUTABLE}" >> "$GITHUB_ENV"
 
           prepare_variant() {
             local app_dir="$1"
             local bundle_id="$2"
             local feed_url="$3"
-            local app_plist="$app_dir/cmux.app/Contents/Info.plist"
+            local app_plist="$app_dir/${ICC_APP_BUNDLE_NAME}/Contents/Info.plist"
 
-            /usr/libexec/PlistBuddy -c "Set :CFBundleName cmux NIGHTLY" "$app_plist"
-            /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName cmux NIGHTLY" "$app_plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleName ${ICC_NIGHTLY_APP_NAME}" "$app_plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName ${ICC_NIGHTLY_APP_NAME}" "$app_plist"
             /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ${bundle_id}" "$app_plist"
             /usr/libexec/PlistBuddy -c "Delete :SUPublicEDKey" "$app_plist" >/dev/null 2>&1 || true
             /usr/libexec/PlistBuddy -c "Delete :SUFeedURL" "$app_plist" >/dev/null 2>&1 || true
@@ -298,16 +314,16 @@ jobs:
             /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${NIGHTLY_BUILD}" "$app_plist"
             /usr/libexec/PlistBuddy -c "Delete :CMUXCommit" "$app_plist" >/dev/null 2>&1 || true
             /usr/libexec/PlistBuddy -c "Add :CMUXCommit string ${SHORT_SHA}" "$app_plist"
-            mv "$app_dir/cmux.app" "$app_dir/cmux NIGHTLY.app"
+            mv "$app_dir/${ICC_APP_BUNDLE_NAME}" "$app_dir/${ICC_NIGHTLY_APP_NAME}.app"
           }
 
           prepare_variant \
             "$APP_DIR" \
-            "com.cmuxterm.app.nightly" \
-            "https://github.com/manaflow-ai/cmux/releases/download/nightly/appcast.xml"
+            "$ICC_NIGHTLY_BUNDLE_ID" \
+            "$ICC_NIGHTLY_FEED_URL"
 
-          echo "Nightly app name: cmux NIGHTLY"
-          echo "Nightly bundle ID: com.cmuxterm.app.nightly"
+          echo "Nightly app name: ${ICC_NIGHTLY_APP_NAME}"
+          echo "Nightly bundle ID: ${ICC_NIGHTLY_BUNDLE_ID}"
           echo "Nightly marketing version: ${NIGHTLY_MARKETING_VERSION}"
           echo "Nightly build number: ${NIGHTLY_BUILD}"
           echo "Nightly immutable DMG: ${NIGHTLY_DMG_IMMUTABLE}"
@@ -320,10 +336,10 @@ jobs:
           ./scripts/build_remote_daemon_release_assets.sh \
             --version "$NIGHTLY_REMOTE_DAEMON_VERSION" \
             --release-tag "nightly" \
-            --repo "manaflow-ai/cmux" \
+            --repo "$ICC_REMOTE_DAEMON_REPO" \
             --output-dir "remote-daemon-assets"
           MANIFEST_JSON="$(python3 -c 'import json,sys; print(json.dumps(json.load(open(sys.argv[1], encoding="utf-8")), separators=(",",":")))' remote-daemon-assets/cmuxd-remote-manifest.json)"
-          APP_PLIST="build-universal/Build/Products/Release/cmux NIGHTLY.app/Contents/Info.plist"
+          APP_PLIST="build-universal/Build/Products/Release/${ICC_NIGHTLY_APP_NAME}.app/Contents/Info.plist"
           if [ ! -f "$APP_PLIST" ]; then
             echo "Missing nightly app Info.plist at $APP_PLIST" >&2
             exit 1
@@ -366,9 +382,9 @@ jobs:
           fi
           ENTITLEMENTS="cmux.entitlements"
           for APP_PATH in \
-            "build-universal/Build/Products/Release/cmux NIGHTLY.app"
+            "build-universal/Build/Products/Release/${ICC_NIGHTLY_APP_NAME}.app"
           do
-            CLI_PATH="$APP_PATH/Contents/Resources/bin/cmux"
+            CLI_PATH="$APP_PATH/Contents/Resources/bin/${ICC_CLI_NAME}"
             HELPER_PATH="$APP_PATH/Contents/Resources/bin/ghostty"
             if [ -f "$CLI_PATH" ]; then
               /usr/bin/codesign --force --options runtime --timestamp --sign "$APPLE_SIGNING_IDENTITY" --entitlements "$ENTITLEMENTS" "$CLI_PATH"
@@ -441,8 +457,8 @@ jobs:
           }
 
           notarize_and_package \
-            "build-universal/Build/Products/Release/cmux NIGHTLY.app" \
-            "cmux-nightly-macos.dmg" \
+            "build-universal/Build/Products/Release/${ICC_NIGHTLY_APP_NAME}.app" \
+            "$ICC_NIGHTLY_DMG_NAME" \
             "$NIGHTLY_DMG_IMMUTABLE"
 
       - name: Upload dSYMs to Sentry
@@ -469,10 +485,10 @@ jobs:
             echo "Missing SPARKLE_PRIVATE_KEY secret" >&2
             exit 1
           fi
-          ./scripts/sparkle_generate_appcast.sh "$NIGHTLY_DMG_IMMUTABLE" nightly appcast.xml
+          ./scripts/sparkle_generate_appcast.sh "$NIGHTLY_DMG_IMMUTABLE" nightly "$ICC_NIGHTLY_APPCAST_NAME"
           # Keep the legacy universal feed alive long enough for older nightly
           # installs to migrate onto the unified nightly appcast.
-          cp appcast.xml appcast-universal.xml
+          cp "$ICC_NIGHTLY_APPCAST_NAME" "$ICC_NIGHTLY_COMPAT_APPCAST_NAME"
 
       - name: Attest remote daemon nightly assets
         if: needs.decide.outputs.should_publish != 'true' || (steps.current_head_prebuild.outputs.still_current == 'true' && steps.current_head_postbuild.outputs.still_current == 'true')
@@ -490,9 +506,9 @@ jobs:
         if: needs.decide.outputs.should_publish != 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: cmux-nightly-${{ needs.decide.outputs.short_sha }}
+          name: icc-nightly-${{ needs.decide.outputs.short_sha }}
           path: |
-            cmux-nightly-macos*.dmg
+            icc-nightly-macos*.dmg
             appcast.xml
             remote-daemon-assets/cmuxd-remote-darwin-arm64
             remote-daemon-assets/cmuxd-remote-darwin-amd64
@@ -523,15 +539,15 @@ jobs:
           body: |
             Automated nightly build for `${{ needs.decide.outputs.short_sha }}`.
 
-            **cmux NIGHTLY** is published as a universal app:
-            - bundle ID `com.cmuxterm.app.nightly`
+            **icc NIGHTLY** is published as a universal app:
+            - bundle ID `com.icc.app.nightly`
             - feed `appcast.xml`
             - compatibility feed `appcast-universal.xml` for older universal nightlies
 
-            [Download cmux-nightly-macos.dmg](https://github.com/manaflow-ai/cmux/releases/download/nightly/cmux-nightly-macos.dmg)
+            [Download icc-nightly-macos.dmg](https://github.com/miounet11/icc/releases/download/nightly/icc-nightly-macos.dmg)
           files: |
-            cmux-nightly-macos-${{ github.run_id }}*.dmg
-            cmux-nightly-macos.dmg
+            icc-nightly-macos-${{ github.run_id }}*.dmg
+            icc-nightly-macos.dmg
             appcast.xml
             remote-daemon-assets/cmuxd-remote-darwin-arm64
             remote-daemon-assets/cmuxd-remote-darwin-amd64

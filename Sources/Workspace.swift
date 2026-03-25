@@ -1282,9 +1282,9 @@ private final class WorkspaceRemoteDaemonRPCClient {
     private static func sshCommonArguments(configuration: WorkspaceRemoteConfiguration, batchMode: Bool) -> [String] {
         let effectiveSSHOptions: [String] = {
             if batchMode {
-                return backgroundSSHOptions(configuration.sshOptions)
+                return backgroundSSHOptions(configuration.effectiveSSHOptions)
             }
-            return normalizedSSHOptions(configuration.sshOptions)
+            return normalizedSSHOptions(configuration.effectiveSSHOptions)
         }()
         var args: [String] = [
             "-o", "ConnectTimeout=6",
@@ -3505,9 +3505,9 @@ final class WorkspaceRemoteSessionController {
     private func sshCommonArguments(batchMode: Bool) -> [String] {
         let effectiveSSHOptions: [String] = {
             if batchMode {
-                return backgroundSSHOptions(configuration.sshOptions)
+                return backgroundSSHOptions(configuration.effectiveSSHOptions)
             }
-            return normalizedSSHOptions(configuration.sshOptions)
+            return normalizedSSHOptions(configuration.effectiveSSHOptions)
         }()
         var args: [String] = [
             "-o", "ConnectTimeout=6",
@@ -4654,6 +4654,77 @@ enum WorkspaceRemoteConnectionState: String {
     case error
 }
 
+enum RemoteSSHTermMode: String, CaseIterable, Identifiable {
+    case xterm256color
+    case inheritGhostty
+
+    static let appStorageKey = "remoteSSHTermMode"
+    static let defaultValue: RemoteSSHTermMode = .xterm256color
+
+    var id: String { rawValue }
+
+    static func current(userDefaults: UserDefaults = .standard) -> RemoteSSHTermMode {
+        guard let rawValue = userDefaults.string(forKey: appStorageKey),
+              let mode = RemoteSSHTermMode(rawValue: rawValue) else {
+            return defaultValue
+        }
+        return mode
+    }
+
+    var sshOption: String? {
+        switch self {
+        case .xterm256color:
+            return "SetEnv=TERM=xterm-256color"
+        case .inheritGhostty:
+            return nil
+        }
+    }
+
+    var statusLabel: String {
+        switch self {
+        case .xterm256color:
+            return "TERM=xterm-256color"
+        case .inheritGhostty:
+            return "TERM=xterm-ghostty"
+        }
+    }
+
+    var localizedSummary: String {
+        switch self {
+        case .xterm256color:
+            return "远程 TERM 回退到 xterm-256color"
+        case .inheritGhostty:
+            return "远程 TERM 保持 Ghostty 默认值"
+        }
+    }
+
+    func applying(to options: [String]) -> [String] {
+        let normalized = options.compactMap { option -> String? in
+            let trimmed = option.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? nil : trimmed
+        }
+        guard let sshOption else { return normalized }
+        if normalized.contains(where: Self.containsExplicitTERMOverride) {
+            return normalized
+        }
+        return normalized + [sshOption]
+    }
+
+    private static func containsExplicitTERMOverride(_ option: String) -> Bool {
+        let trimmed = option.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+        guard trimmed
+            .split(whereSeparator: { $0 == "=" || $0.isWhitespace })
+            .first
+            .map(String.init)?
+            .lowercased() == "setenv" else {
+            return false
+        }
+        let collapsed = trimmed.replacingOccurrences(of: " ", with: "").lowercased()
+        return collapsed.contains("term=")
+    }
+}
+
 enum WorkspaceRemoteDaemonState: String {
     case unavailable
     case bootstrapping
@@ -4698,12 +4769,24 @@ struct WorkspaceRemoteConfiguration: Equatable {
         return "\(destination):\(port)"
     }
 
+    var effectiveSSHOptions: [String] {
+        remoteSSHTermMode.applying(to: sshOptions)
+    }
+
+    var remoteSSHTermMode: RemoteSSHTermMode {
+        RemoteSSHTermMode.current()
+    }
+
+    var remoteSSHTermSummary: String {
+        remoteSSHTermMode.localizedSummary
+    }
+
     var proxyBrokerTransportKey: String {
         let normalizedDestination = destination.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalizedPort = port.map(String.init) ?? ""
         let normalizedIdentity = identityFile?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let normalizedLocalProxyPort = localProxyPort.map(String.init) ?? ""
-        let normalizedOptions = Self.proxyBrokerSSHOptions(sshOptions).joined(separator: "\u{1f}")
+        let normalizedOptions = Self.proxyBrokerSSHOptions(effectiveSSHOptions).joined(separator: "\u{1f}")
         return [normalizedDestination, normalizedPort, normalizedIdentity, normalizedOptions, normalizedLocalProxyPort]
             .joined(separator: "\u{1e}")
     }
@@ -5280,6 +5363,8 @@ final class Workspace: Identifiable, ObservableObject {
     @Published var remoteConfiguration: WorkspaceRemoteConfiguration?
     @Published var remoteConnectionState: WorkspaceRemoteConnectionState = .disconnected
     @Published var remoteConnectionDetail: String?
+    @Published var remoteGhosttyTerminfoInstalled: Bool = false
+    @Published var remoteGhosttyTerminfoSummary: String?
     @Published var supervisorTaskCharter: WorkspaceSupervisorTaskCharter = .init()
     @Published var supervisorGoal: String = ""
     @Published var supervisorEnabled: Bool = false
@@ -5356,6 +5441,22 @@ final class Workspace: Identifiable, ObservableObject {
         return false
     }
 
+    var remoteSSHCompatibilitySummary: String? {
+        let parts = [
+            remoteConfiguration?.remoteSSHTermSummary,
+            remoteGhosttyTerminfoSummary
+        ]
+        .compactMap { value -> String? in
+            guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !trimmed.isEmpty else {
+                return nil
+            }
+            return trimmed
+        }
+        guard !parts.isEmpty else { return nil }
+        return parts.joined(separator: " / ")
+    }
+
     private var hasProxyOnlyRemoteSidebarError: Bool {
         guard let entry = statusEntries[Self.remoteErrorStatusKey]?.value else { return false }
         return entry.lowercased().contains("remote proxy unavailable")
@@ -5379,6 +5480,36 @@ final class Workspace: Identifiable, ObservableObject {
         case unknown
         case promptIdle
         case commandRunning
+
+        var displayText: String {
+            switch self {
+            case .unknown:
+                return "Unverified"
+            case .promptIdle:
+                return "Prompt Idle"
+            case .commandRunning:
+                return "Running"
+            }
+        }
+
+        var localizedSupervisorText: String {
+            switch self {
+            case .unknown:
+                return "未确认"
+            case .promptIdle:
+                return "提示符空闲"
+            case .commandRunning:
+                return "命令执行中"
+            }
+        }
+
+        var isReadyForAutomation: Bool {
+            self == .promptIdle
+        }
+
+        var blocksPromptDispatch: Bool {
+            self == .commandRunning
+        }
     }
 
     nonisolated static func resolveCloseConfirmation(
@@ -6151,6 +6282,15 @@ final class Workspace: Identifiable, ObservableObject {
 #endif
     }
 
+    func panelShellActivityState(for panelId: UUID) -> PanelShellActivityState {
+        panelShellActivityStates[panelId] ?? .unknown
+    }
+
+    var focusedPanelShellActivityState: PanelShellActivityState {
+        guard let focusedPanelId else { return .unknown }
+        return panelShellActivityState(for: focusedPanelId)
+    }
+
     func panelNeedsConfirmClose(panelId: UUID, fallbackNeedsConfirmClose: Bool) -> Bool {
         Self.resolveCloseConfirmation(
             shellActivityState: panelShellActivityStates[panelId],
@@ -6571,6 +6711,10 @@ final class Workspace: Identifiable, ObservableObject {
             guard let last = remoteLastHeartbeatAt else { return NSNull() }
             return Self.remoteHeartbeatDateFormatter.string(from: last)
         }()
+        let ghosttyTerminfoSummaryValue: Any = {
+            guard let summary = remoteGhosttyTerminfoSummary else { return NSNull() }
+            return summary
+        }()
         var payload: [String: Any] = [
             "enabled": remoteConfiguration != nil,
             "state": remoteConnectionState.rawValue,
@@ -6622,14 +6766,26 @@ final class Workspace: Identifiable, ObservableObject {
             payload["destination"] = remoteConfiguration.destination
             payload["port"] = remoteConfiguration.port ?? NSNull()
             payload["has_identity_file"] = remoteConfiguration.identityFile != nil
-            payload["has_ssh_options"] = !remoteConfiguration.sshOptions.isEmpty
+            payload["has_ssh_options"] = !remoteConfiguration.effectiveSSHOptions.isEmpty
             payload["local_proxy_port"] = remoteConfiguration.localProxyPort ?? NSNull()
+            payload["ssh_term_mode"] = remoteConfiguration.remoteSSHTermMode.rawValue
+            payload["ssh_term_label"] = remoteConfiguration.remoteSSHTermSummary
+            payload["ghostty_terminfo"] = [
+                "installed": remoteGhosttyTerminfoInstalled,
+                "summary": ghosttyTerminfoSummaryValue,
+            ]
         } else {
             payload["destination"] = NSNull()
             payload["port"] = NSNull()
             payload["has_identity_file"] = false
             payload["has_ssh_options"] = false
             payload["local_proxy_port"] = NSNull()
+            payload["ssh_term_mode"] = NSNull()
+            payload["ssh_term_label"] = NSNull()
+            payload["ghostty_terminfo"] = [
+                "installed": false,
+                "summary": NSNull(),
+            ]
         }
         return payload
     }
@@ -6644,6 +6800,8 @@ final class Workspace: Identifiable, ObservableObject {
         remoteHeartbeatCount = 0
         remoteLastHeartbeatAt = nil
         remoteConnectionDetail = nil
+        remoteGhosttyTerminfoInstalled = false
+        remoteGhosttyTerminfoSummary = nil
         remoteDaemonStatus = WorkspaceRemoteDaemonStatus()
         statusEntries.removeValue(forKey: Self.remoteErrorStatusKey)
         statusEntries.removeValue(forKey: Self.remotePortConflictStatusKey)
@@ -6698,6 +6856,8 @@ final class Workspace: Identifiable, ObservableObject {
         remoteLastHeartbeatAt = nil
         remoteConnectionState = .disconnected
         remoteConnectionDetail = nil
+        remoteGhosttyTerminfoInstalled = false
+        remoteGhosttyTerminfoSummary = nil
         remoteDaemonStatus = WorkspaceRemoteDaemonStatus()
         statusEntries.removeValue(forKey: Self.remoteErrorStatusKey)
         statusEntries.removeValue(forKey: Self.remotePortConflictStatusKey)

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "$0")" && pwd)/release-config.sh"
+
 # Build, sign, notarize, create DMG, generate appcast, and upload to GitHub release.
 # Usage: ./scripts/build-sign-upload.sh <tag> [--allow-overwrite]
 # Requires: source ~/.secrets/cmuxterm.env && export SPARKLE_PRIVATE_KEY
@@ -48,7 +50,7 @@ fi
 TAG="$1"
 SIGN_HASH="A050CC7E193C8221BDBA204E731B046CDCCC1B30"
 ENTITLEMENTS="cmux.entitlements"
-APP_PATH="build/Build/Products/Release/cmux.app"
+APP_PATH="build/Build/Products/Release/${ICC_APP_BUNDLE_NAME}"
 
 # --- Pre-flight ---
 source ~/.secrets/cmuxterm.env
@@ -87,12 +89,12 @@ APP_PLIST="$APP_PATH/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Delete :SUPublicEDKey" "$APP_PLIST" 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Delete :SUFeedURL" "$APP_PLIST" 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Add :SUPublicEDKey string $SPARKLE_PUBLIC_KEY_DERIVED" "$APP_PLIST"
-/usr/libexec/PlistBuddy -c "Add :SUFeedURL string https://github.com/manaflow-ai/cmux/releases/latest/download/appcast.xml" "$APP_PLIST"
+/usr/libexec/PlistBuddy -c "Add :SUFeedURL string $ICC_STABLE_FEED_URL" "$APP_PLIST"
 echo "Sparkle keys injected"
 
 # --- Codesign ---
 echo "Codesigning..."
-CLI_PATH="$APP_PATH/Contents/Resources/bin/cmux"
+CLI_PATH="$APP_PATH/Contents/Resources/bin/$ICC_CLI_NAME"
 if [ -f "$CLI_PATH" ]; then
   /usr/bin/codesign --force --options runtime --timestamp --sign "$SIGN_HASH" --entitlements "$ENTITLEMENTS" "$CLI_PATH"
 fi
@@ -105,35 +107,35 @@ echo "Codesign verified"
 
 # --- Notarize app ---
 echo "Notarizing app..."
-ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" cmux-notary.zip
-xcrun notarytool submit cmux-notary.zip \
+ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "${ICC_APP_NAME}-notary.zip"
+xcrun notarytool submit "${ICC_APP_NAME}-notary.zip" \
   --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD" --wait
 xcrun stapler staple "$APP_PATH"
 xcrun stapler validate "$APP_PATH"
-rm -f cmux-notary.zip
+rm -f "${ICC_APP_NAME}-notary.zip"
 echo "App notarized"
 
 # --- Create and notarize DMG ---
 echo "Creating DMG..."
-rm -f cmux-macos.dmg
-create-dmg --codesign "$SIGN_HASH" cmux-macos.dmg "$APP_PATH"
+rm -f "$ICC_RELEASE_DMG_NAME"
+create-dmg --codesign "$SIGN_HASH" "$ICC_RELEASE_DMG_NAME" "$APP_PATH"
 echo "Notarizing DMG..."
-xcrun notarytool submit cmux-macos.dmg \
+xcrun notarytool submit "$ICC_RELEASE_DMG_NAME" \
   --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD" --wait
-xcrun stapler staple cmux-macos.dmg
-xcrun stapler validate cmux-macos.dmg
+xcrun stapler staple "$ICC_RELEASE_DMG_NAME"
+xcrun stapler validate "$ICC_RELEASE_DMG_NAME"
 echo "DMG notarized"
 
 # --- Generate Sparkle appcast ---
 echo "Generating appcast..."
-./scripts/sparkle_generate_appcast.sh cmux-macos.dmg "$TAG" appcast.xml
+./scripts/sparkle_generate_appcast.sh "$ICC_RELEASE_DMG_NAME" "$TAG" "$ICC_STABLE_APPCAST_NAME"
 
 # --- Create GitHub release (if needed) and upload ---
 if gh release view "$TAG" >/dev/null 2>&1; then
   echo "Release $TAG already exists"
   EXISTING_ASSETS="$(gh release view "$TAG" --json assets --jq '.assets[].name' || true)"
   HAS_CONFLICTING_ASSET="false"
-  for asset in cmux-macos.dmg appcast.xml; do
+  for asset in "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME"; do
     if printf '%s\n' "$EXISTING_ASSETS" | grep -Fxq "$asset"; then
       HAS_CONFLICTING_ASSET="true"
       break
@@ -148,14 +150,14 @@ if gh release view "$TAG" >/dev/null 2>&1; then
 
   if [[ "$ALLOW_OVERWRITE" == "true" ]]; then
     echo "Uploading with overwrite enabled for existing release $TAG..."
-    gh release upload "$TAG" cmux-macos.dmg appcast.xml --clobber
+    gh release upload "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME" --clobber
   else
     echo "Uploading to existing release $TAG..."
-    gh release upload "$TAG" cmux-macos.dmg appcast.xml
+    gh release upload "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME"
   fi
 else
   echo "Creating release $TAG and uploading..."
-  gh release create "$TAG" cmux-macos.dmg appcast.xml --title "$TAG" --notes "See CHANGELOG.md for details"
+  gh release create "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME" --title "$TAG" --notes "See CHANGELOG.md for details"
 fi
 
 # --- Verify ---
@@ -164,19 +166,19 @@ gh release view "$TAG"
 # --- Update Homebrew cask (skip for nightlies) ---
 if [[ "$TAG" != *"-nightly"* ]]; then
   VERSION="${TAG#v}"
-  DMG_SHA256=$(shasum -a 256 cmux-macos.dmg | cut -d' ' -f1)
+  DMG_SHA256=$(shasum -a 256 "$ICC_RELEASE_DMG_NAME" | cut -d' ' -f1)
   echo "Updating homebrew cask to $VERSION (SHA: $DMG_SHA256)..."
   CASK_FILE="homebrew-cmux/Casks/cmux.rb"
-  if [ -f "$CASK_FILE" ]; then
+  if [ -n "$ICC_HOMEBREW_TAP_REPOSITORY" ] && [ -f "$CASK_FILE" ]; then
     cat > "$CASK_FILE" << CASKEOF
-cask "cmux" do
+cask "icc" do
   version "${VERSION}"
   sha256 "${DMG_SHA256}"
 
-  url "https://github.com/manaflow-ai/cmux/releases/download/v#{version}/cmux-macos.dmg"
-  name "cmux"
-  desc "Lightweight native macOS terminal with vertical tabs for AI coding agents"
-  homepage "https://github.com/manaflow-ai/cmux"
+  url "https://github.com/miounet11/icc/releases/download/v#{version}/icc-macos.dmg"
+  name "icc"
+  desc "Native macOS terminal workspace app for AI execution"
+  homepage "https://github.com/miounet11/icc"
 
   livecheck do
     url :url
@@ -185,13 +187,13 @@ cask "cmux" do
 
   depends_on macos: ">= :ventura"
 
-  app "cmux.app"
-  binary "#{appdir}/cmux.app/Contents/Resources/bin/cmux"
+  app "icc.app"
+  binary "#{appdir}/icc.app/Contents/Resources/bin/icc"
 
   zap trash: [
-    "~/Library/Application Support/cmux",
-    "~/Library/Caches/cmux",
-    "~/Library/Preferences/ai.manaflow.cmuxterm.plist",
+    "~/Library/Application Support/icc",
+    "~/Library/Caches/icc",
+    "~/Library/Preferences/com.icc.app.plist",
   ]
 end
 CASKEOF
@@ -200,18 +202,18 @@ CASKEOF
     if git diff --staged --quiet; then
       echo "Homebrew cask already up to date"
     else
-      git commit -m "Update cmux to ${VERSION}"
+      git commit -m "Update icc to ${VERSION}"
       git push
       echo "Homebrew cask updated"
     fi
     cd ..
   else
-    echo "WARNING: homebrew-cmux submodule not found, skipping cask update"
+    echo "WARNING: Homebrew tap automation is not configured, skipping cask update"
   fi
 fi
 
 # --- Cleanup ---
-rm -rf build/ cmux-macos.dmg appcast.xml
+rm -rf build/ "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME"
 echo ""
 echo "=== Release $TAG complete ==="
-say "cmux release complete"
+say "icc release complete"

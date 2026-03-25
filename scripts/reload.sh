@@ -400,11 +400,11 @@ if [[ -x "$CLI_PATH" ]]; then
 
   # Stable shim that always follows the last reload-selected dev CLI.
   DEV_CLI_SHIM="$HOME/.local/bin/cmux-dev"
-  write_dev_cli_shim "$DEV_CLI_SHIM" "/Applications/cmux.app/Contents/Resources/bin/cmux"
+  write_dev_cli_shim "$DEV_CLI_SHIM" "/Applications/icc.app/Contents/Resources/bin/icc"
 
   CMUX_SHIM_TARGET="$(select_cmux_shim_target || true)"
   if [[ -n "${CMUX_SHIM_TARGET:-}" ]]; then
-    write_dev_cli_shim "$CMUX_SHIM_TARGET" "/Applications/cmux.app/Contents/Resources/bin/cmux"
+    write_dev_cli_shim "$CMUX_SHIM_TARGET" "/Applications/icc.app/Contents/Resources/bin/icc"
   fi
 fi
 
@@ -439,7 +439,7 @@ if [[ -x "$GHOSTTY_HELPER_SRC" ]]; then
   cp "$GHOSTTY_HELPER_SRC" "$BIN_DIR/ghostty"
   chmod +x "$BIN_DIR/ghostty"
 fi
-CLI_PATH="$APP_PATH/Contents/Resources/bin/cmux"
+CLI_PATH="$APP_PATH/Contents/Resources/bin/icc"
 if [[ -x "$CLI_PATH" ]]; then
   echo "$CLI_PATH" > /tmp/cmux-last-cli-path || true
 fi

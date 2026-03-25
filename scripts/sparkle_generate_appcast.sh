@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "$0")" && pwd)/release-config.sh"
+
 if [[ $# -lt 2 ]]; then
   echo "Usage: $0 <dmg-path> <tag> [output-path]" >&2
   exit 1
@@ -16,8 +18,8 @@ if [[ -z "${SPARKLE_PRIVATE_KEY:-}" ]]; then
 fi
 
 SPARKLE_VERSION="${SPARKLE_VERSION:-2.8.1}"
-DOWNLOAD_URL_PREFIX="${DOWNLOAD_URL_PREFIX:-https://github.com/manaflow-ai/cmux/releases/download/$TAG/}"
-RELEASE_NOTES_URL="${RELEASE_NOTES_URL:-https://github.com/manaflow-ai/cmux/releases/tag/$TAG}"
+DOWNLOAD_URL_PREFIX="${DOWNLOAD_URL_PREFIX:-${ICC_REPO_URL}/releases/download/$TAG/}"
+RELEASE_NOTES_URL="${RELEASE_NOTES_URL:-${ICC_RELEASE_NOTES_BASE_URL}/$TAG}"
 
 work_dir="$(mktemp -d)"
 cleanup() {

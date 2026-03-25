@@ -1,4 +1,10 @@
-# cmux agent notes
+# icc agent notes
+
+Historical note:
+
+- The product and shipped CLI are now `icc`.
+- Many local scripts, Xcode targets, test names, sockets, and helper binaries still use legacy `cmux` names.
+- Keep user-facing docs on `icc`, but preserve working internal names until they are migrated deliberately.
 
 ## Initial setup
 
@@ -227,13 +233,13 @@ Manual release steps (if not using the command):
 ```bash
 git tag vX.Y.Z
 git push origin vX.Y.Z
-gh run watch --repo manaflow-ai/cmux
+gh run watch --repo miounet11/icc
 ```
 
 Notes:
 - Requires GitHub secrets: `APPLE_CERTIFICATE_BASE64`, `APPLE_CERTIFICATE_PASSWORD`,
   `APPLE_SIGNING_IDENTITY`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`.
-- The release asset is `cmux-macos.dmg` attached to the tag.
-- README download button points to `releases/latest/download/cmux-macos.dmg`.
+- Verify the release workflow output names before publishing. Some release automation may still emit legacy `cmux`-named assets until that migration is finished.
+- The public README should link to the GitHub Releases page for `icc`, or to the final verified asset name once release packaging is fully renamed.
 - Versioning: bump the minor version for updates unless explicitly asked otherwise.
 - Changelog: update `CHANGELOG.md`; docs changelog is rendered from it.

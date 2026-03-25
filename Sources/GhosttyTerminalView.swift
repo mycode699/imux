@@ -1847,7 +1847,7 @@ class GhosttyApp {
         return enabled
     }
 
-    fileprivate func shellIntegrationMode() -> String {
+    func shellIntegrationMode() -> String {
         guard let config else { return "detect" }
         var value: UnsafePointer<Int8>?
         let key = "shell-integration"

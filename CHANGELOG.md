@@ -1,6 +1,16 @@
 # Changelog
 
-All notable changes to cmux are documented here.
+All notable changes to `icc` are documented here.
+
+Historical note:
+
+- This codebase originated from `cmux`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
+- The current product being released from this repository is `icc`.
+
+## [Unreleased] - 2026-03-25
+
+### Changed
+- Refreshed the release-facing documentation for the `icc` launch: README files, install guidance, contributing notes, remote SSH docs, browser automation notes, notification docs, and legacy Homebrew/web documentation were updated to describe the current product and repository.
 
 ## [0.62.2] - 2026-03-14
 

@@ -241,6 +241,24 @@ struct WorkspaceSupervisorLoopTarget: Codable, Equatable, Sendable {
     var selectedAt: TimeInterval
 }
 
+struct WorkspaceSupervisorAutomationReadiness: Sendable {
+    var headline: String
+    var statusText: String
+    var shellIntegrationMode: String
+    var shellIntegrationInjected: Bool
+    var appleScriptAutomationEnabled: Bool
+    var focusedPanelTitle: String
+    var focusedPanelType: String
+    var focusedDirectory: String
+    var focusedShellState: String
+    var terminalPanelCount: Int
+    var promptReadyCount: Int
+    var runningCount: Int
+    var unknownCount: Int
+    var trackedDirectoryCount: Int
+    var notes: [String]
+}
+
 struct WorkspaceSupervisorSnapshot: Sendable {
     var title: String
     var customTitle: String?
@@ -256,6 +274,7 @@ struct WorkspaceSupervisorSnapshot: Sendable {
     var gitDirty: Bool
     var remoteTarget: String?
     var remoteState: String
+    var remoteCompatibility: String?
     var remoteDetail: String?
     var statusEntries: [(key: String, value: String)]
     var recentLogs: [String]
@@ -315,6 +334,9 @@ enum WorkspaceSupervisorHeuristics {
         if let remoteTarget = snapshot.remoteTarget, !remoteTarget.isEmpty {
             let remoteDetail = snapshot.remoteDetail?.trimmingCharacters(in: .whitespacesAndNewlines)
             lines.append("远程：\(remoteTarget) / \(snapshot.remoteState)\(remoteDetail?.isEmpty == false ? " / \(remoteDetail!)" : "")")
+        }
+        if let remoteCompatibility = snapshot.remoteCompatibility, !remoteCompatibility.isEmpty {
+            lines.append("远程 SSH：\(remoteCompatibility)")
         }
         if !snapshot.recentRunHeadlines.isEmpty {
             lines.append("最近监督记录：\(snapshot.recentRunHeadlines.joined(separator: " | "))")
@@ -603,6 +625,10 @@ struct SupervisorPaneView: View {
         Array(workspace.supervisorExecutionQueue.prefix(6))
     }
 
+    private var automationReadiness: WorkspaceSupervisorAutomationReadiness {
+        workspace.supervisorAutomationReadiness()
+    }
+
     private var canSendToCurrentWindow: Bool {
         workspace.canDispatchSupervisorPrompt(preferredPanelID: workspace.focusedPanelId)
     }
@@ -657,6 +683,11 @@ struct SupervisorPaneView: View {
     }
 
     var body: some View {
+        let readiness = automationReadiness
+        let currentWindowDispatchEnabled = canSendToCurrentWindow
+        let activeWindowDispatchEnabled = canSendToActiveWindow
+        let snapshot = workspace.supervisorSnapshot
+
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 SupervisorSurface {
@@ -707,6 +738,7 @@ struct SupervisorPaneView: View {
                             SupervisorMetricPill(title: "执行简报", value: workspace.supervisorExecutionBrief == nil ? "未生成" : "已生成")
                             SupervisorMetricPill(title: "窗口交接", value: "\(workspace.supervisorPanelHandoffs.count) 个")
                             SupervisorMetricPill(title: "当前窗口", value: workspace.supervisorActiveLoopTarget?.panelTitle ?? "未选定")
+                            SupervisorMetricPill(title: "自动化就绪", value: readiness.statusText)
                             SupervisorMetricPill(title: "自动循环", value: loopStateText)
                             SupervisorMetricPill(title: "运行记录", value: "\(workspace.supervisorRunJournal.count) 条")
                             SupervisorMetricPill(title: "最近更新", value: updatedText)
@@ -857,14 +889,18 @@ struct SupervisorPaneView: View {
                     Text("环境上下文")
                         .font(.headline)
                     LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
-                        SupervisorReviewCard(title: "当前目录", content: workspace.supervisorSnapshot.currentDirectory, monospaced: true)
-                        if let remoteTarget = workspace.supervisorSnapshot.remoteTarget, !remoteTarget.isEmpty {
-                            SupervisorReviewCard(title: "远程目标", content: remoteTarget)
+                        SupervisorReviewCard(title: "当前目录", content: snapshot.currentDirectory, monospaced: true)
+                        if let remoteTarget = snapshot.remoteTarget, !remoteTarget.isEmpty {
+                            let remoteCompatibility = snapshot.remoteCompatibility?.trimmingCharacters(in: .whitespacesAndNewlines)
+                            SupervisorReviewCard(
+                                title: "远程目标",
+                                content: remoteCompatibility?.isEmpty == false ? "\(remoteTarget)\n\(remoteCompatibility!)" : remoteTarget
+                            )
                         }
-                        if !workspace.supervisorSnapshot.observedDirectories.isEmpty {
+                        if !snapshot.observedDirectories.isEmpty {
                             SupervisorReviewCard(
                                 title: "已记录目录",
-                                content: workspace.supervisorSnapshot.observedDirectories.joined(separator: "\n"),
+                                content: snapshot.observedDirectories.joined(separator: "\n"),
                                 monospaced: true
                             )
                         }
@@ -882,6 +918,56 @@ struct SupervisorPaneView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
+                    Text("自动化就绪度")
+                        .font(.headline)
+
+                    LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
+                        SupervisorReviewCard(
+                            title: "当前判断",
+                            content: """
+                            \(readiness.headline)
+
+                            Shell Integration: \(readiness.shellIntegrationMode)
+                            注入状态: \(readiness.shellIntegrationInjected ? "已启用" : "已关闭")
+                            AppleScript: \(readiness.appleScriptAutomationEnabled ? "已启用" : "未启用")
+                            """,
+                            monospaced: true
+                        )
+
+                        SupervisorReviewCard(
+                            title: "聚焦窗口",
+                            content: """
+                            标题: \(readiness.focusedPanelTitle)
+                            类型: \(readiness.focusedPanelType)
+                            目录: \(readiness.focusedDirectory)
+                            Shell 状态: \(readiness.focusedShellState)
+                            """,
+                            monospaced: true
+                        )
+
+                        SupervisorReviewCard(
+                            title: "终端覆盖率",
+                            content: """
+                            终端窗口: \(readiness.terminalPanelCount)
+                            可安全派发: \(readiness.promptReadyCount)
+                            正在运行: \(readiness.runningCount)
+                            未确认状态: \(readiness.unknownCount)
+                            已跟踪目录: \(readiness.trackedDirectoryCount)
+                            """,
+                            monospaced: true
+                        )
+
+                        if !readiness.notes.isEmpty {
+                            SupervisorReviewCard(
+                                title: "建议与风险",
+                                content: readiness.notes.joined(separator: "\n"),
+                                monospaced: true
+                            )
+                        }
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text("执行简报")
                             .font(.headline)
@@ -890,13 +976,13 @@ struct SupervisorPaneView: View {
                             supervisorDispatchStatus = workspace.dispatchSupervisorPromptToCurrentPanel()
                         }
                         .buttonStyle(SupervisorSecondaryButtonStyle())
-                        .disabled(!canSendToCurrentWindow)
+                        .disabled(!currentWindowDispatchEnabled)
 
                         Button("发送到循环窗口") {
                             supervisorDispatchStatus = workspace.dispatchSupervisorPromptToActiveLoopPanel()
                         }
                         .buttonStyle(SupervisorPrimaryButtonStyle())
-                        .disabled(!canSendToActiveWindow)
+                        .disabled(!activeWindowDispatchEnabled)
 
                         Button(isGeneratingExecutionBrief ? "生成中..." : "生成执行简报") {
                             Task {
@@ -1623,6 +1709,7 @@ enum WorkspaceSupervisorLLMClient {
             "gitDirty": snapshot.gitDirty,
             "remoteTarget": snapshot.remoteTarget as Any,
             "remoteState": snapshot.remoteState,
+            "remoteCompatibility": snapshot.remoteCompatibility as Any,
             "remoteDetail": snapshot.remoteDetail as Any,
             "statusEntries": snapshot.statusEntries.map { ["key": $0.key, "value": $0.value] },
             "recentLogs": snapshot.recentLogs,
@@ -1694,9 +1781,10 @@ extension Workspace {
         return terminalPanel
     }
 
-    private func supervisorResolvedDispatchTarget(preferredPanelID: UUID?) -> WorkspaceSupervisorPanelHandoff? {
-        refreshSupervisorPanelHandoffs()
-
+    private func supervisorResolvedDispatchTarget(
+        preferredPanelID: UUID?,
+        handoffs: [WorkspaceSupervisorPanelHandoff]
+    ) -> WorkspaceSupervisorPanelHandoff? {
         let terminalPanelIDs = Set(
             sidebarOrderedPanelIds().filter { supervisorTerminalPanel(for: $0) != nil }
         )
@@ -1705,23 +1793,23 @@ extension Workspace {
 
         if let preferredPanelID,
            terminalPanelIDs.contains(preferredPanelID),
-           let exact = supervisorPanelHandoffs.first(where: { $0.panelID == preferredPanelID }) {
+           let exact = handoffs.first(where: { $0.panelID == preferredPanelID }) {
             return exact
         }
 
         if let activePanelID = supervisorActiveLoopTarget?.panelID,
            terminalPanelIDs.contains(activePanelID),
-           let active = supervisorPanelHandoffs.first(where: { $0.panelID == activePanelID }) {
+           let active = handoffs.first(where: { $0.panelID == activePanelID }) {
             return active
         }
 
         if let focusedPanelId,
            terminalPanelIDs.contains(focusedPanelId),
-           let focused = supervisorPanelHandoffs.first(where: { $0.panelID == focusedPanelId }) {
+           let focused = handoffs.first(where: { $0.panelID == focusedPanelId }) {
             return focused
         }
 
-        return supervisorPanelHandoffs.first(where: { terminalPanelIDs.contains($0.panelID) })
+        return handoffs.first(where: { terminalPanelIDs.contains($0.panelID) })
     }
 
     private func supervisorDispatchPrompt(for handoff: WorkspaceSupervisorPanelHandoff?) -> String? {
@@ -1733,7 +1821,11 @@ extension Workspace {
     }
 
     func canDispatchSupervisorPrompt(preferredPanelID: UUID?) -> Bool {
-        guard let handoff = supervisorResolvedDispatchTarget(preferredPanelID: preferredPanelID),
+        let handoffs = computedSupervisorPanelHandoffsSnapshot().handoffs
+        guard let handoff = supervisorResolvedDispatchTarget(
+                preferredPanelID: preferredPanelID,
+                handoffs: handoffs
+              ),
               supervisorTerminalPanel(for: handoff.panelID) != nil else {
             return false
         }
@@ -1755,7 +1847,11 @@ extension Workspace {
 
     @discardableResult
     func dispatchSupervisorPrompt(preferredPanelID: UUID?, source: String) -> String {
-        guard let handoff = supervisorResolvedDispatchTarget(preferredPanelID: preferredPanelID) else {
+        let handoffs = computedSupervisorPanelHandoffsSnapshot().handoffs
+        guard let handoff = supervisorResolvedDispatchTarget(
+                preferredPanelID: preferredPanelID,
+                handoffs: handoffs
+              ) else {
             let message = "No terminal window is available for supervisor dispatch."
             appendLogEntry(message, level: .warning, source: "supervisor")
             return message
@@ -1764,6 +1860,20 @@ extension Workspace {
         guard let terminalPanel = supervisorTerminalPanel(for: handoff.panelID) else {
             let message = "The selected supervisor target is not a terminal window."
             appendLogEntry(message, level: .warning, source: "supervisor")
+            return message
+        }
+
+        let shellState = panelShellActivityState(for: handoff.panelID)
+        if shellState.blocksPromptDispatch {
+            let message = "The target terminal is still running a command. Wait for a prompt before dispatching the supervisor prompt."
+            appendLogEntry(message, level: .warning, source: "supervisor")
+            appendSupervisorRun(
+                title: "派发执行提示词",
+                summary: "未向 \(handoff.panelTitle) 派发提示词。",
+                outcome: "目标窗口仍在执行命令，已阻止本次派发。",
+                nextAction: "等待终端回到提示符空闲状态后再发送。",
+                source: "\(source)-blocked"
+            )
             return message
         }
 
@@ -1783,17 +1893,116 @@ extension Workspace {
         focusPanel(handoff.panelID)
         terminalPanel.sendText(prompt)
 
+        let shellStateNote = shellState == .unknown
+            ? "Shell state is still unverified, so dispatch safety is best-effort."
+            : "Terminal was idle at a prompt when the prompt was dispatched."
         let message = "Supervisor prompt sent to \(handoff.panelTitle)."
         appendSupervisorRun(
             title: "派发执行提示词",
             summary: "已向 \(handoff.panelTitle) 派发执行提示词。",
-            outcome: "目标目录：\(handoff.workingDirectory)",
+            outcome: "目标目录：\(handoff.workingDirectory)；\(shellStateNote)",
             nextAction: handoff.nextAction,
             source: source
         )
         appendLogEntry(message, level: .info, source: "supervisor")
         publishSupervisorStatusEntry()
         return message
+    }
+
+    func supervisorAutomationReadiness() -> WorkspaceSupervisorAutomationReadiness {
+        let shellIntegrationMode = GhosttyApp.shared.shellIntegrationMode()
+        let shellIntegrationInjected = UserDefaults.standard.object(forKey: "sidebarShellIntegration") as? Bool ?? true
+        let appleScriptEnabled = GhosttyApp.shared.appleScriptAutomationEnabled()
+
+        let terminalPanelIDs = sidebarOrderedPanelIds().filter { terminalPanel(for: $0) != nil }
+        let promptReadyCount = terminalPanelIDs.filter { panelShellActivityState(for: $0) == .promptIdle }.count
+        let runningCount = terminalPanelIDs.filter { panelShellActivityState(for: $0) == .commandRunning }.count
+        let unknownCount = max(0, terminalPanelIDs.count - promptReadyCount - runningCount)
+        let trackedDirectoryCount = Set(
+            terminalPanelIDs.compactMap { panelDirectories[$0]?.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+        ).count
+
+        let focusedPanel = focusedPanelId.flatMap { panels[$0] }
+        let focusedPanelTitle = focusedPanelId.flatMap { panelTitle(panelId: $0) }?.trimmingCharacters(in: .whitespacesAndNewlines)
+            ?? focusedPanel?.displayTitle
+            ?? "未选定"
+        let focusedPanelType: String = {
+            switch focusedPanel?.panelType {
+            case .terminal:
+                return "终端"
+            case .browser:
+                return "浏览器"
+            case .markdown:
+                return "文件"
+            case nil:
+                return "未选定"
+            }
+        }()
+        let focusedDirectory = focusedPanelId
+            .map { normalizedPanelDirectory(for: $0) }
+            ?? currentDirectory
+        let focusedShellState: Workspace.PanelShellActivityState = {
+            guard let focusedPanelId, terminalPanel(for: focusedPanelId) != nil else { return .unknown }
+            return panelShellActivityState(for: focusedPanelId)
+        }()
+
+        var notes: [String] = []
+        if terminalPanelIDs.isEmpty {
+            notes.append("当前工作区还没有终端窗口，监督器无法把执行提示词真正交给执行面板。")
+        }
+        if !shellIntegrationInjected {
+            notes.append("icc 侧边栏 shell integration 注入已关闭，目录和提示符边界会更难准确追踪。")
+        }
+        if shellIntegrationMode == "none" {
+            notes.append("Ghostty 配置中的 shell-integration = none，监督器无法可靠判断终端是否回到了提示符。")
+        }
+        if focusedPanel?.panelType != .terminal, focusedPanel != nil {
+            notes.append("当前聚焦窗口不是终端。发送执行提示词前，最好先选中目标终端窗口。")
+        } else if focusedShellState == .commandRunning {
+            notes.append("当前聚焦终端仍在执行命令。icc 已阻止监督器直接插入提示词，以免打断正在运行的任务。")
+        } else if focusedShellState == .unknown, focusedPanel?.panelType == .terminal {
+            notes.append("当前聚焦终端尚未上报 shell 状态。可以继续派发，但安全性只能按最佳努力处理。")
+        }
+        if terminalPanelIDs.count > trackedDirectoryCount {
+            notes.append("有些终端尚未回报当前目录。建议等待 shell integration 完成初始化后再启动自动化。")
+        }
+
+        let headline: String
+        let statusText: String
+        if terminalPanelIDs.isEmpty {
+            statusText = "缺终端"
+            headline = "先打开至少一个终端窗口，再让监督器真正接管任务执行。"
+        } else if !shellIntegrationInjected || shellIntegrationMode == "none" {
+            statusText = "弱就绪"
+            headline = "终端已经可用，但 shell integration 不完整，自动化判断会退化为保守模式。"
+        } else if promptReadyCount > 0 {
+            statusText = "可派发"
+            headline = "已有 \(promptReadyCount) 个终端处于提示符空闲状态，监督器可以更安全地派发执行提示词。"
+        } else if runningCount > 0 {
+            statusText = "忙碌"
+            headline = "终端仍在执行命令。等待回到提示符后，再进行自动派发会更稳妥。"
+        } else {
+            statusText = "待确认"
+            headline = "终端已打开，但还没有收到明确的提示符状态回报。"
+        }
+
+        return WorkspaceSupervisorAutomationReadiness(
+            headline: headline,
+            statusText: statusText,
+            shellIntegrationMode: shellIntegrationMode,
+            shellIntegrationInjected: shellIntegrationInjected,
+            appleScriptAutomationEnabled: appleScriptEnabled,
+            focusedPanelTitle: focusedPanelTitle,
+            focusedPanelType: focusedPanelType,
+            focusedDirectory: focusedDirectory,
+            focusedShellState: focusedShellState.localizedSupervisorText,
+            terminalPanelCount: terminalPanelIDs.count,
+            promptReadyCount: promptReadyCount,
+            runningCount: runningCount,
+            unknownCount: unknownCount,
+            trackedDirectoryCount: trackedDirectoryCount,
+            notes: notes
+        )
     }
 
     private func supervisorPanelEvidenceLines(panelID: UUID) -> [String] {
@@ -1805,7 +2014,10 @@ extension Workspace {
         }
         if let remoteTarget = remoteDisplayTarget, !remoteTarget.isEmpty {
             let detail = remoteConnectionDetail?.trimmingCharacters(in: .whitespacesAndNewlines)
-            lines.append("Remote: \(remoteTarget) / \(remoteConnectionState)\(detail?.isEmpty == false ? " / \(detail!)" : "")")
+            let compatibility = remoteSSHCompatibilitySummary?.trimmingCharacters(in: .whitespacesAndNewlines)
+            lines.append(
+                "Remote: \(remoteTarget) / \(remoteConnectionState)\(detail?.isEmpty == false ? " / \(detail!)" : "")\(compatibility?.isEmpty == false ? " / \(compatibility!)" : "")"
+            )
         }
         let recentSignals = Array(logEntries.suffix(3).map(\.message))
         if !recentSignals.isEmpty {
@@ -2204,9 +2416,13 @@ extension Workspace {
         ) != nil
     }
 
-    func refreshSupervisorPanelHandoffs() {
+    private func computedSupervisorPanelHandoffsSnapshot() -> (
+        queue: [WorkspaceSupervisorQueueItem],
+        handoffs: [WorkspaceSupervisorPanelHandoff],
+        activeTargetStillValid: Bool
+    ) {
         let orderedPanelIds = sidebarOrderedPanelIds()
-        pruneSupervisorPanelStates(validPanelIDs: Set(orderedPanelIds))
+        let validPanelIDs = Set(orderedPanelIds)
         let fallbackObjective: String? = {
             if let objective = supervisorExecutionBrief?.objective, !objective.isEmpty {
                 return objective
@@ -2222,9 +2438,13 @@ extension Workspace {
             ?? supervisorStartupPlan?.recommendedAction
             ?? "Inspect the current panel state and make the smallest safe move."
         let globalStatus = WorkspaceSupervisorHeuristics.handoffStatus(for: supervisorLastReview)
-        let stateByPanelID = supervisorPanelStateMap()
+        let stateByPanelID = Dictionary(
+            uniqueKeysWithValues: supervisorPanelRoundStates
+                .filter { validPanelIDs.contains($0.panelID) }
+                .map { ($0.panelID, $0) }
+        )
         let activeTargetPanelID = supervisorActiveLoopTarget?.panelID
-        supervisorExecutionQueue = buildSupervisorExecutionQueue(
+        let queue = buildSupervisorExecutionQueue(
             orderedPanelIds: orderedPanelIds,
             stateByPanelID: stateByPanelID,
             activeTargetPanelID: activeTargetPanelID,
@@ -2286,9 +2506,26 @@ extension Workspace {
                 generatedAt: Date().timeIntervalSince1970
             ))
         }
-        supervisorPanelHandoffs = handoffs
-        if let activePanelID = supervisorActiveLoopTarget?.panelID,
-           handoffs.contains(where: { $0.panelID == activePanelID }) == false {
+        let activeTargetStillValid: Bool
+        if let activePanelID = supervisorActiveLoopTarget?.panelID {
+            activeTargetStillValid = handoffs.contains(where: { $0.panelID == activePanelID })
+        } else {
+            activeTargetStillValid = true
+        }
+
+        return (
+            queue: queue,
+            handoffs: handoffs,
+            activeTargetStillValid: activeTargetStillValid
+        )
+    }
+
+    func refreshSupervisorPanelHandoffs() {
+        pruneSupervisorPanelStates(validPanelIDs: Set(sidebarOrderedPanelIds()))
+        let snapshot = computedSupervisorPanelHandoffsSnapshot()
+        supervisorExecutionQueue = snapshot.queue
+        supervisorPanelHandoffs = snapshot.handoffs
+        if snapshot.activeTargetStillValid == false {
             supervisorActiveLoopTarget = nil
         }
     }
@@ -2420,6 +2657,7 @@ extension Workspace {
             gitDirty: gitBranch?.isDirty ?? false,
             remoteTarget: remoteDisplayTarget,
             remoteState: "\(remoteConnectionState)",
+            remoteCompatibility: remoteSSHCompatibilitySummary,
             remoteDetail: remoteConnectionDetail,
             statusEntries: orderedStatuses,
             recentLogs: recentLogs,

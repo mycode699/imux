@@ -1,62 +1,38 @@
 # Notifications
 
-cmux provides a notification panel for AI agents like Claude Code, Codex, and OpenCode. Notifications appear in a dedicated panel and trigger macOS system notifications.
+`icc` includes an in-app notification system for agent workflows. It works well for Claude Code, Codex, OpenCode, and any other tool that can run a shell command when attention is required.
 
-## Quick Start
+Compatibility note:
 
-```bash
-# Send a notification (if cmux is available)
-command -v cmux &>/dev/null && cmux notify --title "Done" --body "Task complete"
+- The user-facing CLI is `icc`.
+- Some environment variables still use legacy `CMUX_*` names for compatibility.
 
-# With fallback to macOS notifications
-command -v cmux &>/dev/null && cmux notify --title "Done" --body "Task complete" || osascript -e 'display notification "Task complete" with title "Done"'
-```
-
-## Detection
-
-Check if `cmux` CLI is available before using it:
+## Quick start
 
 ```bash
-# Shell
-if command -v cmux &>/dev/null; then
-    cmux notify --title "Hello"
-fi
-
-# One-liner with fallback
-command -v cmux &>/dev/null && cmux notify --title "Hello" || osascript -e 'display notification "" with title "Hello"'
+command -v icc >/dev/null 2>&1 \
+  && icc notify --title "Done" --body "Task complete" \
+  || osascript -e 'display notification "Task complete" with title "Done"'
 ```
 
-```python
-# Python
-import shutil
-import subprocess
-
-def notify(title: str, body: str = ""):
-    if shutil.which("cmux"):
-        subprocess.run(["cmux", "notify", "--title", title, "--body", body])
-    else:
-        # Fallback to macOS
-        subprocess.run(["osascript", "-e", f'display notification "{body}" with title "{title}"'])
-```
-
-## CLI Usage
+## CLI examples
 
 ```bash
-# Simple notification
-cmux notify --title "Build Complete"
-
-# With subtitle and body
-cmux notify --title "Claude Code" --subtitle "Permission" --body "Approval needed"
-
-# Notify specific tab/panel
-cmux notify --title "Done" --tab 0 --panel 1
+icc notify --title "Build complete"
+icc notify --title "Claude Code" --subtitle "Permission" --body "Approval needed"
+icc list-notifications
+icc clear-notifications
 ```
 
-## Integration Examples
+You can also target a specific workspace or surface:
 
-### Claude Code Hooks
+```bash
+icc notify --title "Review needed" --workspace workspace:2 --surface surface:1
+```
 
-Add to `~/.claude/settings.json`:
+## Claude Code hook
+
+Add a shell hook that prefers `icc` and falls back to macOS notifications:
 
 ```json
 {
@@ -67,16 +43,7 @@ Add to `~/.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "command -v cmux &>/dev/null && cmux notify --title 'Claude Code' --body 'Waiting for input' || osascript -e 'display notification \"Waiting for input\" with title \"Claude Code\"'"
-          }
-        ]
-      },
-      {
-        "matcher": "permission_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "command -v cmux &>/dev/null && cmux notify --title 'Claude Code' --subtitle 'Permission' --body 'Approval needed' || osascript -e 'display notification \"Approval needed\" with title \"Claude Code\"'"
+            "command": "command -v icc >/dev/null 2>&1 && icc notify --title 'Claude Code' --body 'Waiting for input' || osascript -e 'display notification \"Waiting for input\" with title \"Claude Code\"'"
           }
         ]
       }
@@ -85,36 +52,21 @@ Add to `~/.claude/settings.json`:
 }
 ```
 
-### OpenAI Codex
+## Codex hook
 
-Add to `~/.codex/config.toml`:
+`~/.codex/config.toml` example:
 
 ```toml
-notify = ["bash", "-c", "command -v cmux &>/dev/null && cmux notify --title Codex --body \"$(echo $1 | jq -r '.\"last-assistant-message\" // \"Turn complete\"' 2>/dev/null | head -c 100)\" || osascript -e 'display notification \"Turn complete\" with title \"Codex\"'", "--"]
+notify = ["bash", "-lc", "MSG=$(echo \"$1\" | jq -r '.\"last-assistant-message\" // \"Turn complete\"' 2>/dev/null | head -c 100); command -v icc >/dev/null 2>&1 && icc notify --title 'Codex' --body \"$MSG\" || osascript -e \"display notification \\\"$MSG\\\" with title \\\"Codex\\\"\"", "--"]
 ```
 
-Or create a simple script `~/.local/bin/codex-notify.sh`:
-
-```bash
-#!/bin/bash
-MSG=$(echo "$1" | jq -r '."last-assistant-message" // "Turn complete"' 2>/dev/null | head -c 100)
-command -v cmux &>/dev/null && cmux notify --title "Codex" --body "$MSG" || osascript -e "display notification \"$MSG\" with title \"Codex\""
-```
-
-Then use:
-```toml
-notify = ["bash", "~/.local/bin/codex-notify.sh"]
-```
-
-### OpenCode Plugin
-
-Create `.opencode/plugins/cmux-notify.js`:
+## OpenCode plugin sketch
 
 ```javascript
-export const CmuxNotificationPlugin = async ({ $, }) => {
+export const IccNotificationPlugin = async ({ $, }) => {
   const notify = async (title, body) => {
     try {
-      await $`command -v cmux && cmux notify --title ${title} --body ${body}`;
+      await $`command -v icc >/dev/null 2>&1 && icc notify --title ${title} --body ${body}`;
     } catch {
       await $`osascript -e ${"display notification \"" + body + "\" with title \"" + title + "\""}`;
     }
@@ -130,27 +82,21 @@ export const CmuxNotificationPlugin = async ({ $, }) => {
 };
 ```
 
-## Environment Variables
+## Environment variables
 
-cmux sets these in child shells:
+`icc` still injects the following compatibility variables into managed child shells:
 
 | Variable | Description |
-|----------|-------------|
-| `CMUX_SOCKET_PATH` | Path to control socket |
-| `CMUX_TAB_ID` | UUID of the current tab |
+| --- | --- |
+| `CMUX_SOCKET_PATH` | Path to the local control socket |
+| `CMUX_WORKSPACE_ID` | UUID of the current workspace |
 | `CMUX_PANEL_ID` | UUID of the current panel |
+| `CMUX_TAB_ID` | UUID of the current surface/tab |
+| `CMUX_PORT` | Start of the workspace port range |
+| `CMUX_PORT_END` | End of the workspace port range |
 
-## CLI Commands
+## Best practices
 
-```
-cmux notify --title <text> [--subtitle <text>] [--body <text>] [--tab <id|index>] [--panel <id|index>]
-cmux list-notifications
-cmux clear-notifications
-cmux ping
-```
-
-## Best Practices
-
-1. **Always check availability first** - Use `command -v cmux` before calling
-2. **Provide fallbacks** - Use `|| osascript` for macOS fallback
-3. **Keep notifications concise** - Title should be brief, use body for details
+- Always check `command -v icc` before calling it from a shared dotfile.
+- Keep titles short and move extra context into the body.
+- Use macOS fallback notifications when `icc` is not installed in `PATH`.

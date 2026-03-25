@@ -1287,13 +1287,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Feedback is unavailable right now. Email github.com/miounet11/iatlas/issues instead."
+            "value": "Feedback is unavailable right now. Email github.com/miounet11/icc/issues instead."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "現在フィードバックを送信できません。代わりに github.com/miounet11/iatlas/issues までメールしてください。"
+            "value": "現在フィードバックを送信できません。代わりに github.com/miounet11/icc/issues までメールしてください。"
           }
         }
       }
@@ -1423,13 +1423,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You can also reach us at github.com/miounet11/iatlas/issues."
+            "value": "You can also reach us at github.com/miounet11/icc/issues."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "github.com/miounet11/iatlas/issues 宛てに直接ご連絡いただくこともできます。"
+            "value": "github.com/miounet11/icc/issues 宛てに直接ご連絡いただくこともできます。"
           }
         }
       }
@@ -1491,13 +1491,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You can also reach us at github.com/miounet11/iatlas/issues."
+            "value": "You can also reach us at github.com/miounet11/icc/issues."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "github.com/miounet11/iatlas/issues 宛てに直接ご連絡いただくこともできます。"
+            "value": "github.com/miounet11/icc/issues 宛てに直接ご連絡いただくこともできます。"
           }
         }
       }

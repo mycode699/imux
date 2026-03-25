@@ -9059,7 +9059,7 @@ private enum FeedbackComposerSettings {
     static let storedEmailKey = "sidebarHelpFeedbackEmail"
     static let endpointEnvironmentKey = "CMUX_FEEDBACK_API_URL"
     static let defaultEndpoint = ""
-    static let supportURL = "https://github.com/miounet11/iatlas/issues"
+    static let supportURL = "https://github.com/miounet11/icc/issues"
     static let maxMessageLength = 4_000
     static let maxAttachmentCount = 10
     // Keep the multipart body below Vercel's 4.5 MB request limit.
@@ -10772,10 +10772,10 @@ enum FeedbackComposerBridge {
 }
 
 private struct SidebarHelpMenuButton: View {
-    private let docsURL = URL(string: "https://github.com/miounet11/iatlas#readme")
-    private let changelogURL = URL(string: "https://github.com/miounet11/iatlas/releases")
-    private let githubURL = URL(string: "https://github.com/miounet11/iatlas")
-    private let githubIssuesURL = URL(string: "https://github.com/miounet11/iatlas/issues")
+    private let docsURL = URL(string: "https://github.com/miounet11/icc#readme")
+    private let changelogURL = URL(string: "https://github.com/miounet11/icc/releases")
+    private let githubURL = URL(string: "https://github.com/miounet11/icc")
+    private let githubIssuesURL = URL(string: "https://github.com/miounet11/icc/issues")
     private let discordURL: URL? = nil
     private let helpTitle = String(localized: "sidebar.help.button", defaultValue: "Help")
     private let buttonSize: CGFloat = 22

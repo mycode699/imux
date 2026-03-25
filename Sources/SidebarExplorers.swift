@@ -43,6 +43,7 @@ struct SSHConfigHostEntry: Identifiable, Equatable {
 
     func workspaceConfiguration() -> WorkspaceRemoteConfiguration {
         let controlPath = Self.makeControlSocketPath(alias: alias)
+        let remoteSSHTermMode = RemoteSSHTermMode.current()
         return WorkspaceRemoteConfiguration(
             destination: alias,
             port: port,
@@ -55,11 +56,20 @@ struct SSHConfigHostEntry: Identifiable, Equatable {
             relayID: nil,
             relayToken: nil,
             localSocketPath: nil,
-            terminalStartupCommand: Self.interactiveSSHCommand(alias: alias, controlPath: controlPath)
+            terminalStartupCommand: Self.interactiveSSHCommand(
+                alias: alias,
+                controlPath: controlPath,
+                remoteSSHTermMode: remoteSSHTermMode
+            )
         )
     }
 
-    private static func interactiveSSHCommand(alias: String, controlPath: String) -> String {
+    private static func interactiveSSHCommand(
+        alias: String,
+        controlPath: String,
+        remoteSSHTermMode: RemoteSSHTermMode
+    ) -> String {
+        let compatibilitySSHArguments = remoteSSHTermMode.sshOption.map { " -o \($0)" } ?? ""
         let shell = """
         alias_name=\(shellSingleQuoted(alias))
         control_path=\(shellSingleQuoted(controlPath))
@@ -75,7 +85,7 @@ struct SSHConfigHostEntry: Identifiable, Equatable {
         set control_path $env(CMUX_SSH_CONTROL_PATH)
         set password $env(CMUX_SSH_PASSWORD)
         set sent_password 0
-        spawn ssh -M -o ControlPersist=yes -o ControlPath=$control_path $alias_name
+        spawn ssh -M -o ControlPersist=yes -o ControlPath=$control_path\(compatibilitySSHArguments) $alias_name
         expect {
             -re "(?i)are you sure you want to continue connecting.*" {
                 send "yes\\r"
@@ -105,7 +115,7 @@ struct SSHConfigHostEntry: Identifiable, Equatable {
         interact
         CMUX_EXPECT
         else
-          exec ssh -M -o ControlPersist=yes -o ControlPath="$control_path" "$alias_name"
+          exec ssh -M -o ControlPersist=yes -o ControlPath="$control_path"\(compatibilitySSHArguments) "$alias_name"
         fi
         """
         return "sh -lc \(shellSingleQuoted(shell))"
@@ -382,6 +392,11 @@ struct RemoteExplorerEntry: Identifiable, Equatable {
     var id: String { path }
 }
 
+struct RemoteGhosttyTerminfoProbeResult {
+    let isInstalled: Bool
+    let detail: String
+}
+
 enum RemoteSSHFileService {
     static func resolveInitialDirectory(
         configuration: WorkspaceRemoteConfiguration,
@@ -540,6 +555,116 @@ enum RemoteSSHFileService {
         }
     }
 
+    static func checkGhosttyTerminfo(
+        configuration: WorkspaceRemoteConfiguration
+    ) throws -> RemoteGhosttyTerminfoProbeResult {
+        let script = """
+        if command -v infocmp >/dev/null 2>&1 && infocmp -x xterm-ghostty >/dev/null 2>&1; then
+          printf 'installed\\t%s\\n' "infocmp"
+          exit 0
+        fi
+        for candidate in \
+          "$HOME/.terminfo/78/xterm-ghostty" \
+          "$HOME/.terminfo/x/xterm-ghostty" \
+          "$HOME/.local/share/terminfo/78/xterm-ghostty" \
+          "$HOME/.local/share/terminfo/x/xterm-ghostty" \
+          "/usr/share/terminfo/78/xterm-ghostty" \
+          "/usr/share/terminfo/x/xterm-ghostty" \
+          "/usr/local/share/terminfo/78/xterm-ghostty" \
+          "/usr/local/share/terminfo/x/xterm-ghostty"
+        do
+          if [ -f "$candidate" ]; then
+            printf 'installed\\t%s\\n' "$candidate"
+            exit 0
+          fi
+        done
+        printf 'missing\\t%s\\n' "$HOME/.terminfo"
+        """
+        let result = try runSSH(
+            configuration: configuration,
+            remoteCommand: "sh -lc \(shellSingleQuoted(script))",
+            timeout: 10,
+            batchMode: false
+        )
+        guard result.status == 0 else {
+            let detail = bestErrorLine(stderr: result.stderr, stdout: result.stdout) ?? "Failed to inspect remote terminfo."
+            throw NSError(domain: "cmux.remote.explorer", code: 6, userInfo: [
+                NSLocalizedDescriptionKey: detail
+            ])
+        }
+        let parts = result.stdout
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .split(separator: "\t", maxSplits: 1, omittingEmptySubsequences: false)
+            .map(String.init)
+        let status = parts.first ?? "missing"
+        let detail = parts.count > 1 ? parts[1] : ""
+        return RemoteGhosttyTerminfoProbeResult(
+            isInstalled: status == "installed",
+            detail: detail
+        )
+    }
+
+    static func installGhosttyTerminfo(
+        configuration: WorkspaceRemoteConfiguration
+    ) throws -> String {
+        if let source = try? bundledGhosttyTerminfoSource() {
+            let script = """
+            command -v tic >/dev/null 2>&1 || exit 14
+            mkdir -p "$HOME/.terminfo" 2>/dev/null || exit 15
+            tic -x -o "$HOME/.terminfo" - >/dev/null 2>&1 || exit 16
+            if command -v infocmp >/dev/null 2>&1 && infocmp -x xterm-ghostty >/dev/null 2>&1; then
+              printf '%s\\n' "$HOME/.terminfo"
+              exit 0
+            fi
+            for candidate in "$HOME/.terminfo/78/xterm-ghostty" "$HOME/.terminfo/x/xterm-ghostty"; do
+              if [ -f "$candidate" ]; then
+                printf '%s\\n' "$candidate"
+                exit 0
+              fi
+            done
+            exit 17
+            """
+            let result = try runSSH(
+                configuration: configuration,
+                remoteCommand: "sh -lc \(shellSingleQuoted(script))",
+                stdin: Data(source.utf8),
+                timeout: 20,
+                batchMode: false
+            )
+            if result.status == 0 {
+                let detail = result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+                return detail.isEmpty ? "~/.terminfo" : detail
+            }
+        }
+
+        let binary = try bundledGhosttyTerminfoBinaryData()
+        let fallbackScript = """
+        tmp_dir="$(mktemp -d 2>/dev/null || mktemp -d -t icc-terminfo)"
+        tmp_file="$tmp_dir/xterm-ghostty"
+        trap 'rm -rf "$tmp_dir"' EXIT
+        cat > "$tmp_file"
+        mkdir -p "$HOME/.terminfo/78" "$HOME/.terminfo/x" 2>/dev/null || exit 18
+        cp "$tmp_file" "$HOME/.terminfo/78/xterm-ghostty" || exit 19
+        cp "$tmp_file" "$HOME/.terminfo/x/xterm-ghostty" || exit 20
+        printf '%s\\n' "$HOME/.terminfo"
+        """
+        let fallbackResult = try runSSH(
+            configuration: configuration,
+            remoteCommand: "sh -lc \(shellSingleQuoted(fallbackScript))",
+            stdin: binary,
+            timeout: 20,
+            batchMode: false
+        )
+        guard fallbackResult.status == 0 else {
+            let detail = bestErrorLine(stderr: fallbackResult.stderr, stdout: fallbackResult.stdout) ?? "Failed to install Ghostty terminfo on remote host."
+            throw NSError(domain: "cmux.remote.explorer", code: 7, userInfo: [
+                NSLocalizedDescriptionKey: detail
+            ])
+        }
+        let detail = fallbackResult.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+        return detail.isEmpty ? "~/.terminfo" : detail
+    }
+
     private static func runSSH(
         configuration: WorkspaceRemoteConfiguration,
         remoteCommand: String,
@@ -586,6 +711,7 @@ enum RemoteSSHFileService {
         configuration: WorkspaceRemoteConfiguration,
         batchMode: Bool
     ) -> [String] {
+        let effectiveSSHOptions = configuration.effectiveSSHOptions
         var args: [String] = []
         if batchMode {
             args += ["-o", "BatchMode=yes"]
@@ -600,10 +726,10 @@ enum RemoteSSHFileService {
            !identityFile.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             args += ["-i", NSString(string: identityFile).expandingTildeInPath]
         }
-        if !hasSSHOptionKey(configuration.sshOptions, key: "StrictHostKeyChecking") {
+        if !hasSSHOptionKey(effectiveSSHOptions, key: "StrictHostKeyChecking") {
             args += ["-o", "StrictHostKeyChecking=accept-new"]
         }
-        for option in configuration.sshOptions {
+        for option in effectiveSSHOptions {
             let trimmed = option.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmed.isEmpty { continue }
             args += ["-o", trimmed]
@@ -629,6 +755,110 @@ enum RemoteSSHFileService {
 
     private static func shellSingleQuoted(_ value: String) -> String {
         "'" + value.replacingOccurrences(of: "'", with: "'\"'\"'") + "'"
+    }
+
+    private static func bundledGhosttyTerminfoSource() throws -> String {
+        let databasePaths = bundledGhosttyTerminfoDatabasePaths()
+        let executables = preferredInfocmpExecutables()
+
+        for executable in executables {
+            for databasePath in databasePaths {
+                let result = try runLocalProcess(
+                    executable: executable,
+                    arguments: ["-0", "-x", "-A", databasePath, "xterm-ghostty"]
+                )
+                let source = result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+                if result.status == 0, !source.isEmpty {
+                    return source + "\n"
+                }
+            }
+        }
+
+        throw NSError(domain: "cmux.remote.explorer", code: 8, userInfo: [
+            NSLocalizedDescriptionKey: "Local Ghostty terminfo source is unavailable."
+        ])
+    }
+
+    private static func bundledGhosttyTerminfoBinaryData() throws -> Data {
+        for relativePath in [
+            "ghostty/terminfo/78/xterm-ghostty",
+            "ghostty/terminfo/x/xterm-ghostty",
+            "terminfo/78/xterm-ghostty",
+            "terminfo/x/xterm-ghostty",
+        ] {
+            if let url = Bundle.main.resourceURL?.appendingPathComponent(relativePath),
+               let data = try? Data(contentsOf: url),
+               !data.isEmpty {
+                return data
+            }
+        }
+
+        throw NSError(domain: "cmux.remote.explorer", code: 9, userInfo: [
+            NSLocalizedDescriptionKey: "Bundled Ghostty terminfo binary is unavailable."
+        ])
+    }
+
+    private static func bundledGhosttyTerminfoDatabasePaths() -> [String] {
+        [
+            Bundle.main.resourceURL?.appendingPathComponent("ghostty/terminfo").path,
+            Bundle.main.resourceURL?.appendingPathComponent("terminfo").path,
+        ]
+        .compactMap { path in
+            guard let path,
+                  FileManager.default.fileExists(atPath: path) else {
+                return nil
+            }
+            return path
+        }
+    }
+
+    private static func preferredInfocmpExecutables() -> [String] {
+        var executables: [String] = []
+        if let fromPATH = executablePath(named: "infocmp") {
+            executables.append(fromPATH)
+        }
+        for candidate in [
+            "/opt/homebrew/opt/ncurses/bin/infocmp",
+            "/usr/local/opt/ncurses/bin/infocmp",
+            "/opt/homebrew/bin/infocmp",
+            "/usr/local/bin/infocmp",
+            "/usr/bin/infocmp",
+        ] where FileManager.default.isExecutableFile(atPath: candidate) && !executables.contains(candidate) {
+            executables.append(candidate)
+        }
+        return executables
+    }
+
+    private static func executablePath(named executable: String) -> String? {
+        let path = ProcessInfo.processInfo.environment["PATH"] ?? ""
+        for component in path.split(separator: ":") {
+            let candidate = String(component) + "/" + executable
+            if FileManager.default.isExecutableFile(atPath: candidate) {
+                return candidate
+            }
+        }
+        return nil
+    }
+
+    private static func runLocalProcess(
+        executable: String,
+        arguments: [String]
+    ) throws -> (status: Int32, stdout: String, stderr: String) {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
+
+        let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
+        process.standardOutput = stdoutPipe
+        process.standardError = stderrPipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let stdout = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+        let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+        return (process.terminationStatus, stdout, stderr)
     }
 
     private static func bestErrorLine(stderr: String, stdout: String) -> String? {
@@ -1479,6 +1709,7 @@ private struct PlainTextEditorRepresentable: NSViewRepresentable {
 struct RemoteHostsSidebar: View {
     let onConnect: (SSHConfigHostEntry) -> Void
 
+    @AppStorage(RemoteSSHTermMode.appStorageKey) private var remoteSSHTermModeRaw = RemoteSSHTermMode.defaultValue.rawValue
     @State private var hosts: [SSHConfigHostEntry] = []
     @State private var editingCredentialHost: SSHConfigHostEntry?
     @State private var credentialDraft = ""
@@ -1494,6 +1725,9 @@ struct RemoteHostsSidebar: View {
                 Text("来自 ~/.ssh/config")
                     .font(.system(size: 12, weight: .medium))
                 Text("密码仅保存在本机钥匙串中。")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                Text(remoteSSHTermMode.localizedSummary)
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
             }
@@ -1580,7 +1814,7 @@ struct RemoteHostsSidebar: View {
                     }
                     Section("密码") {
                         SecureField("密码", text: $credentialDraft)
-                        Text("密码仅保存在当前 Mac 的本地钥匙串中，iatlas 会在后续连接时复用它。")
+                        Text("密码仅保存在当前 Mac 的本地钥匙串中，icc 会在后续连接时复用它。")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         if let credentialStatusMessage {
@@ -1626,6 +1860,78 @@ struct RemoteHostsSidebar: View {
             .frame(minWidth: 460, minHeight: 250)
         }
     }
+
+    private var remoteSSHTermMode: RemoteSSHTermMode {
+        RemoteSSHTermMode(rawValue: remoteSSHTermModeRaw) ?? RemoteSSHTermMode.defaultValue
+    }
+}
+
+private struct RemoteGhosttyTerminfoBannerState {
+    enum Kind: Equatable {
+        case disconnected
+        case checking
+        case installed
+        case missing
+        case installing
+        case error
+    }
+
+    let kind: Kind
+    let summary: String
+
+    var badgeText: String {
+        switch kind {
+        case .disconnected:
+            return "待检查"
+        case .checking:
+            return "检查中"
+        case .installed:
+            return "已安装"
+        case .missing:
+            return "未安装"
+        case .installing:
+            return "同步中"
+        case .error:
+            return "异常"
+        }
+    }
+
+    var badgeColor: Color {
+        switch kind {
+        case .disconnected:
+            return .secondary
+        case .checking, .installing:
+            return .blue
+        case .installed:
+            return .green
+        case .missing:
+            return .orange
+        case .error:
+            return .red
+        }
+    }
+
+    var canInstall: Bool {
+        switch kind {
+        case .missing, .error:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isInstalled: Bool {
+        kind == .installed
+    }
+
+    var workspaceSummary: String? {
+        switch kind {
+        case .installed, .missing, .error:
+            return summary
+        default:
+            return nil
+        }
+    }
 }
 
 struct RemoteWorkspaceExplorerSidebar: View {
@@ -1633,10 +1939,15 @@ struct RemoteWorkspaceExplorerSidebar: View {
     let selectedRemotePath: String?
     let onOpenRemoteFile: (String) -> Void
 
+    @AppStorage(RemoteSSHTermMode.appStorageKey) private var remoteSSHTermModeRaw = RemoteSSHTermMode.defaultValue.rawValue
     @State private var rootNode: RemoteFileExplorerNode?
     @State private var resolvedRootPath: String?
     @State private var errorMessage: String?
     @State private var isLoading = false
+    @State private var ghosttyTerminfoState = RemoteGhosttyTerminfoBannerState(
+        kind: .disconnected,
+        summary: "连接后会检查远端是否已具备 xterm-ghostty terminfo。"
+    )
 
     var body: some View {
         VStack(spacing: 0) {
@@ -1673,7 +1984,7 @@ struct RemoteWorkspaceExplorerSidebar: View {
         }
         .background(SidebarBackdrop().ignoresSafeArea())
         .task(id: refreshFingerprint) {
-            await reload()
+            await refreshRemoteSidebar()
         }
     }
 
@@ -1681,7 +1992,8 @@ struct RemoteWorkspaceExplorerSidebar: View {
         [
             workspace.remoteConfiguration?.displayTarget ?? "none",
             workspace.remoteConnectionState.rawValue,
-            workspace.currentDirectory
+            workspace.currentDirectory,
+            remoteSSHTermModeRaw
         ].joined(separator: "|")
     }
 
@@ -1714,6 +2026,35 @@ struct RemoteWorkspaceExplorerSidebar: View {
                     .lineLimit(2)
             }
 
+            Text(activeRemoteSSHTermSummary)
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+
+            HStack(spacing: 8) {
+                Text(ghosttyTerminfoState.badgeText)
+                    .font(.system(size: 10, weight: .semibold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Capsule().fill(ghosttyTerminfoState.badgeColor.opacity(0.14)))
+                    .foregroundStyle(ghosttyTerminfoState.badgeColor)
+
+                if ghosttyTerminfoState.canInstall {
+                    Button("同步 TERMINFO") {
+                        Task { await installGhosttyTerminfo() }
+                    }
+                    .controlSize(.small)
+                    .disabled(workspace.remoteConfiguration == nil || workspace.remoteConnectionState != .connected)
+                }
+
+                Spacer(minLength: 0)
+            }
+
+            Text(ghosttyTerminfoState.summary)
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
             HStack(spacing: 8) {
                 Button("连接") {
                     workspace.reconnectRemoteConnection()
@@ -1725,7 +2066,7 @@ struct RemoteWorkspaceExplorerSidebar: View {
                 )
 
                 Button("刷新") {
-                    Task { await reload(forceRootReload: false) }
+                    Task { await refreshRemoteSidebar(forceRootReload: false) }
                 }
                 .disabled(workspace.remoteConfiguration == nil || workspace.remoteConnectionState != .connected)
 
@@ -1807,7 +2148,7 @@ struct RemoteWorkspaceExplorerSidebar: View {
         case .connected:
             return "如果远程文件树没有出现，请点击刷新。"
         case .connecting:
-            return "iatlas 正在启动远程工作区服务。SSH 连接准备完成后，文件树会自动出现。"
+            return "icc 正在启动远程工作区服务。SSH 连接准备完成后，文件树会自动出现。"
         case .error:
             return "先在终端完成 SSH 登录，然后再点击连接。"
         case .disconnected:
@@ -1818,11 +2159,145 @@ struct RemoteWorkspaceExplorerSidebar: View {
         }
     }
 
+    private var activeRemoteSSHTermSummary: String {
+        workspace.remoteConfiguration?.remoteSSHTermSummary ?? remoteSSHTermMode.localizedSummary
+    }
+
+    private var remoteSSHTermMode: RemoteSSHTermMode {
+        RemoteSSHTermMode(rawValue: remoteSSHTermModeRaw) ?? RemoteSSHTermMode.defaultValue
+    }
+
+    private func refreshRemoteSidebar(forceRootReload: Bool = true) async {
+        await reload(forceRootReload: forceRootReload)
+        await refreshGhosttyTerminfoStatus()
+    }
+
+    private func refreshGhosttyTerminfoStatus() async {
+        guard let configuration = workspace.remoteConfiguration else {
+            applyGhosttyTerminfoState(disconnectedGhosttyTerminfoState())
+            return
+        }
+
+        guard workspace.remoteConnectionState == .connected else {
+            applyGhosttyTerminfoState(disconnectedGhosttyTerminfoState())
+            return
+        }
+
+        applyGhosttyTerminfoState(
+            RemoteGhosttyTerminfoBannerState(
+                kind: .checking,
+                summary: "正在检查远端是否已具备 xterm-ghostty terminfo。"
+            )
+        )
+
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let result: Result<RemoteGhosttyTerminfoProbeResult, Error> = Result {
+                    try RemoteSSHFileService.checkGhosttyTerminfo(configuration: configuration)
+                }
+
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let probe):
+                        if probe.isInstalled {
+                            self.applyGhosttyTerminfoState(self.installedGhosttyTerminfoState(detail: probe.detail))
+                        } else {
+                            self.applyGhosttyTerminfoState(self.missingGhosttyTerminfoState(detail: probe.detail))
+                        }
+                    case .failure(let error):
+                        self.applyGhosttyTerminfoState(
+                            RemoteGhosttyTerminfoBannerState(
+                                kind: .error,
+                                summary: "Ghostty terminfo 检查失败：\(error.localizedDescription)"
+                            )
+                        )
+                    }
+                    continuation.resume()
+                }
+            }
+        }
+    }
+
+    private func installGhosttyTerminfo() async {
+        guard let configuration = workspace.remoteConfiguration,
+              workspace.remoteConnectionState == .connected else {
+            return
+        }
+
+        applyGhosttyTerminfoState(
+            RemoteGhosttyTerminfoBannerState(
+                kind: .installing,
+                summary: "正在同步 Ghostty terminfo 到远端主机。"
+            )
+        )
+
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let result: Result<String, Error> = Result {
+                    try RemoteSSHFileService.installGhosttyTerminfo(configuration: configuration)
+                }
+
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let installPath):
+                        self.applyGhosttyTerminfoState(self.installedGhosttyTerminfoState(detail: installPath))
+                    case .failure(let error):
+                        self.applyGhosttyTerminfoState(
+                            RemoteGhosttyTerminfoBannerState(
+                                kind: .error,
+                                summary: "同步 Ghostty terminfo 失败：\(error.localizedDescription)"
+                            )
+                        )
+                    }
+                    continuation.resume()
+                }
+            }
+        }
+    }
+
+    private func applyGhosttyTerminfoState(_ state: RemoteGhosttyTerminfoBannerState) {
+        ghosttyTerminfoState = state
+        workspace.remoteGhosttyTerminfoInstalled = state.isInstalled
+        workspace.remoteGhosttyTerminfoSummary = state.workspaceSummary
+    }
+
+    private func disconnectedGhosttyTerminfoState() -> RemoteGhosttyTerminfoBannerState {
+        let summary: String
+        switch remoteSSHTermMode {
+        case .xterm256color:
+            summary = "当前兼容模式使用 xterm-256color；连接后仍可同步 xterm-ghostty terminfo，以便后续切换到 Ghostty TERM。"
+        case .inheritGhostty:
+            summary = "连接后会检查远端是否已具备 xterm-ghostty terminfo。"
+        }
+        return RemoteGhosttyTerminfoBannerState(kind: .disconnected, summary: summary)
+    }
+
+    private func installedGhosttyTerminfoState(detail: String) -> RemoteGhosttyTerminfoBannerState {
+        let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+        let summary = trimmedDetail.isEmpty || trimmedDetail == "infocmp"
+            ? "远端已具备 xterm-ghostty terminfo。"
+            : "远端已具备 xterm-ghostty terminfo：\(trimmedDetail)"
+        return RemoteGhosttyTerminfoBannerState(kind: .installed, summary: summary)
+    }
+
+    private func missingGhosttyTerminfoState(detail: String) -> RemoteGhosttyTerminfoBannerState {
+        let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+        let suffix = trimmedDetail.isEmpty ? "" : " 建议安装位置：\(trimmedDetail)"
+        let summary: String
+        switch remoteSSHTermMode {
+        case .xterm256color:
+            summary = "远端尚未检测到 xterm-ghostty terminfo；当前仍可继续使用 xterm-256color。" + suffix
+        case .inheritGhostty:
+            summary = "远端尚未检测到 xterm-ghostty terminfo；建议先同步，再保留 Ghostty TERM。" + suffix
+        }
+        return RemoteGhosttyTerminfoBannerState(kind: .missing, summary: summary)
+    }
+
     private func reload(forceRootReload: Bool = true) async {
         guard let configuration = workspace.remoteConfiguration else {
             rootNode = nil
             resolvedRootPath = nil
-            errorMessage = "Select a remote host first."
+            errorMessage = "请先选择一个远程主机。"
             return
         }
 

@@ -1,6 +1,11 @@
 # PROJECTS
 
-Cross-project tracking (features, bugs, backlog) for cmux.
+Cross-project tracking (features, bugs, backlog) for `icc`.
+
+Historical note:
+
+- Older bullets below preserve legacy `cmux` naming because they reference original scripts, commands, tests, and upstream implementation details.
+- Treat this file as engineering history plus backlog, not as the public product naming source of truth.
 
 ## Done
 - 2026-02-14: Fixed updater release regression path: made `.github/workflows/release.yml` Sparkle Info.plist key injection idempotent (re-running tags no longer fails with "Entry Already Exists"), and hardened `scripts/bump-version.sh` to keep `CURRENT_PROJECT_VERSION` above the latest published Sparkle appcast build number so upgrades from `0.27.0` can be detected.

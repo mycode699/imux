@@ -2793,8 +2793,8 @@ private final class SidebarDebugWindowController: NSWindowController, NSWindowDe
 private struct AboutPanelView: View {
     @Environment(\.openURL) private var openURL
 
-    private let githubURL = URL(string: "https://github.com/miounet11/iatlas")
-    private let docsURL = URL(string: "https://github.com/miounet11/iatlas#readme")
+    private let githubURL = URL(string: "https://github.com/miounet11/icc")
+    private let docsURL = URL(string: "https://github.com/miounet11/icc#readme")
 
     private var version: String? { Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String }
     private var build: String? { Bundle.main.infoDictionary?["CFBundleVersion"] as? String }
@@ -2838,7 +2838,7 @@ private struct AboutPanelView: View {
                     }
                     let commitText = commit ?? "—"
                     let commitURL = commit.flatMap { hash in
-                        URL(string: "https://github.com/miounet11/iatlas/commit/\(hash)")
+                        URL(string: "https://github.com/miounet11/icc/commit/\(hash)")
                     }
                     AboutPropertyRow(label: String(localized: "about.commit", defaultValue: "Commit"), text: commitText, url: commitURL)
                 }
@@ -4259,6 +4259,7 @@ struct SettingsView: View {
     @AppStorage(ShortcutHintDebugSettings.showHintsOnCommandHoldKey)
     private var showShortcutHintsOnCommandHold = ShortcutHintDebugSettings.defaultShowHintsOnCommandHold
     @AppStorage("sidebarShowSSH") private var sidebarShowSSH = true
+    @AppStorage(RemoteSSHTermMode.appStorageKey) private var remoteSSHTermModeRaw = RemoteSSHTermMode.defaultValue.rawValue
     @AppStorage("sidebarShowPorts") private var sidebarShowPorts = true
     @AppStorage("sidebarShowLog") private var sidebarShowLog = true
     @AppStorage("sidebarShowProgress") private var sidebarShowProgress = true
@@ -5596,6 +5597,22 @@ struct SettingsView: View {
                             Toggle("", isOn: $sidebarShowSSH)
                                 .labelsHidden()
                                 .controlSize(.small)
+                        }
+
+                        SettingsCardDivider()
+
+                        SettingsPickerRow(
+                            localizedSettingsText("settings.app.remoteSSHTermMode", english: "Managed Remote SSH TERM", simplifiedChinese: "受管远程 SSH 的 TERM", traditionalChinese: "受管遠端 SSH 的 TERM"),
+                            subtitle: remoteSSHTermModeRaw == RemoteSSHTermMode.xterm256color.rawValue
+                                ? localizedSettingsText("settings.app.remoteSSHTermMode.subtitleCompat", english: "Managed remote SSH sessions use TERM=xterm-256color for stronger compatibility. Reconnect terminals after changing this.", simplifiedChinese: "受管远程 SSH 会使用 TERM=xterm-256color 以获得更稳的兼容性。修改后请重新连接终端。", traditionalChinese: "受管遠端 SSH 會使用 TERM=xterm-256color 以獲得更穩的相容性。修改後請重新連線終端。")
+                                : localizedSettingsText("settings.app.remoteSSHTermMode.subtitleGhostty", english: "Managed remote SSH sessions keep Ghostty's default TERM and expect remote terminfo support.", simplifiedChinese: "受管远程 SSH 会保留 Ghostty 默认 TERM，并假定远端已具备对应 terminfo。", traditionalChinese: "受管遠端 SSH 會保留 Ghostty 預設 TERM，並假定遠端已具備對應 terminfo。"),
+                            controlWidth: pickerColumnWidth,
+                            selection: $remoteSSHTermModeRaw
+                        ) {
+                            Text(localizedSettingsText("settings.app.remoteSSHTermMode.compat", english: "Compatibility First", simplifiedChinese: "兼容优先", traditionalChinese: "相容優先"))
+                                .tag(RemoteSSHTermMode.xterm256color.rawValue)
+                            Text(localizedSettingsText("settings.app.remoteSSHTermMode.ghostty", english: "Keep Ghostty TERM", simplifiedChinese: "保留 Ghostty TERM", traditionalChinese: "保留 Ghostty TERM"))
+                                .tag(RemoteSSHTermMode.inheritGhostty.rawValue)
                         }
 
                         SettingsCardDivider()
@@ -7125,6 +7142,7 @@ struct SettingsView: View {
         openSidebarPullRequestLinksInCmuxBrowser = BrowserLinkOpenSettings.defaultOpenSidebarPullRequestLinksInCmuxBrowser
         showShortcutHintsOnCommandHold = ShortcutHintDebugSettings.defaultShowHintsOnCommandHold
         sidebarShowSSH = true
+        remoteSSHTermModeRaw = RemoteSSHTermMode.defaultValue.rawValue
         sidebarShowPorts = true
         sidebarShowLog = true
         sidebarShowProgress = true

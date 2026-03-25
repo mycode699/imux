@@ -1,5 +1,10 @@
 # TODO
 
+Working note:
+
+- Public product naming is now `icc`.
+- Older tasks below may still mention `cmux`, `CMUX_*`, or `cmuxd-remote` because those identifiers remain in the implementation and migration backlog.
+
 ## Issue 151: Remote SSH (Living Execution)
 - [x] `cmux ssh` creates remote workspace metadata and does not require `--name`
 - [x] Remote daemon bootstrap/upload/start path with `cmuxd-remote serve --stdio`
