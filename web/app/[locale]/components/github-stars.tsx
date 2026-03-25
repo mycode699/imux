@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import posthog from "posthog-js";
+import { siteConfig } from "../../site-config";
 
 function formatStars(count: number): string {
   if (count >= 1000) {
@@ -45,11 +46,11 @@ export function GitHubStarsBadge({
 
   return (
     <a
-      href="https://github.com/manaflow-ai/cmux"
+      href={siteConfig.repoUrl}
       target="_blank"
       rel="noopener noreferrer"
       onClick={() =>
-        posthog.capture("cmuxterm_github_clicked", { location })
+        posthog.capture("icc_github_clicked", { location })
       }
       className={className ?? "inline-flex items-center gap-1.5 pr-1 text-sm text-muted hover:text-foreground transition-colors animate-fade-in"}
     >

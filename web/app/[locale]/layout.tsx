@@ -1,27 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import {
   getMessages,
-  getTranslations,
   setRequestLocale,
 } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "../../i18n/routing";
-import { Providers } from "./providers";
-import { DevPanel } from "./components/spacing-control";
-import { SiteFooter } from "./components/site-footer";
-import "../globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { siteConfig } from "../site-config";
 
 export async function generateMetadata({
   params,
@@ -29,39 +14,38 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "meta" });
   const url =
-    locale === "en" ? "https://cmux.com" : `https://cmux.com/${locale}`;
+    locale === "en" ? siteConfig.canonicalUrl : `${siteConfig.canonicalUrl}/${locale}`;
   return {
-    title: t("title"),
-    description: t("description"),
+    title: `${siteConfig.name} — ${siteConfig.descriptor}`,
+    description: siteConfig.description,
     keywords: [
-      "terminal",
-      "macOS",
-      "coding agents",
-      "Claude Code",
-      "Codex",
-      "OpenCode",
-      "Gemini CLI",
-      "Kiro",
-      "Aider",
+      "icc",
+      "AI command center",
+      "macOS terminal",
       "Ghostty",
-      "AI",
-      "terminal for AI agents",
+      "remote explorer",
+      "SSH workspace",
+      "file editor",
+      "terminal automation",
+      "AI execution workspace",
+      "source control",
+      "browser operator",
+      "supervisor",
     ],
     openGraph: {
-      title: t("title"),
-      description: t("ogDescription"),
+      title: `${siteConfig.name} — ${siteConfig.descriptor}`,
+      description: siteConfig.description,
       url,
-      siteName: "cmux",
+      siteName: siteConfig.name,
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: t("title"),
-      description: t("ogDescription"),
+      title: `${siteConfig.name} — ${siteConfig.descriptor}`,
+      description: siteConfig.description,
     },
-    metadataBase: new URL("https://cmux.com"),
+    metadataBase: new URL(siteConfig.canonicalUrl),
   };
 }
 
@@ -91,44 +75,28 @@ export default async function LocaleLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "cmux",
+    name: siteConfig.name,
     operatingSystem: "macOS",
     applicationCategory: "DeveloperApplication",
-    url: "https://cmux.com",
-    downloadUrl:
-      "https://github.com/manaflow-ai/cmux/releases/latest/download/cmux-macos.dmg",
-    description:
-      "Native macOS terminal built on Ghostty. Works with Claude Code, Codex, OpenCode, Gemini CLI, Kiro, Aider, and any CLI tool. Vertical tabs, notification rings, split panes, and a socket API.",
+    url: siteConfig.canonicalUrl,
+    downloadUrl: siteConfig.downloadUrl,
+    description: siteConfig.description,
     keywords:
-      "terminal, macOS, Claude Code, Codex, OpenCode, Gemini CLI, Kiro, Aider, AI coding agents, Ghostty",
+      "icc, AI command center, macOS, Ghostty, terminal, SSH, source control, browser operator, supervisor",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
-      <head>
-        <meta name="theme-color" content="#0a0a0a" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("theme");var light=t==="light"||(t==="system"&&window.matchMedia("(prefers-color-scheme:light)").matches);if(!light)document.documentElement.classList.add("dark");var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=light?"#fafafa":"#0a0a0a"}catch(e){}})()`,
-          }}
-        />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
-      >
-        <NextIntlClientProvider messages={messages}>
-          <Providers>
-            {children}
-            <SiteFooter />
-            <DevPanel />
-          </Providers>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <NextIntlClientProvider messages={messages}>
+        <div dir={dir}>
+          {children}
+        </div>
+      </NextIntlClientProvider>
+    </>
   );
 }

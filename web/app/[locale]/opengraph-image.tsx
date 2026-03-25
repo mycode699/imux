@@ -1,21 +1,19 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import { join } from "path";
+import { siteConfig } from "../site-config";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "cmux — The terminal built for multitasking";
+export const alt = "icc — AI Command Center for macOS";
 
 const S = 2; // render at 2x for sharper images on social platforms
 
 export default async function Image() {
-  const [logoData, screenshotData, geistRegular, geistSemiBold] =
+  const [logoData, geistRegular, geistSemiBold] =
     await Promise.all([
       readFile(join(process.cwd(), "public", "logo.png")),
-      readFile(
-        join(process.cwd(), "app", "[locale]", "assets", "og-screenshot.png")
-      ),
       fetch(
         "https://fonts.gstatic.com/s/geist/v4/gyBhhwUxId8gMGYQMKR3pzfaWI_RnOM4nQ.ttf"
       ).then((res) => res.arrayBuffer()),
@@ -25,7 +23,6 @@ export default async function Image() {
     ]);
 
   const logoSrc = `data:image/png;base64,${logoData.toString("base64")}`;
-  const screenshotSrc = `data:image/png;base64,${screenshotData.toString("base64")}`;
 
   return new ImageResponse(
     (
@@ -35,89 +32,142 @@ export default async function Image() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "#0a0a0a",
+          background:
+            "radial-gradient(circle at top left, rgba(37,99,235,0.38), transparent 34%), radial-gradient(circle at top right, rgba(249,115,22,0.28), transparent 28%), linear-gradient(180deg, #08101d 0%, #0f172a 100%)",
           fontFamily: "Geist",
-          paddingBottom: 28 * S,
+          padding: 48 * S,
         }}
       >
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
             flex: 1,
+            alignItems: "stretch",
+            justifyContent: "space-between",
           }}
         >
-          {/* Screenshot */}
-          <div
-            style={{
-              display: "flex",
-              flex: 1,
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            <img src={screenshotSrc} width={size.width * S} />
-            <div
-              style={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: 320 * S,
-                background:
-                  "linear-gradient(to bottom, rgba(10,10,10,0), rgba(10,10,10,1))",
-              }}
-            />
-          </div>
-
-          {/* Branding bar */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              marginTop: -60 * S,
-              paddingLeft: 25 * S,
+              justifyContent: "space-between",
             }}
           >
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 20 * S,
+                gap: 16 * S,
               }}
             >
               <img
                 src={logoSrc}
-                width={112 * S}
-                height={112 * S}
-                style={{ borderRadius: 20 * S }}
+                width={80 * S}
+                height={80 * S}
+                style={{ borderRadius: 18 * S }}
               />
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <div
                   style={{
-                    fontSize: 48 * S,
+                    fontSize: 34 * S,
                     fontWeight: 600,
                     color: "#ededed",
                     letterSpacing: "-0.02em",
-                    lineHeight: 1,
-                    marginTop: -8 * S,
+                    lineHeight: 1.1,
                   }}
                 >
-                  cmux
+                  {siteConfig.name}
                 </div>
                 <div
                   style={{
-                    fontSize: 34 * S,
+                    fontSize: 16 * S,
                     fontWeight: 400,
-                    color: "#cfcfcf",
-                    marginTop: 5 * S,
-                    lineHeight: 1,
+                    color: "#94a3b8",
+                    marginTop: 6 * S,
+                    lineHeight: 1.2,
                   }}
                 >
-                  The terminal built for multitasking
+                  {siteConfig.descriptor}
                 </div>
               </div>
             </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                border: "1px solid rgba(148,163,184,0.28)",
+                borderRadius: 9999,
+                padding: `${8 * S}px ${14 * S}px`,
+                color: "#cbd5e1",
+                fontSize: 12 * S,
+                textTransform: "uppercase",
+                letterSpacing: "0.18em",
+              }}
+            >
+              {siteConfig.version}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              maxWidth: 860 * S,
+              gap: 18 * S,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 58 * S,
+                fontWeight: 600,
+                color: "white",
+                letterSpacing: "-0.05em",
+                lineHeight: 0.95,
+              }}
+            >
+              {siteConfig.tagline}
+            </div>
+            <div
+              style={{
+                fontSize: 24 * S,
+                lineHeight: 1.5,
+                color: "#cbd5e1",
+                maxWidth: 820 * S,
+              }}
+            >
+              Native macOS workspace for terminal execution, local and remote files, browser tasks,
+              source control, and supervisor-driven next steps.
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              gap: 16 * S,
+            }}
+          >
+            {[
+              "Terminal-first execution",
+              "Local + remote explorers",
+              "In-app file editing",
+              "Supervisor workflow",
+            ].map((item) => (
+              <div
+                key={item}
+                style={{
+                  display: "flex",
+                  borderRadius: 24 * S,
+                  border: "1px solid rgba(148,163,184,0.24)",
+                  background: "rgba(15,23,42,0.6)",
+                  color: "#e2e8f0",
+                  padding: `${16 * S}px ${18 * S}px`,
+                  fontSize: 14 * S,
+                }}
+              >
+                {item}
+              </div>
+            ))}
           </div>
         </div>
       </div>

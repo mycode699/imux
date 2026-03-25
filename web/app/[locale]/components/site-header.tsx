@@ -1,8 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { Link } from "../../../i18n/navigation";
-import { NavLinks } from "./nav-links";
 import { DownloadButton } from "./download-button";
 import { ThemeToggle } from "../theme";
 import { GitHubStarsBadge } from "./github-stars";
@@ -11,6 +8,7 @@ import {
   MobileDrawerOverlay,
   MobileDrawerToggle,
 } from "./mobile-drawer";
+import { siteConfig } from "../../site-config";
 
 export function SiteHeader({
   section,
@@ -19,30 +17,33 @@ export function SiteHeader({
   section?: string;
   hideLogo?: boolean;
 }) {
-  const t = useTranslations("nav");
-  const tc = useTranslations("common");
   const { open, toggle, close, drawerRef, buttonRef } = useMobileDrawer();
 
   return (
     <>
-      <header className="sticky top-0 z-30 w-full bg-background">
-        <div className="w-full max-w-6xl mx-auto flex items-center px-6 h-12">
+      <header className="sticky top-0 z-30 w-full border-b border-border/60 bg-background/88 backdrop-blur-xl">
+        <div className="w-full max-w-6xl mx-auto flex items-center px-6 h-14">
           {/* Left: logo + section */}
           <div className="flex flex-1 items-center gap-3 min-w-0">
             {!hideLogo && (
               <>
-                <Link href="/" className="flex items-center gap-2.5">
+                <a href="/" className="flex items-center gap-3">
                   <img
                     src="/logo.png"
-                    alt="cmux"
-                    width={24}
-                    height={24}
-                    className="rounded-md"
+                    alt={siteConfig.name}
+                    width={28}
+                    height={28}
+                    className="rounded-lg"
                   />
-                  <span className="text-sm font-semibold tracking-tight">
-                    cmux
-                  </span>
-                </Link>
+                  <div className="flex flex-col leading-none">
+                    <span className="text-sm font-semibold tracking-tight">
+                      {siteConfig.name}
+                    </span>
+                    <span className="text-[11px] text-muted">
+                      {siteConfig.descriptor}
+                    </span>
+                  </div>
+                </a>
                 {section && (
                   <>
                     <span className="text-border text-[13px]">/</span>
@@ -54,8 +55,24 @@ export function SiteHeader({
           </div>
 
           {/* Center: nav links */}
-          <nav className="hidden md:flex items-center justify-center gap-4 text-sm text-muted shrink-0">
-            <NavLinks />
+          <nav className="hidden md:flex items-center justify-center gap-5 text-sm text-muted shrink-0">
+            <a href="#capabilities" className="hover:text-foreground transition-colors">
+              Capabilities
+            </a>
+            <a href="#workflow" className="hover:text-foreground transition-colors">
+              Workflow
+            </a>
+            <a href="#faq" className="hover:text-foreground transition-colors">
+              FAQ
+            </a>
+            <a
+              href={siteConfig.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              GitHub
+            </a>
           </nav>
 
           {/* Right: GitHub stars + Download + theme + mobile */}
@@ -89,7 +106,7 @@ export function SiteHeader({
           <button
             onClick={close}
             className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground transition-colors"
-            aria-label={tc("closeMenu")}
+            aria-label="Close menu"
           >
             <svg
               width="16"
@@ -108,34 +125,24 @@ export function SiteHeader({
         </div>
 
         <div className="flex flex-col gap-3 text-sm text-muted px-4 pb-4">
-          <Link
-            href="/docs/getting-started"
+          <a href="#capabilities" onClick={close} className="hover:text-foreground transition-colors py-1">
+            Capabilities
+          </a>
+          <a href="#workflow" onClick={close} className="hover:text-foreground transition-colors py-1">
+            Workflow
+          </a>
+          <a href="#faq" onClick={close} className="hover:text-foreground transition-colors py-1">
+            FAQ
+          </a>
+          <a
+            href={siteConfig.repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={close}
             className="hover:text-foreground transition-colors py-1"
           >
-            {t("docs")}
-          </Link>
-          <Link
-            href="/blog"
-            onClick={close}
-            className="hover:text-foreground transition-colors py-1"
-          >
-            {t("blog")}
-          </Link>
-          <Link
-            href="/docs/changelog"
-            onClick={close}
-            className="hover:text-foreground transition-colors py-1"
-          >
-            {t("changelog")}
-          </Link>
-          <Link
-            href="/community"
-            onClick={close}
-            className="hover:text-foreground transition-colors py-1"
-          >
-            {t("community")}
-          </Link>
+            GitHub
+          </a>
           <GitHubStarsBadge location="mobile_drawer" />
           <div className="pt-2">
             <DownloadButton size="sm" location="mobile_drawer" />
