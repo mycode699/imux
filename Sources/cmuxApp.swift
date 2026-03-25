@@ -3,6 +3,9 @@ import SwiftUI
 import Darwin
 import Bonsplit
 import UniformTypeIdentifiers
+#if canImport(Security)
+import Security
+#endif
 
 enum WorkspaceTitlebarSettings {
     static let showTitlebarKey = "workspaceTitlebarVisible"
@@ -370,7 +373,7 @@ struct cmuxApp: App {
             }
 
             CommandGroup(replacing: .appInfo) {
-                Button(String(localized: "menu.app.about", defaultValue: "About iatlas")) {
+                Button(String(localized: "menu.app.about", defaultValue: "About icc")) {
                     showAboutPanel()
                 }
                 Button(String(localized: "menu.app.ghosttySettings", defaultValue: "Ghostty Settings…")) {
@@ -1254,16 +1257,16 @@ struct cmuxApp: App {
 }
 
 private let cmuxAuxiliaryWindowIdentifiers: Set<String> = [
-    "iatlas.settings",
-    "iatlas.about",
-    "iatlas.licenses",
-    "iatlas.browser-popup",
-    "iatlas.settingsAboutTitlebarDebug",
-    "iatlas.debugWindowControls",
-    "iatlas.browserImportHintDebug",
-    "iatlas.sidebarDebug",
-    "iatlas.menubarDebug",
-    "iatlas.backgroundDebug",
+    "icc.settings",
+    "icc.about",
+    "icc.licenses",
+    "icc.browser-popup",
+    "icc.settingsAboutTitlebarDebug",
+    "icc.debugWindowControls",
+    "icc.browserImportHintDebug",
+    "icc.sidebarDebug",
+    "icc.menubarDebug",
+    "icc.backgroundDebug",
 ]
 
 /// Returns whether the given window should handle the standard close shortcut
@@ -1292,9 +1295,9 @@ private enum SettingsAboutWindowKind: String, CaseIterable, Identifiable {
     var windowIdentifier: String {
         switch self {
         case .settings:
-            return "iatlas.settings"
+            return "icc.settings"
         case .about:
-            return "iatlas.about"
+            return "icc.about"
         }
     }
 
@@ -1303,7 +1306,7 @@ private enum SettingsAboutWindowKind: String, CaseIterable, Identifiable {
         case .settings:
             return "Settings"
         case .about:
-            return "About iatlas"
+            return "About icc"
         }
     }
 
@@ -1416,7 +1419,7 @@ private struct SettingsAboutTitlebarDebugOptions: Equatable {
         case .about:
             return SettingsAboutTitlebarDebugOptions(
                 overridesEnabled: false,
-                windowTitle: "About iatlas",
+                windowTitle: "About icc",
                 titleVisibility: .hidden,
                 titlebarAppearsTransparent: true,
                 movableByWindowBackground: false,
@@ -1588,7 +1591,7 @@ private final class SettingsAboutTitlebarDebugWindowController: NSWindowControll
         window.titlebarAppearsTransparent = false
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.settingsAboutTitlebarDebug")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.settingsAboutTitlebarDebug")
         window.center()
         window.contentView = NSHostingView(rootView: SettingsAboutTitlebarDebugView())
         AppDelegate.shared?.applyWindowDecorations(to: window)
@@ -1816,7 +1819,7 @@ private final class DebugWindowControlsWindowController: NSWindowController, NSW
         window.titlebarAppearsTransparent = false
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.debugWindowControls")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.debugWindowControls")
         window.center()
         window.contentView = NSHostingView(rootView: DebugWindowControlsView())
         AppDelegate.shared?.applyWindowDecorations(to: window)
@@ -2120,7 +2123,7 @@ private final class BrowserImportHintDebugWindowController: NSWindowController, 
         window.titlebarAppearsTransparent = false
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.browserImportHintDebug")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.browserImportHintDebug")
         window.center()
         window.contentView = NSHostingView(rootView: BrowserImportHintDebugView())
         AppDelegate.shared?.applyWindowDecorations(to: window)
@@ -2157,7 +2160,7 @@ private final class BrowserProfilePopoverDebugWindowController: NSWindowControll
         window.titlebarAppearsTransparent = false
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.browserProfilePopoverDebug")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.browserProfilePopoverDebug")
         window.center()
         window.contentView = NSHostingView(rootView: BrowserProfilePopoverDebugView())
         AppDelegate.shared?.applyWindowDecorations(to: window)
@@ -2521,7 +2524,7 @@ private final class AboutWindowController: NSWindowController, NSWindowDelegate 
             defer: false
         )
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.about")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.about")
         window.center()
         window.contentView = NSHostingView(rootView: AboutPanelView())
         SettingsAboutTitlebarDebugStore.shared.applyCurrentOptions(to: window, for: .about)
@@ -2555,7 +2558,7 @@ private final class AcknowledgmentsWindowController: NSWindowController, NSWindo
         )
         window.isReleasedWhenClosed = false
         window.title = String(localized: "about.licenses.windowTitle", defaultValue: "Third-Party Licenses")
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.licenses")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.licenses")
         window.center()
         window.contentView = NSHostingView(rootView: AcknowledgmentsView())
         super.init(window: window)
@@ -2606,7 +2609,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
             defer: false
         )
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.settings")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.settings")
         window.center()
         window.contentView = NSHostingView(rootView: SettingsRootView())
         SettingsAboutTitlebarDebugStore.shared.applyCurrentOptions(to: window, for: .settings)
@@ -2736,7 +2739,7 @@ enum SettingsNavigationTarget: String {
 }
 
 enum SettingsNavigationRequest {
-    static let notificationName = Notification.Name("iatlas.settings.navigate")
+    static let notificationName = Notification.Name("icc.settings.navigate")
     private static let targetKey = "target"
 
     static func post(_ target: SettingsNavigationTarget) {
@@ -2768,7 +2771,7 @@ private final class SidebarDebugWindowController: NSWindowController, NSWindowDe
         window.titlebarAppearsTransparent = false
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.sidebarDebug")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.sidebarDebug")
         window.center()
         window.contentView = NSHostingView(rootView: SidebarDebugView())
         AppDelegate.shared?.applyWindowDecorations(to: window)
@@ -2814,7 +2817,7 @@ private struct AboutPanelView: View {
 
             VStack(alignment: .center, spacing: 32) {
                 VStack(alignment: .center, spacing: 8) {
-                    Text(String(localized: "about.appName", defaultValue: "iatlas"))
+                    Text(String(localized: "about.appName", defaultValue: "icc"))
                         .bold()
                         .font(.title)
                     Text(String(localized: "about.description", defaultValue: "A Ghostty-based terminal with vertical tabs\nand a notification panel for macOS."))
@@ -3434,12 +3437,12 @@ private struct BackgroundDebugView: View {
         let window: NSWindow? = {
             if let key = NSApp.keyWindow,
                let raw = key.identifier?.rawValue,
-               raw == "cmux.main" || raw.hasPrefix("iatlas.main.") {
+               raw == "cmux.main" || raw == "icc.main" || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.") {
                 return key
             }
             return NSApp.windows.first(where: {
                 guard let raw = $0.identifier?.rawValue else { return false }
-                return raw == "cmux.main" || raw.hasPrefix("iatlas.main.")
+                return raw == "cmux.main" || raw == "icc.main" || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
             })
         }()
         guard let window else { return }
@@ -3657,6 +3660,42 @@ enum LanguageSettings {
     }()
 }
 
+private enum PreferredChineseVariant {
+    case none
+    case simplified
+    case traditional
+}
+
+private func preferredChineseVariant() -> PreferredChineseVariant {
+    let languages = UserDefaults.standard.stringArray(forKey: "AppleLanguages") ?? Locale.preferredLanguages
+    guard let first = languages.first?.lowercased() else { return .none }
+    if first.hasPrefix("zh-hant") || first.contains("hant") || first.hasSuffix("-tw") || first.hasSuffix("-hk") {
+        return .traditional
+    }
+    if first.hasPrefix("zh") {
+        return .simplified
+    }
+    return .none
+}
+
+private func localizedSettingsText(
+    _ key: String,
+    english: String,
+    simplifiedChinese: String,
+    traditionalChinese: String? = nil
+) -> String {
+    let resolvedCandidate = NSLocalizedString(key, comment: "")
+    let resolved = resolvedCandidate == key ? english : resolvedCandidate
+    switch preferredChineseVariant() {
+    case .simplified:
+        return resolved == english ? simplifiedChinese : resolved
+    case .traditional:
+        return resolved == english ? (traditionalChinese ?? simplifiedChinese) : resolved
+    case .none:
+        return resolved
+    }
+}
+
 enum AppIconMode: String, CaseIterable, Identifiable {
     case automatic
     case light
@@ -3763,6 +3802,379 @@ enum ClaudeCodeIntegrationSettings {
     }
 }
 
+enum WeChatChannelSettings {
+    static let defaultsKey = "wechat.channel.configuration.v1"
+}
+
+enum WeChatBotTokenStore {
+    static let serviceName = "com.icc.app.wechat.bot-token"
+
+    static func loadToken(for accountId: UUID) -> String? {
+#if canImport(Security)
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: serviceName,
+            kSecAttrAccount: accountId.uuidString,
+            kSecReturnData: true,
+            kSecMatchLimit: kSecMatchLimitOne,
+        ]
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess, let data = result as? Data else { return nil }
+        return String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
+#else
+        return nil
+#endif
+    }
+
+    static func hasToken(for accountId: UUID) -> Bool {
+        guard let token = loadToken(for: accountId) else { return false }
+        return !token.isEmpty
+    }
+
+    static func saveToken(_ token: String, for accountId: UUID) throws {
+#if canImport(Security)
+        let trimmed = token.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            try clearToken(for: accountId)
+            return
+        }
+        let data = Data(trimmed.utf8)
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: serviceName,
+            kSecAttrAccount: accountId.uuidString,
+        ]
+        let attributes: [CFString: Any] = [
+            kSecValueData: data,
+        ]
+        let updateStatus = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+        if updateStatus == errSecSuccess {
+            return
+        }
+        guard updateStatus == errSecItemNotFound else {
+            throw NSError(domain: NSOSStatusErrorDomain, code: Int(updateStatus))
+        }
+        var createQuery = query
+        createQuery[kSecValueData] = data
+        let addStatus = SecItemAdd(createQuery as CFDictionary, nil)
+        guard addStatus == errSecSuccess else {
+            throw NSError(domain: NSOSStatusErrorDomain, code: Int(addStatus))
+        }
+#endif
+    }
+
+    static func clearToken(for accountId: UUID) throws {
+#if canImport(Security)
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: serviceName,
+            kSecAttrAccount: accountId.uuidString,
+        ]
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw NSError(domain: NSOSStatusErrorDomain, code: Int(status))
+        }
+#endif
+    }
+}
+
+enum WeChatAccountConnectionState: String, Codable, CaseIterable, Identifiable {
+    case draft
+    case qrReady
+    case connected
+    case paused
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .draft:
+            return localizedSettingsText(
+                "settings.wechat.state.draft",
+                english: "Draft",
+                simplifiedChinese: "草稿",
+                traditionalChinese: "草稿"
+            )
+        case .qrReady:
+            return localizedSettingsText(
+                "settings.wechat.state.qrReady",
+                english: "Waiting for Scan",
+                simplifiedChinese: "等待扫码",
+                traditionalChinese: "等待掃碼"
+            )
+        case .connected:
+            return localizedSettingsText(
+                "settings.wechat.state.connected",
+                english: "Connected",
+                simplifiedChinese: "已连接",
+                traditionalChinese: "已連線"
+            )
+        case .paused:
+            return localizedSettingsText(
+                "settings.wechat.state.paused",
+                english: "Paused",
+                simplifiedChinese: "已暂停",
+                traditionalChinese: "已暫停"
+            )
+        }
+    }
+}
+
+enum WeChatBindingDestinationKind: String, Codable, Hashable {
+    case unbound
+    case autoCreateWindow
+    case window
+    case workspace
+}
+
+struct WeChatBindingDestination: Codable, Equatable, Hashable {
+    var kind: WeChatBindingDestinationKind = .unbound
+    var windowId: UUID?
+    var workspaceId: UUID?
+
+    static let unbound = WeChatBindingDestination(kind: .unbound, windowId: nil, workspaceId: nil)
+    static let autoCreateWindow = WeChatBindingDestination(kind: .autoCreateWindow, windowId: nil, workspaceId: nil)
+}
+
+struct WeChatConversationBinding: Codable, Identifiable, Equatable {
+    var id = UUID()
+    var title: String
+    var sessionId: String
+    var contactLabel: String
+    var contextTokenHint: String
+    var destination: WeChatBindingDestination
+    var sendTypingIndicator = true
+}
+
+struct WeChatBotAccountConfiguration: Codable, Identifiable, Equatable {
+    var id = UUID()
+    var displayName: String
+    var botId: String
+    var userId: String
+    var baseURLString: String
+    var routeTag: String
+    var tokenHint: String
+    var isEnabled = true
+    var connectionState: WeChatAccountConnectionState = .draft
+    var bindings: [WeChatConversationBinding] = []
+}
+
+struct WeChatChannelConfiguration: Codable, Equatable {
+    var integrationEnabled = false
+    var autoCreateWindowForNewChats = true
+    var sendTypingWhileWorking = true
+    var mirrorWindowProgressIntoReplies = true
+    var accounts: [WeChatBotAccountConfiguration] = []
+
+    static let empty = WeChatChannelConfiguration()
+}
+
+@MainActor
+final class WeChatChannelSettingsStore: ObservableObject {
+    @Published var configuration: WeChatChannelConfiguration {
+        didSet { persist() }
+    }
+
+    init(defaults: UserDefaults = .standard) {
+        if let data = defaults.data(forKey: WeChatChannelSettings.defaultsKey),
+           let decoded = try? JSONDecoder().decode(WeChatChannelConfiguration.self, from: data) {
+            configuration = decoded
+        } else {
+            configuration = .empty
+        }
+    }
+
+    func addAccount() {
+        var updated = configuration
+        updated.accounts.append(
+            WeChatBotAccountConfiguration(
+                displayName: localizedSettingsText(
+                    "settings.wechat.account.defaultName",
+                    english: "WeChat Bot",
+                    simplifiedChinese: "微信机器人",
+                    traditionalChinese: "微信機器人"
+                ),
+                botId: "",
+                userId: "",
+                baseURLString: "https://ilinkai.weixin.qq.com",
+                routeTag: "",
+                tokenHint: "",
+                bindings: [
+                    WeChatConversationBinding(
+                        title: localizedSettingsText(
+                            "settings.wechat.binding.defaultTitle",
+                            english: "Default Chat Route",
+                            simplifiedChinese: "默认聊天路由",
+                            traditionalChinese: "預設聊天路由"
+                        ),
+                        sessionId: "",
+                        contactLabel: "",
+                        contextTokenHint: "",
+                        destination: .autoCreateWindow
+                    )
+                ]
+            )
+        )
+        configuration = updated
+    }
+
+    func removeAccount(_ accountId: UUID) {
+        configuration.accounts.removeAll { $0.id == accountId }
+    }
+
+    func updateAccount(_ accountId: UUID, mutate: (inout WeChatBotAccountConfiguration) -> Void) {
+        guard let index = configuration.accounts.firstIndex(where: { $0.id == accountId }) else { return }
+        var updated = configuration
+        mutate(&updated.accounts[index])
+        configuration = updated
+    }
+
+    func addBinding(to accountId: UUID) {
+        updateAccount(accountId) { account in
+            account.bindings.append(
+                WeChatConversationBinding(
+                    title: localizedSettingsText(
+                        "settings.wechat.binding.newTitle",
+                        english: "New Chat Route",
+                        simplifiedChinese: "新聊天路由",
+                        traditionalChinese: "新聊天路由"
+                    ),
+                    sessionId: "",
+                    contactLabel: "",
+                    contextTokenHint: "",
+                    destination: account.bindings.isEmpty ? .autoCreateWindow : .unbound
+                )
+            )
+        }
+    }
+
+    func removeBinding(accountId: UUID, bindingId: UUID) {
+        updateAccount(accountId) { account in
+            account.bindings.removeAll { $0.id == bindingId }
+        }
+    }
+
+    func updateBinding(accountId: UUID, bindingId: UUID, mutate: (inout WeChatConversationBinding) -> Void) {
+        updateAccount(accountId) { account in
+            guard let index = account.bindings.firstIndex(where: { $0.id == bindingId }) else { return }
+            mutate(&account.bindings[index])
+        }
+    }
+
+    private func persist(defaults: UserDefaults = .standard) {
+        guard let data = try? JSONEncoder().encode(configuration) else { return }
+        defaults.set(data, forKey: WeChatChannelSettings.defaultsKey)
+    }
+}
+
+struct WeChatBindingTargetOption: Identifiable, Hashable {
+    let id: String
+    let label: String
+    let destination: WeChatBindingDestination
+}
+
+@MainActor
+final class WeChatBindingTargetCatalog: ObservableObject {
+    @Published private(set) var options: [WeChatBindingTargetOption] = []
+    private var observer: NSObjectProtocol?
+
+    init() {
+        refresh()
+        observer = NotificationCenter.default.addObserver(
+            forName: .mainWindowContextsDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.refresh()
+        }
+    }
+
+    deinit {
+        if let observer {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+
+    func refresh() {
+        var nextOptions: [WeChatBindingTargetOption] = [
+            WeChatBindingTargetOption(
+                id: "unbound",
+                label: localizedSettingsText(
+                    "settings.wechat.destination.unbound",
+                    english: "Unbound",
+                    simplifiedChinese: "未绑定",
+                    traditionalChinese: "未綁定"
+                ),
+                destination: .unbound
+            ),
+            WeChatBindingTargetOption(
+                id: "auto",
+                label: localizedSettingsText(
+                    "settings.wechat.destination.auto",
+                    english: "Auto-create a Window on First Message",
+                    simplifiedChinese: "首次消息自动创建窗口",
+                    traditionalChinese: "首次訊息自動建立視窗"
+                ),
+                destination: .autoCreateWindow
+            ),
+        ]
+
+        if let appDelegate = AppDelegate.shared {
+            let windows = appDelegate.windowMoveTargets(referenceWindowId: nil)
+            let workspaces = appDelegate.workspaceMoveTargets(referenceWindowId: nil)
+
+            nextOptions.append(contentsOf: windows.map { target in
+                WeChatBindingTargetOption(
+                    id: "window:\(target.windowId.uuidString)",
+                    label: localizedSettingsText(
+                        "settings.wechat.destination.windowPrefix",
+                        english: "Window",
+                        simplifiedChinese: "窗口",
+                        traditionalChinese: "視窗"
+                    ) + " · " + target.label,
+                    destination: WeChatBindingDestination(kind: .window, windowId: target.windowId, workspaceId: nil)
+                )
+            })
+
+            nextOptions.append(contentsOf: workspaces.map { target in
+                WeChatBindingTargetOption(
+                    id: "workspace:\(target.windowId.uuidString):\(target.workspaceId.uuidString)",
+                    label: localizedSettingsText(
+                        "settings.wechat.destination.workspacePrefix",
+                        english: "Workspace",
+                        simplifiedChinese: "工作区",
+                        traditionalChinese: "工作區"
+                    ) + " · " + target.label,
+                    destination: WeChatBindingDestination(kind: .workspace, windowId: target.windowId, workspaceId: target.workspaceId)
+                )
+            })
+        }
+
+        options = nextOptions
+    }
+
+    func optionId(for destination: WeChatBindingDestination) -> String {
+        switch destination.kind {
+        case .unbound:
+            return "unbound"
+        case .autoCreateWindow:
+            return "auto"
+        case .window:
+            return destination.windowId.map { "window:\($0.uuidString)" } ?? "unbound"
+        case .workspace:
+            if let windowId = destination.windowId, let workspaceId = destination.workspaceId {
+                return "workspace:\(windowId.uuidString):\(workspaceId.uuidString)"
+            }
+            return "unbound"
+        }
+    }
+
+    func destination(for optionId: String) -> WeChatBindingDestination {
+        options.first(where: { $0.id == optionId })?.destination ?? .unbound
+    }
+}
+
 enum WelcomeSettings {
     static let shownKey = "cmuxWelcomeShown"
 }
@@ -3857,6 +4269,8 @@ struct SettingsView: View {
     @AppStorage("sidebarTintOpacity") private var sidebarTintOpacity = SidebarTintDefaults.opacity
 
     @ObservedObject private var notificationStore = TerminalNotificationStore.shared
+    @StateObject private var weChatChannelStore = WeChatChannelSettingsStore()
+    @StateObject private var weChatBindingCatalog = WeChatBindingTargetCatalog()
     @State private var shortcutResetToken = UUID()
     @State private var topBlurOpacity: Double = 0
     @State private var topBlurBaselineOffset: CGFloat?
@@ -3879,6 +4293,12 @@ struct SettingsView: View {
     @State private var isResettingSettings = false
     @State private var workspaceTabDefaultEntries = WorkspaceTabColorSettings.defaultPaletteWithOverrides()
     @State private var workspaceTabCustomColors = WorkspaceTabColorSettings.customColors()
+    @State private var selectedSettingsSection: SettingsSidebarSection = .app
+    @State private var expandedWeChatAccountIds: Set<UUID> = []
+    @State private var expandedWeChatBindingIds: Set<UUID> = []
+    @State private var weChatBotTokenDrafts: [UUID: String] = [:]
+    @State private var weChatAccountStatusMessages: [UUID: String] = [:]
+    @State private var weChatAccountStatusErrors: Set<UUID> = []
 
     private var selectedWorkspacePlacement: NewWorkspacePlacement {
         NewWorkspacePlacement(rawValue: newWorkspacePlacement) ?? WorkspacePlacementSettings.defaultPlacement
@@ -3890,14 +4310,18 @@ struct SettingsView: View {
 
     private var minimalModeSubtitle: String {
         if minimalModeEnabled {
-            return String(
-                localized: "settings.app.minimalMode.subtitleOn",
-                defaultValue: "Hide the workspace title bar and move workspace controls into the sidebar."
+            return localizedSettingsText(
+                "settings.app.minimalMode.subtitleOn",
+                english: "Hide the workspace title bar and move workspace controls into the sidebar.",
+                simplifiedChinese: "隐藏工作区标题栏，并把工作区控制项移到侧边栏。",
+                traditionalChinese: "隱藏工作區標題列，並把工作區控制項移到側邊欄。"
             )
         }
-        return String(
-            localized: "settings.app.minimalMode.subtitleOff",
-            defaultValue: "Use the standard workspace title bar and controls."
+        return localizedSettingsText(
+            "settings.app.minimalMode.subtitleOff",
+            english: "Use the standard workspace title bar and controls.",
+            simplifiedChinese: "使用标准工作区标题栏和控制项。",
+            traditionalChinese: "使用標準工作區標題列與控制項。"
         )
     }
 
@@ -3914,27 +4338,35 @@ struct SettingsView: View {
 
     private var closeWorkspaceOnLastSurfaceShortcutSubtitle: String {
         if keepWorkspaceOpenOnLastSurfaceShortcut {
-            return String(
-                localized: "settings.app.closeWorkspaceOnLastSurfaceShortcut.subtitleOn",
-                defaultValue: "When the focused surface is the last one in its workspace, the close-surface shortcut closes only the surface and keeps the workspace open. Use the close-workspace shortcut to close the workspace explicitly."
+            return localizedSettingsText(
+                "settings.app.closeWorkspaceOnLastSurfaceShortcut.subtitleOn",
+                english: "When the focused surface is the last one in its workspace, the close-surface shortcut closes only the surface and keeps the workspace open. Use the close-workspace shortcut to close the workspace explicitly.",
+                simplifiedChinese: "当当前面板是工作区中的最后一个时，关闭面板快捷键只关闭面板，不关闭工作区。如需关闭工作区，请使用关闭工作区快捷键。",
+                traditionalChinese: "當目前面板是工作區中的最後一個時，關閉面板快捷鍵只會關閉面板，不會關閉工作區。如需關閉工作區，請使用關閉工作區快捷鍵。"
             )
         }
-        return String(
-            localized: "settings.app.closeWorkspaceOnLastSurfaceShortcut.subtitleOff",
-            defaultValue: "When the focused surface is the last one in its workspace, the close-surface shortcut also closes the workspace."
+        return localizedSettingsText(
+            "settings.app.closeWorkspaceOnLastSurfaceShortcut.subtitleOff",
+            english: "When the focused surface is the last one in its workspace, the close-surface shortcut also closes the workspace.",
+            simplifiedChinese: "当当前面板是工作区中的最后一个时，关闭面板快捷键会同时关闭工作区。",
+            traditionalChinese: "當目前面板是工作區中的最後一個時，關閉面板快捷鍵會同時關閉工作區。"
         )
     }
 
     private var paneFirstClickFocusSubtitle: String {
         if paneFirstClickFocusEnabled {
-            return String(
-                localized: "settings.app.paneFirstClickFocus.subtitleOn",
-                defaultValue: "When cmux is inactive, clicking a pane activates the window and focuses that pane in one click."
+            return localizedSettingsText(
+                "settings.app.paneFirstClickFocus.subtitleOn",
+                english: "When cmux is inactive, clicking a pane activates the window and focuses that pane in one click.",
+                simplifiedChinese: "当 iatlas 未激活时，点击面板会同时激活窗口并聚焦该面板。",
+                traditionalChinese: "當 iatlas 未啟用時，點擊面板會同時啟用視窗並聚焦該面板。"
             )
         }
-        return String(
-            localized: "settings.app.paneFirstClickFocus.subtitleOff",
-            defaultValue: "When cmux is inactive, the first click only activates the window. Click again to focus the pane."
+        return localizedSettingsText(
+            "settings.app.paneFirstClickFocus.subtitleOff",
+            english: "When cmux is inactive, the first click only activates the window. Click again to focus the pane.",
+            simplifiedChinese: "当 iatlas 未激活时，第一次点击只会激活窗口；再次点击才会聚焦面板。",
+            traditionalChinese: "當 iatlas 未啟用時，第一次點擊只會啟用視窗；再次點擊才會聚焦面板。"
         )
     }
 
@@ -4122,25 +4554,40 @@ struct SettingsView: View {
     private var notificationPermissionSubtitle: String {
         switch notificationStore.authorizationState {
         case .unknown, .notDetermined:
-            return "Desktop notifications are not enabled yet."
+            return localizedSettingsText("settings.notifications.desktop.subtitle.unknown", english: "Desktop notifications are not enabled yet.", simplifiedChinese: "桌面通知尚未启用。", traditionalChinese: "桌面通知尚未啟用。")
         case .authorized:
-            return "Desktop notifications are enabled."
+            return localizedSettingsText("settings.notifications.desktop.subtitle.authorized", english: "Desktop notifications are enabled.", simplifiedChinese: "桌面通知已启用。", traditionalChinese: "桌面通知已啟用。")
         case .denied:
-            return "Desktop notifications are disabled in System Settings."
+            return localizedSettingsText("settings.notifications.desktop.subtitle.denied", english: "Desktop notifications are disabled in System Settings.", simplifiedChinese: "桌面通知已在系统设置中关闭。", traditionalChinese: "桌面通知已在系統設定中關閉。")
         case .provisional:
-            return "Desktop notifications are enabled with quiet delivery."
+            return localizedSettingsText("settings.notifications.desktop.subtitle.provisional", english: "Desktop notifications are enabled with quiet delivery.", simplifiedChinese: "桌面通知已启用，当前为安静投递。", traditionalChinese: "桌面通知已啟用，目前為安靜投遞。")
         case .ephemeral:
-            return "Desktop notifications are temporarily enabled."
+            return localizedSettingsText("settings.notifications.desktop.subtitle.ephemeral", english: "Desktop notifications are temporarily enabled.", simplifiedChinese: "桌面通知已临时启用。", traditionalChinese: "桌面通知已暫時啟用。")
         }
     }
 
     private var notificationPermissionActionTitle: String {
         switch notificationStore.authorizationState {
         case .unknown, .notDetermined:
-            return "Enable"
+            return localizedSettingsText("settings.notifications.desktop.action.enable", english: "Enable", simplifiedChinese: "启用", traditionalChinese: "啟用")
         case .authorized, .denied, .provisional, .ephemeral:
-            return "Open Settings"
+            return localizedSettingsText("settings.notifications.desktop.action.openSettings", english: "Open Settings", simplifiedChinese: "打开设置", traditionalChinese: "打開設定")
         }
+    }
+
+    private var selectedSidebarColorPreset: SidebarColorPreset? {
+        let currentLight = (sidebarTintHexLight ?? sidebarTintHex).uppercased()
+        let currentDark = (sidebarTintHexDark ?? sidebarTintHex).uppercased()
+        return SidebarColorPreset.allCases.first { preset in
+            currentLight == preset.lightHex && currentDark == preset.darkHex && abs(sidebarTintOpacity - preset.opacity) < 0.01
+        }
+    }
+
+    private func applySidebarColorPreset(_ preset: SidebarColorPreset) {
+        sidebarTintHex = preset.darkHex
+        sidebarTintHexLight = preset.lightHex
+        sidebarTintHexDark = preset.darkHex
+        sidebarTintOpacity = preset.opacity
     }
 
     private func blurOpacity(forContentOffset offset: CGFloat) -> Double {
@@ -4311,17 +4758,442 @@ struct SettingsView: View {
         }
     }
 
+    private var weChatConfigurationBinding: Binding<Bool> {
+        Binding(
+            get: { weChatChannelStore.configuration.integrationEnabled },
+            set: { newValue in
+                var updated = weChatChannelStore.configuration
+                updated.integrationEnabled = newValue
+                weChatChannelStore.configuration = updated
+            }
+        )
+    }
+
+    private var weChatAutoCreateWindowBinding: Binding<Bool> {
+        Binding(
+            get: { weChatChannelStore.configuration.autoCreateWindowForNewChats },
+            set: { newValue in
+                var updated = weChatChannelStore.configuration
+                updated.autoCreateWindowForNewChats = newValue
+                weChatChannelStore.configuration = updated
+            }
+        )
+    }
+
+    private var weChatTypingBinding: Binding<Bool> {
+        Binding(
+            get: { weChatChannelStore.configuration.sendTypingWhileWorking },
+            set: { newValue in
+                var updated = weChatChannelStore.configuration
+                updated.sendTypingWhileWorking = newValue
+                weChatChannelStore.configuration = updated
+            }
+        )
+    }
+
+    private var weChatProgressMirrorBinding: Binding<Bool> {
+        Binding(
+            get: { weChatChannelStore.configuration.mirrorWindowProgressIntoReplies },
+            set: { newValue in
+                var updated = weChatChannelStore.configuration
+                updated.mirrorWindowProgressIntoReplies = newValue
+                weChatChannelStore.configuration = updated
+            }
+        )
+    }
+
+    private func weChatAccountStringBinding(
+        accountId: UUID,
+        keyPath: WritableKeyPath<WeChatBotAccountConfiguration, String>
+    ) -> Binding<String> {
+        Binding(
+            get: {
+                weChatChannelStore.configuration.accounts.first(where: { $0.id == accountId })?[keyPath: keyPath] ?? ""
+            },
+            set: { newValue in
+                weChatChannelStore.updateAccount(accountId) { account in
+                    account[keyPath: keyPath] = newValue
+                }
+            }
+        )
+    }
+
+    private func weChatAccountBoolBinding(
+        accountId: UUID,
+        keyPath: WritableKeyPath<WeChatBotAccountConfiguration, Bool>
+    ) -> Binding<Bool> {
+        Binding(
+            get: {
+                weChatChannelStore.configuration.accounts.first(where: { $0.id == accountId })?[keyPath: keyPath] ?? false
+            },
+            set: { newValue in
+                weChatChannelStore.updateAccount(accountId) { account in
+                    account[keyPath: keyPath] = newValue
+                }
+            }
+        )
+    }
+
+    private func weChatAccountStateBinding(accountId: UUID) -> Binding<WeChatAccountConnectionState> {
+        Binding(
+            get: {
+                weChatChannelStore.configuration.accounts.first(where: { $0.id == accountId })?.connectionState ?? .draft
+            },
+            set: { newValue in
+                weChatChannelStore.updateAccount(accountId) { account in
+                    account.connectionState = newValue
+                }
+            }
+        )
+    }
+
+    private func weChatBindingStringBinding(
+        accountId: UUID,
+        bindingId: UUID,
+        keyPath: WritableKeyPath<WeChatConversationBinding, String>
+    ) -> Binding<String> {
+        Binding(
+            get: {
+                weChatChannelStore.configuration.accounts
+                    .first(where: { $0.id == accountId })?
+                    .bindings.first(where: { $0.id == bindingId })?[keyPath: keyPath] ?? ""
+            },
+            set: { newValue in
+                weChatChannelStore.updateBinding(accountId: accountId, bindingId: bindingId) { binding in
+                    binding[keyPath: keyPath] = newValue
+                }
+            }
+        )
+    }
+
+    private func weChatBindingBoolBinding(
+        accountId: UUID,
+        bindingId: UUID,
+        keyPath: WritableKeyPath<WeChatConversationBinding, Bool>
+    ) -> Binding<Bool> {
+        Binding(
+            get: {
+                weChatChannelStore.configuration.accounts
+                    .first(where: { $0.id == accountId })?
+                    .bindings.first(where: { $0.id == bindingId })?[keyPath: keyPath] ?? false
+            },
+            set: { newValue in
+                weChatChannelStore.updateBinding(accountId: accountId, bindingId: bindingId) { binding in
+                    binding[keyPath: keyPath] = newValue
+                }
+            }
+        )
+    }
+
+    private func weChatBindingDestinationBinding(accountId: UUID, bindingId: UUID) -> Binding<String> {
+        Binding(
+            get: {
+                let destination = weChatChannelStore.configuration.accounts
+                    .first(where: { $0.id == accountId })?
+                    .bindings.first(where: { $0.id == bindingId })?.destination ?? .unbound
+                return weChatBindingCatalog.optionId(for: destination)
+            },
+            set: { optionId in
+                let destination = weChatBindingCatalog.destination(for: optionId)
+                weChatChannelStore.updateBinding(accountId: accountId, bindingId: bindingId) { binding in
+                    binding.destination = destination
+                }
+            }
+        )
+    }
+
+    private func weChatAccountStatusTint(_ state: WeChatAccountConnectionState) -> Color {
+        switch state {
+        case .connected:
+            return .green
+        case .qrReady:
+            return .orange
+        case .paused:
+            return .secondary
+        case .draft:
+            return .blue
+        }
+    }
+
+    private var weChatAccountCount: Int {
+        weChatChannelStore.configuration.accounts.count
+    }
+
+    private var weChatEnabledAccountCount: Int {
+        weChatChannelStore.configuration.accounts.filter(\.isEnabled).count
+    }
+
+    private var weChatRouteCount: Int {
+        weChatChannelStore.configuration.accounts.reduce(0) { $0 + $1.bindings.count }
+    }
+
+    private var weChatConnectedAccountCount: Int {
+        weChatChannelStore.configuration.accounts.filter { $0.connectionState == .connected }.count
+    }
+
+    private func weChatBotTokenDraftBinding(accountId: UUID) -> Binding<String> {
+        Binding(
+            get: {
+                if let draft = weChatBotTokenDrafts[accountId] {
+                    return draft
+                }
+                return ""
+            },
+            set: { newValue in
+                weChatBotTokenDrafts[accountId] = newValue
+            }
+        )
+    }
+
+    private func ensureWeChatDraftState(for account: WeChatBotAccountConfiguration) {
+        if expandedWeChatAccountIds.isEmpty && weChatChannelStore.configuration.accounts.count == 1 {
+            expandedWeChatAccountIds.insert(account.id)
+        }
+        if weChatBotTokenDrafts[account.id] == nil {
+            weChatBotTokenDrafts[account.id] = ""
+        }
+    }
+
+    private func ensureWeChatBindingExpanded(_ bindingId: UUID) {
+        if expandedWeChatBindingIds.isEmpty {
+            expandedWeChatBindingIds.insert(bindingId)
+        }
+    }
+
+    private func weChatHasSavedBotToken(_ accountId: UUID) -> Bool {
+        WeChatBotTokenStore.hasToken(for: accountId)
+    }
+
+    private func saveWeChatBotToken(for accountId: UUID) {
+        let trimmed = (weChatBotTokenDrafts[accountId] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            weChatAccountStatusMessages[accountId] = localizedSettingsText(
+                "settings.wechat.account.token.empty",
+                english: "Enter a bot token first.",
+                simplifiedChinese: "请先输入机器人 Token。",
+                traditionalChinese: "請先輸入機器人 Token。"
+            )
+            weChatAccountStatusErrors.insert(accountId)
+            return
+        }
+
+        do {
+            try WeChatBotTokenStore.saveToken(trimmed, for: accountId)
+            weChatBotTokenDrafts[accountId] = ""
+            weChatAccountStatusMessages[accountId] = localizedSettingsText(
+                "settings.wechat.account.token.saved",
+                english: "Bot token saved locally on this Mac.",
+                simplifiedChinese: "机器人 Token 已保存在本机。",
+                traditionalChinese: "機器人 Token 已保存在本機。"
+            )
+            weChatAccountStatusErrors.remove(accountId)
+            weChatChannelStore.updateAccount(accountId) { account in
+                account.tokenHint = String(trimmed.suffix(6))
+            }
+        } catch {
+            weChatAccountStatusMessages[accountId] = localizedSettingsText(
+                "settings.wechat.account.token.saveFailed",
+                english: "Failed to save the bot token locally.",
+                simplifiedChinese: "本地保存机器人 Token 失败。",
+                traditionalChinese: "本地儲存機器人 Token 失敗。"
+            )
+            weChatAccountStatusErrors.insert(accountId)
+        }
+    }
+
+    private func clearWeChatBotToken(for accountId: UUID) {
+        do {
+            try WeChatBotTokenStore.clearToken(for: accountId)
+            weChatBotTokenDrafts[accountId] = ""
+            weChatAccountStatusMessages[accountId] = localizedSettingsText(
+                "settings.wechat.account.token.cleared",
+                english: "Saved bot token removed from this Mac.",
+                simplifiedChinese: "已删除本机保存的机器人 Token。",
+                traditionalChinese: "已刪除本機儲存的機器人 Token。"
+            )
+            weChatAccountStatusErrors.remove(accountId)
+            weChatChannelStore.updateAccount(accountId) { account in
+                account.tokenHint = ""
+            }
+        } catch {
+            weChatAccountStatusMessages[accountId] = localizedSettingsText(
+                "settings.wechat.account.token.clearFailed",
+                english: "Failed to remove the saved bot token.",
+                simplifiedChinese: "删除已保存的机器人 Token 失败。",
+                traditionalChinese: "刪除已儲存的機器人 Token 失敗。"
+            )
+            weChatAccountStatusErrors.insert(accountId)
+        }
+    }
+
+    private func weChatBindingDestinationSummary(_ binding: WeChatConversationBinding) -> String {
+        weChatBindingCatalog.options.first(where: { $0.destination == binding.destination })?.label
+            ?? localizedSettingsText(
+                "settings.wechat.destination.unbound",
+                english: "Unbound",
+                simplifiedChinese: "未绑定",
+                traditionalChinese: "未綁定"
+            )
+    }
+
+    private func weChatBindingStatusSummary(_ binding: WeChatConversationBinding) -> String {
+        if !binding.sessionId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "session_id: \(binding.sessionId)"
+        }
+        return localizedSettingsText(
+            "settings.wechat.binding.session.waiting",
+            english: "Waiting for the first inbound chat session.",
+            simplifiedChinese: "等待首个进入的聊天会话。",
+            traditionalChinese: "等待首個進入的聊天會話。"
+        )
+    }
+
+    private func bindWeChatRouteToCurrentWindow(accountId: UUID, bindingId: UUID) {
+        guard let target = AppDelegate.shared?.currentWindowMoveTarget() else { return }
+        weChatChannelStore.updateBinding(accountId: accountId, bindingId: bindingId) { binding in
+            binding.destination = WeChatBindingDestination(kind: .window, windowId: target.windowId, workspaceId: nil)
+        }
+        weChatBindingCatalog.refresh()
+    }
+
+    private func bindWeChatRouteToCurrentWorkspace(accountId: UUID, bindingId: UUID) {
+        guard let target = AppDelegate.shared?.currentWorkspaceMoveTarget() else { return }
+        weChatChannelStore.updateBinding(accountId: accountId, bindingId: bindingId) { binding in
+            binding.destination = WeChatBindingDestination(kind: .workspace, windowId: target.windowId, workspaceId: target.workspaceId)
+        }
+        weChatBindingCatalog.refresh()
+    }
+
+    private var weChatCurrentWindowQuickBindTitle: String {
+        if let target = AppDelegate.shared?.currentWindowMoveTarget() {
+            return localizedSettingsText(
+                "settings.wechat.binding.bindCurrentWindow",
+                english: "Bind to Current Window",
+                simplifiedChinese: "绑定到当前窗口",
+                traditionalChinese: "綁定到目前視窗"
+            ) + " · " + target.label
+        }
+        return localizedSettingsText(
+            "settings.wechat.binding.bindCurrentWindow",
+            english: "Bind to Current Window",
+            simplifiedChinese: "绑定到当前窗口",
+            traditionalChinese: "綁定到目前視窗"
+        )
+    }
+
+    private var weChatCurrentWorkspaceQuickBindTitle: String {
+        if let target = AppDelegate.shared?.currentWorkspaceMoveTarget() {
+            return localizedSettingsText(
+                "settings.wechat.binding.bindCurrentWorkspace",
+                english: "Bind to Current Workspace",
+                simplifiedChinese: "绑定到当前工作区",
+                traditionalChinese: "綁定到目前工作區"
+            ) + " · " + target.workspaceTitle
+        }
+        return localizedSettingsText(
+            "settings.wechat.binding.bindCurrentWorkspace",
+            english: "Bind to Current Workspace",
+            simplifiedChinese: "绑定到当前工作区",
+            traditionalChinese: "綁定到目前工作區"
+        )
+    }
+
+    @ViewBuilder
+    private func weChatDestinationPicker(accountId: UUID, bindingId: UUID) -> some View {
+        Picker(
+            "",
+            selection: weChatBindingDestinationBinding(accountId: accountId, bindingId: bindingId)
+        ) {
+            ForEach(weChatBindingCatalog.options) { option in
+                Text(option.label).tag(option.id)
+            }
+        }
+        .labelsHidden()
+        .pickerStyle(.menu)
+        .frame(width: 250)
+    }
+
+    private func scrollToSettingsSection(
+        _ section: SettingsSidebarSection,
+        proxy: ScrollViewProxy
+    ) {
+        selectedSettingsSection = section
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.18)) {
+                proxy.scrollTo(section.rawValue, anchor: .top)
+            }
+        }
+    }
+
+    private func settingsNavigationSidebar(proxy: ScrollViewProxy) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("icc")
+                    .font(.system(size: 19, weight: .semibold))
+                Text(
+                    localizedSettingsText(
+                        "settings.nav.summary",
+                        english: "Configure the workspace, automation, browser, and notification flow from one place.",
+                        simplifiedChinese: "在这里统一配置工作区、自动化、浏览器和通知流程。",
+                        traditionalChinese: "在這裡統一設定工作區、自動化、瀏覽器與通知流程。"
+                    )
+                )
+                    .font(.system(size: 11.5, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 18)
+
+            VStack(spacing: 8) {
+                ForEach(SettingsSidebarSection.allCases) { section in
+                    SettingsSidebarNavButton(
+                        section: section,
+                        isSelected: selectedSettingsSection == section,
+                        action: {
+                            scrollToSettingsSection(section, proxy: proxy)
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, 10)
+
+            Spacer(minLength: 0)
+        }
+        .frame(width: 248)
+        .frame(maxHeight: .infinity, alignment: .topLeading)
+        .background(
+            ZStack {
+                Color(nsColor: NSColor.controlBackgroundColor).opacity(0.72)
+                LinearGradient(
+                    colors: [
+                        Color.accentColor.opacity(0.05),
+                        Color.clear
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
+        )
+    }
+
     var body: some View {
         ScrollViewReader { proxy in
             ZStack(alignment: .top) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    SettingsSectionHeader(title: String(localized: "settings.section.app", defaultValue: "App"))
+                HStack(spacing: 0) {
+                    settingsNavigationSidebar(proxy: proxy)
+
+                    Divider()
+
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 14) {
+                    SettingsSectionHeader(title: SettingsSidebarSection.app.title)
+                        .id(SettingsSidebarSection.app.rawValue)
                     SettingsCard {
                         SettingsCardRow(
                             String(localized: "settings.app.language", defaultValue: "Language"),
                             subtitle: appLanguage != LanguageSettings.languageAtLaunch.rawValue
-                                ? String(localized: "settings.app.language.restartSubtitle", defaultValue: "Restart cmux to apply")
+                                ? String(localized: "settings.app.language.restartSubtitle", defaultValue: "Restart icc to apply")
                                 : nil,
                             controlWidth: pickerColumnWidth
                         ) {
@@ -4382,7 +5254,7 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.minimalMode", defaultValue: "Minimal Mode"),
+                            localizedSettingsText("settings.app.minimalMode", english: "Minimal Mode", simplifiedChinese: "极简模式", traditionalChinese: "極簡模式"),
                             subtitle: minimalModeSubtitle
                         ) {
                             Toggle("", isOn: minimalModeBinding)
@@ -4390,14 +5262,14 @@ struct SettingsView: View {
                                 .controlSize(.small)
                                 .accessibilityIdentifier("SettingsMinimalModeToggle")
                                 .accessibilityLabel(
-                                    String(localized: "settings.app.minimalMode", defaultValue: "Minimal Mode")
+                                    localizedSettingsText("settings.app.minimalMode", english: "Minimal Mode", simplifiedChinese: "极简模式", traditionalChinese: "極簡模式")
                                 )
                         }
 
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.closeWorkspaceOnLastSurfaceShortcut", defaultValue: "Keep Workspace Open When Closing Last Surface"),
+                            localizedSettingsText("settings.app.closeWorkspaceOnLastSurfaceShortcut", english: "Keep Workspace Open When Closing Last Surface", simplifiedChinese: "关闭最后一个面板时保留工作区", traditionalChinese: "關閉最後一個面板時保留工作區"),
                             subtitle: closeWorkspaceOnLastSurfaceShortcutSubtitle
                         ) {
                             Toggle("", isOn: keepWorkspaceOpenOnLastSurfaceShortcutBinding)
@@ -4408,22 +5280,22 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.paneFirstClickFocus", defaultValue: "Focus Pane on First Click"),
+                            localizedSettingsText("settings.app.paneFirstClickFocus", english: "Focus Pane on First Click", simplifiedChinese: "首次点击直接聚焦面板", traditionalChinese: "首次點擊直接聚焦面板"),
                             subtitle: paneFirstClickFocusSubtitle
                         ) {
                             Toggle("", isOn: $paneFirstClickFocusEnabled)
                                 .labelsHidden()
                                 .controlSize(.small)
                                 .accessibilityLabel(
-                                    String(localized: "settings.app.paneFirstClickFocus", defaultValue: "Focus Pane on First Click")
+                                    localizedSettingsText("settings.app.paneFirstClickFocus", english: "Focus Pane on First Click", simplifiedChinese: "首次点击直接聚焦面板", traditionalChinese: "首次點擊直接聚焦面板")
                                 )
                         }
 
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.reorderOnNotification", defaultValue: "Reorder on Notification"),
-                            subtitle: String(localized: "settings.app.reorderOnNotification.subtitle", defaultValue: "Move workspaces to the top when they receive a notification. Disable for stable shortcut positions.")
+                            localizedSettingsText("settings.app.reorderOnNotification", english: "Reorder on Notification", simplifiedChinese: "收到通知时重新排序", traditionalChinese: "收到通知時重新排序"),
+                            subtitle: localizedSettingsText("settings.app.reorderOnNotification.subtitle", english: "Move workspaces to the top when they receive a notification. Disable for stable shortcut positions.", simplifiedChinese: "工作区收到通知时自动移到顶部。若要保持快捷键位置稳定，可关闭此项。", traditionalChinese: "工作區收到通知時自動移到頂部。若要保持快捷鍵位置穩定，可關閉此項。")
                         ) {
                             Toggle("", isOn: $workspaceAutoReorder)
                                 .labelsHidden()
@@ -4433,8 +5305,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.dockBadge", defaultValue: "Dock Badge"),
-                            subtitle: String(localized: "settings.app.dockBadge.subtitle", defaultValue: "Show unread count on app icon (Dock and Cmd+Tab).")
+                            localizedSettingsText("settings.app.dockBadge", english: "Dock Badge", simplifiedChinese: "程序坞角标", traditionalChinese: "Dock 角標"),
+                            subtitle: localizedSettingsText("settings.app.dockBadge.subtitle", english: "Show unread count on app icon (Dock and Cmd+Tab).", simplifiedChinese: "在应用图标上显示未读数量，包括 Dock 和 Cmd+Tab。", traditionalChinese: "在應用圖示上顯示未讀數量，包括 Dock 與 Cmd+Tab。")
                         ) {
                             Toggle("", isOn: $notificationDockBadgeEnabled)
                                 .labelsHidden()
@@ -4444,50 +5316,50 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showInMenuBar", defaultValue: "Show in Menu Bar"),
-                            subtitle: String(localized: "settings.app.showInMenuBar.subtitle", defaultValue: "Keep cmux in the menu bar for unread notifications and quick actions.")
+                            localizedSettingsText("settings.app.showInMenuBar", english: "Show in Menu Bar", simplifiedChinese: "在菜单栏显示", traditionalChinese: "在選單列顯示"),
+                            subtitle: localizedSettingsText("settings.app.showInMenuBar.subtitle", english: "Keep cmux in the menu bar for unread notifications and quick actions.", simplifiedChinese: "在菜单栏中保留 iatlas，用于未读提醒和快捷操作。", traditionalChinese: "在選單列中保留 iatlas，用於未讀提醒與快捷操作。")
                         ) {
                             Toggle("", isOn: $showMenuBarExtra)
                                 .labelsHidden()
                                 .controlSize(.small)
                                 .accessibilityLabel(
-                                    String(localized: "settings.app.showInMenuBar", defaultValue: "Show in Menu Bar")
+                                    localizedSettingsText("settings.app.showInMenuBar", english: "Show in Menu Bar", simplifiedChinese: "在菜单栏显示", traditionalChinese: "在選單列顯示")
                                 )
                         }
 
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.notifications.paneRing.title", defaultValue: "Unread Pane Ring"),
-                            subtitle: String(localized: "settings.notifications.paneRing.subtitle", defaultValue: "Show a blue ring around panes with unread notifications.")
+                            localizedSettingsText("settings.notifications.paneRing.title", english: "Unread Pane Ring", simplifiedChinese: "未读面板描边", traditionalChinese: "未讀面板描邊"),
+                            subtitle: localizedSettingsText("settings.notifications.paneRing.subtitle", english: "Show a blue ring around panes with unread notifications.", simplifiedChinese: "带有未读通知的面板会显示蓝色描边。", traditionalChinese: "帶有未讀通知的面板會顯示藍色描邊。")
                         ) {
                             Toggle("", isOn: $notificationPaneRingEnabled)
                                 .labelsHidden()
                                 .controlSize(.small)
                                 .accessibilityLabel(
-                                    String(localized: "settings.notifications.paneRing.title", defaultValue: "Unread Pane Ring")
+                                    localizedSettingsText("settings.notifications.paneRing.title", english: "Unread Pane Ring", simplifiedChinese: "未读面板描边", traditionalChinese: "未讀面板描邊")
                                 )
                         }
-                        .id(SettingsNavigationTarget.notifications)
+                        .id(SettingsSidebarSection.notifications.rawValue)
 
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.notifications.paneFlash.title", defaultValue: "Pane Flash"),
-                            subtitle: String(localized: "settings.notifications.paneFlash.subtitle", defaultValue: "Briefly flash a blue outline when cmux highlights a pane.")
+                            localizedSettingsText("settings.notifications.paneFlash.title", english: "Pane Flash", simplifiedChinese: "面板闪烁提示", traditionalChinese: "面板閃爍提示"),
+                            subtitle: localizedSettingsText("settings.notifications.paneFlash.subtitle", english: "Briefly flash a blue outline when cmux highlights a pane.", simplifiedChinese: "iatlas 高亮面板时，会短暂闪烁蓝色边框。", traditionalChinese: "iatlas 高亮面板時，會短暫閃爍藍色邊框。")
                         ) {
                             Toggle("", isOn: $notificationPaneFlashEnabled)
                                 .labelsHidden()
                                 .controlSize(.small)
                                 .accessibilityLabel(
-                                    String(localized: "settings.notifications.paneFlash.title", defaultValue: "Pane Flash")
+                                    localizedSettingsText("settings.notifications.paneFlash.title", english: "Pane Flash", simplifiedChinese: "面板闪烁提示", traditionalChinese: "面板閃爍提示")
                                 )
                         }
 
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            "Desktop Notifications",
+                            localizedSettingsText("settings.notifications.desktop.title", english: "Desktop Notifications", simplifiedChinese: "桌面通知", traditionalChinese: "桌面通知"),
                             subtitle: notificationPermissionSubtitle
                         ) {
                             HStack(spacing: 6) {
@@ -4501,7 +5373,7 @@ struct SettingsView: View {
                                 }
                                 .controlSize(.small)
 
-                                Button("Send Test") {
+                                Button(localizedSettingsText("settings.notifications.desktop.sendTest", english: "Send Test", simplifiedChinese: "发送测试", traditionalChinese: "傳送測試")) {
                                     notificationStore.sendSettingsTestNotification()
                                 }
                                 .controlSize(.small)
@@ -4511,8 +5383,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.notifications.sound.title", defaultValue: "Notification Sound"),
-                            subtitle: String(localized: "settings.notifications.sound.subtitle", defaultValue: "Sound played when a notification arrives."),
+                            localizedSettingsText("settings.notifications.sound.title", english: "Notification Sound", simplifiedChinese: "通知声音", traditionalChinese: "通知聲音"),
+                            subtitle: localizedSettingsText("settings.notifications.sound.subtitle", english: "Sound played when a notification arrives.", simplifiedChinese: "通知到达时播放的声音。", traditionalChinese: "通知到達時播放的聲音。"),
                             controlWidth: notificationSoundControlWidth
                         ) {
                             VStack(alignment: .trailing, spacing: 6) {
@@ -4543,19 +5415,13 @@ struct SettingsView: View {
                                             .truncationMode(.middle)
                                             .frame(width: 170, alignment: .trailing)
                                         Button(
-                                            String(
-                                                localized: "settings.notifications.sound.custom.choose.button",
-                                                defaultValue: "Choose..."
-                                            )
+                                            localizedSettingsText("settings.notifications.sound.custom.choose.button", english: "Choose...", simplifiedChinese: "选择...", traditionalChinese: "選擇...")
                                         ) {
                                             chooseNotificationSoundFile()
                                         }
                                         .controlSize(.small)
                                         Button(
-                                            String(
-                                                localized: "settings.notifications.sound.custom.clear.button",
-                                                defaultValue: "Clear"
-                                            )
+                                            localizedSettingsText("settings.notifications.sound.custom.clear.button", english: "Clear", simplifiedChinese: "清除", traditionalChinese: "清除")
                                         ) {
                                             notificationSoundCustomFilePath = NotificationSoundSettings.defaultCustomFilePath
                                             refreshNotificationCustomSoundStatus()
@@ -4579,10 +5445,10 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            "Notification Command",
-                            subtitle: "Run a shell command when a notification arrives. $CMUX_NOTIFICATION_TITLE, $CMUX_NOTIFICATION_SUBTITLE, $CMUX_NOTIFICATION_BODY are set."
+                            localizedSettingsText("settings.notifications.command.title", english: "Notification Command", simplifiedChinese: "通知命令", traditionalChinese: "通知命令"),
+                            subtitle: localizedSettingsText("settings.notifications.command.subtitle", english: "Run a shell command when a notification arrives. $CMUX_NOTIFICATION_TITLE, $CMUX_NOTIFICATION_SUBTITLE, $CMUX_NOTIFICATION_BODY are set.", simplifiedChinese: "通知到达时执行 Shell 命令。会自动注入 $CMUX_NOTIFICATION_TITLE、$CMUX_NOTIFICATION_SUBTITLE、$CMUX_NOTIFICATION_BODY。", traditionalChinese: "通知到達時執行 Shell 指令。會自動注入 $CMUX_NOTIFICATION_TITLE、$CMUX_NOTIFICATION_SUBTITLE、$CMUX_NOTIFICATION_BODY。")
                         ) {
-                            TextField("say \"done\"", text: $notificationCustomCommand)
+                            TextField(localizedSettingsText("settings.notifications.command.placeholder", english: "say \"done\"", simplifiedChinese: "say \"完成\"", traditionalChinese: "say \"完成\""), text: $notificationCustomCommand)
                                 .textFieldStyle(.roundedBorder)
                                 .frame(width: 200)
                         }
@@ -4590,10 +5456,10 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.telemetry", defaultValue: "Send anonymous telemetry"),
+                            localizedSettingsText("settings.app.telemetry", english: "Send anonymous telemetry", simplifiedChinese: "发送匿名遥测", traditionalChinese: "傳送匿名遙測"),
                             subtitle: sendAnonymousTelemetry != telemetryValueAtLaunch
-                                ? String(localized: "settings.app.telemetry.subtitleChanged", defaultValue: "Change takes effect on next launch.")
-                                : String(localized: "settings.app.telemetry.subtitle", defaultValue: "Share anonymized crash and usage data to help improve cmux.")
+                                ? localizedSettingsText("settings.app.telemetry.subtitleChanged", english: "Change takes effect on next launch.", simplifiedChinese: "更改将在下次启动后生效。", traditionalChinese: "變更將在下次啟動後生效。")
+                                : localizedSettingsText("settings.app.telemetry.subtitle", english: "Share anonymized crash and usage data to help improve cmux.", simplifiedChinese: "共享匿名化的崩溃与使用数据，以帮助改进 iatlas。", traditionalChinese: "共享匿名化的崩潰與使用資料，以協助改進 iatlas。")
                         ) {
                             Toggle("", isOn: $sendAnonymousTelemetry)
                                 .labelsHidden()
@@ -4603,10 +5469,10 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.warnBeforeQuit", defaultValue: "Warn Before Quit"),
+                            localizedSettingsText("settings.app.warnBeforeQuit", english: "Warn Before Quit", simplifiedChinese: "退出前确认", traditionalChinese: "退出前確認"),
                             subtitle: warnBeforeQuitShortcut
-                                ? String(localized: "settings.app.warnBeforeQuit.subtitleOn", defaultValue: "Show a confirmation before quitting with Cmd+Q.")
-                                : String(localized: "settings.app.warnBeforeQuit.subtitleOff", defaultValue: "Cmd+Q quits immediately without confirmation.")
+                                ? localizedSettingsText("settings.app.warnBeforeQuit.subtitleOn", english: "Show a confirmation before quitting with Cmd+Q.", simplifiedChinese: "使用 Cmd+Q 退出前先显示确认提示。", traditionalChinese: "使用 Cmd+Q 退出前先顯示確認提示。")
+                                : localizedSettingsText("settings.app.warnBeforeQuit.subtitleOff", english: "Cmd+Q quits immediately without confirmation.", simplifiedChinese: "Cmd+Q 将直接退出，不再确认。", traditionalChinese: "Cmd+Q 將直接退出，不再確認。")
                         ) {
                             Toggle("", isOn: $warnBeforeQuitShortcut)
                                 .labelsHidden()
@@ -4616,10 +5482,10 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.renameSelectsName", defaultValue: "Rename Selects Existing Name"),
+                            localizedSettingsText("settings.app.renameSelectsName", english: "Rename Selects Existing Name", simplifiedChinese: "重命名时默认选中原名称", traditionalChinese: "重新命名時預設選取原名稱"),
                             subtitle: commandPaletteRenameSelectAllOnFocus
-                                ? String(localized: "settings.app.renameSelectsName.subtitleOn", defaultValue: "Command Palette rename starts with all text selected.")
-                                : String(localized: "settings.app.renameSelectsName.subtitleOff", defaultValue: "Command Palette rename keeps the caret at the end.")
+                                ? localizedSettingsText("settings.app.renameSelectsName.subtitleOn", english: "Command Palette rename starts with all text selected.", simplifiedChinese: "命令面板重命名时会默认全选文本。", traditionalChinese: "命令面板重新命名時會預設全選文字。")
+                                : localizedSettingsText("settings.app.renameSelectsName.subtitleOff", english: "Command Palette rename keeps the caret at the end.", simplifiedChinese: "命令面板重命名时会把光标放在末尾。", traditionalChinese: "命令面板重新命名時會把游標放在末尾。")
                         ) {
                             Toggle("", isOn: $commandPaletteRenameSelectAllOnFocus)
                                 .labelsHidden()
@@ -4629,27 +5495,27 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.commandPaletteSearchAllSurfaces", defaultValue: "Command Palette Searches All Surfaces"),
+                            localizedSettingsText("settings.app.commandPaletteSearchAllSurfaces", english: "Command Palette Searches All Surfaces", simplifiedChinese: "命令面板搜索全部视图", traditionalChinese: "命令面板搜尋全部視圖"),
                             subtitle: commandPaletteSearchAllSurfaces
-                                ? String(localized: "settings.app.commandPaletteSearchAllSurfaces.subtitleOn", defaultValue: "Cmd+P also matches terminal, browser, and markdown surfaces across workspaces.")
-                                : String(localized: "settings.app.commandPaletteSearchAllSurfaces.subtitleOff", defaultValue: "Cmd+P matches workspace rows only.")
+                                ? localizedSettingsText("settings.app.commandPaletteSearchAllSurfaces.subtitleOn", english: "Cmd+P also matches terminal, browser, and markdown surfaces across workspaces.", simplifiedChinese: "Cmd+P 会同时匹配各工作区中的终端、浏览器和 Markdown 视图。", traditionalChinese: "Cmd+P 會同時比對各工作區中的終端、瀏覽器與 Markdown 視圖。")
+                                : localizedSettingsText("settings.app.commandPaletteSearchAllSurfaces.subtitleOff", english: "Cmd+P matches workspace rows only.", simplifiedChinese: "Cmd+P 仅匹配工作区行。", traditionalChinese: "Cmd+P 僅比對工作區列。")
                         ) {
                             Toggle("", isOn: $commandPaletteSearchAllSurfaces)
                                 .labelsHidden()
                                 .controlSize(.small)
                                 .accessibilityIdentifier("CommandPaletteSearchAllSurfacesToggle")
                                 .accessibilityLabel(
-                                    String(localized: "settings.app.commandPaletteSearchAllSurfaces", defaultValue: "Command Palette Searches All Surfaces")
+                                    localizedSettingsText("settings.app.commandPaletteSearchAllSurfaces", english: "Command Palette Searches All Surfaces", simplifiedChinese: "命令面板搜索全部视图", traditionalChinese: "命令面板搜尋全部視圖")
                                 )
                         }
 
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.hideAllSidebarDetails", defaultValue: "Hide All Sidebar Details"),
+                            localizedSettingsText("settings.app.hideAllSidebarDetails", english: "Hide All Sidebar Details", simplifiedChinese: "隐藏侧边栏全部详情", traditionalChinese: "隱藏側邊欄全部詳情"),
                             subtitle: sidebarHideAllDetails
-                                ? String(localized: "settings.app.hideAllSidebarDetails.subtitleOn", defaultValue: "Show only the workspace title row. Overrides the detail toggles below.")
-                                : String(localized: "settings.app.hideAllSidebarDetails.subtitleOff", defaultValue: "Show secondary workspace details as controlled by the toggles below.")
+                                ? localizedSettingsText("settings.app.hideAllSidebarDetails.subtitleOn", english: "Show only the workspace title row. Overrides the detail toggles below.", simplifiedChinese: "只显示工作区标题行，并覆盖下面的详情开关。", traditionalChinese: "只顯示工作區標題列，並覆蓋下方的詳情開關。")
+                                : localizedSettingsText("settings.app.hideAllSidebarDetails.subtitleOff", english: "Show secondary workspace details as controlled by the toggles below.", simplifiedChinese: "按下方开关显示工作区的次级详情。", traditionalChinese: "依照下方開關顯示工作區的次級詳情。")
                         ) {
                             Toggle("", isOn: $sidebarHideAllDetails)
                                 .labelsHidden()
@@ -4659,23 +5525,23 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsPickerRow(
-                            String(localized: "settings.app.sidebarBranchLayout", defaultValue: "Sidebar Branch Layout"),
+                            localizedSettingsText("settings.app.sidebarBranchLayout", english: "Sidebar Branch Layout", simplifiedChinese: "侧边栏分支布局", traditionalChinese: "側邊欄分支佈局"),
                             subtitle: sidebarBranchVerticalLayout
-                                ? String(localized: "settings.app.sidebarBranchLayout.subtitleVertical", defaultValue: "Vertical: each branch appears on its own line.")
-                                : String(localized: "settings.app.sidebarBranchLayout.subtitleInline", defaultValue: "Inline: all branches share one line."),
+                                ? localizedSettingsText("settings.app.sidebarBranchLayout.subtitleVertical", english: "Vertical: each branch appears on its own line.", simplifiedChinese: "纵向：每个分支单独占一行。", traditionalChinese: "縱向：每個分支單獨佔一行。")
+                                : localizedSettingsText("settings.app.sidebarBranchLayout.subtitleInline", english: "Inline: all branches share one line.", simplifiedChinese: "内联：所有分支共用一行。", traditionalChinese: "內聯：所有分支共用一行。"),
                             controlWidth: pickerColumnWidth,
                             selection: $sidebarBranchVerticalLayout
                         ) {
-                            Text(String(localized: "settings.app.sidebarBranchLayout.vertical", defaultValue: "Vertical")).tag(true)
-                            Text(String(localized: "settings.app.sidebarBranchLayout.inline", defaultValue: "Inline")).tag(false)
+                            Text(localizedSettingsText("settings.app.sidebarBranchLayout.vertical", english: "Vertical", simplifiedChinese: "纵向", traditionalChinese: "縱向")).tag(true)
+                            Text(localizedSettingsText("settings.app.sidebarBranchLayout.inline", english: "Inline", simplifiedChinese: "内联", traditionalChinese: "內聯")).tag(false)
                         }
                         .disabled(sidebarHideAllDetails)
 
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showNotificationMessage", defaultValue: "Show Notification Message in Sidebar"),
-                            subtitle: String(localized: "settings.app.showNotificationMessage.subtitle", defaultValue: "Display the latest notification message below the workspace title.")
+                            localizedSettingsText("settings.app.showNotificationMessage", english: "Show Notification Message in Sidebar", simplifiedChinese: "在侧边栏显示通知消息", traditionalChinese: "在側邊欄顯示通知訊息"),
+                            subtitle: localizedSettingsText("settings.app.showNotificationMessage.subtitle", english: "Display the latest notification message below the workspace title.", simplifiedChinese: "在工作区标题下方显示最新通知内容。", traditionalChinese: "在工作區標題下方顯示最新通知內容。")
                         ) {
                             Toggle("", isOn: $sidebarShowNotificationMessage)
                                 .labelsHidden()
@@ -4686,8 +5552,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showBranchDirectory", defaultValue: "Show Branch + Directory in Sidebar"),
-                            subtitle: String(localized: "settings.app.showBranchDirectory.subtitle", defaultValue: "Display the built-in git branch and working-directory row.")
+                            localizedSettingsText("settings.app.showBranchDirectory", english: "Show Branch + Directory in Sidebar", simplifiedChinese: "在侧边栏显示分支和目录", traditionalChinese: "在側邊欄顯示分支與目錄"),
+                            subtitle: localizedSettingsText("settings.app.showBranchDirectory.subtitle", english: "Display the built-in git branch and working-directory row.", simplifiedChinese: "显示内置的 Git 分支和工作目录行。", traditionalChinese: "顯示內建的 Git 分支與工作目錄列。")
                         ) {
                             Toggle("", isOn: $sidebarShowBranchDirectory)
                                 .labelsHidden()
@@ -4698,8 +5564,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showPullRequests", defaultValue: "Show Pull Requests in Sidebar"),
-                            subtitle: String(localized: "settings.app.showPullRequests.subtitle", defaultValue: "Display review items (PR/MR/etc.) with status, number, and clickable link.")
+                            localizedSettingsText("settings.app.showPullRequests", english: "Show Pull Requests in Sidebar", simplifiedChinese: "在侧边栏显示合并请求", traditionalChinese: "在側邊欄顯示合併請求"),
+                            subtitle: localizedSettingsText("settings.app.showPullRequests.subtitle", english: "Display review items (PR/MR/etc.) with status, number, and clickable link.", simplifiedChinese: "显示评审项（PR/MR 等）的状态、编号和可点击链接。", traditionalChinese: "顯示評審項目（PR/MR 等）的狀態、編號與可點擊連結。")
                         ) {
                             Toggle("", isOn: $sidebarShowPullRequest)
                                 .labelsHidden()
@@ -4710,10 +5576,10 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.openSidebarPRLinks", defaultValue: "Open Sidebar PR Links in cmux Browser"),
+                            localizedSettingsText("settings.app.openSidebarPRLinks", english: "Open Sidebar PR Links in cmux Browser", simplifiedChinese: "在 iatlas 浏览器中打开侧边栏 PR 链接", traditionalChinese: "在 iatlas 瀏覽器中開啟側邊欄 PR 連結"),
                             subtitle: openSidebarPullRequestLinksInCmuxBrowser
-                                ? String(localized: "settings.app.openSidebarPRLinks.subtitleOn", defaultValue: "Clicks open inside cmux browser.")
-                                : String(localized: "settings.app.openSidebarPRLinks.subtitleOff", defaultValue: "Clicks open in your default browser.")
+                                ? localizedSettingsText("settings.app.openSidebarPRLinks.subtitleOn", english: "Clicks open inside cmux browser.", simplifiedChinese: "点击后会在 iatlas 内置浏览器中打开。", traditionalChinese: "點擊後會在 iatlas 內建瀏覽器中開啟。")
+                                : localizedSettingsText("settings.app.openSidebarPRLinks.subtitleOff", english: "Clicks open in your default browser.", simplifiedChinese: "点击后会在系统默认浏览器中打开。", traditionalChinese: "點擊後會在系統預設瀏覽器中開啟。")
                         ) {
                             Toggle("", isOn: $openSidebarPullRequestLinksInCmuxBrowser)
                                 .labelsHidden()
@@ -4724,8 +5590,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showSSH", defaultValue: "Show SSH in Sidebar"),
-                            subtitle: String(localized: "settings.app.showSSH.subtitle", defaultValue: "Display the SSH target for remote workspaces in its own row.")
+                            localizedSettingsText("settings.app.showSSH", english: "Show SSH in Sidebar", simplifiedChinese: "在侧边栏显示 SSH", traditionalChinese: "在側邊欄顯示 SSH"),
+                            subtitle: localizedSettingsText("settings.app.showSSH.subtitle", english: "Display the SSH target for remote workspaces in its own row.", simplifiedChinese: "为远程工作区单独显示 SSH 目标行。", traditionalChinese: "為遠端工作區單獨顯示 SSH 目標列。")
                         ) {
                             Toggle("", isOn: $sidebarShowSSH)
                                 .labelsHidden()
@@ -4735,8 +5601,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showPorts", defaultValue: "Show Listening Ports in Sidebar"),
-                            subtitle: String(localized: "settings.app.showPorts.subtitle", defaultValue: "Display detected listening ports for the active workspace.")
+                            localizedSettingsText("settings.app.showPorts", english: "Show Listening Ports in Sidebar", simplifiedChinese: "在侧边栏显示监听端口", traditionalChinese: "在側邊欄顯示監聽連接埠"),
+                            subtitle: localizedSettingsText("settings.app.showPorts.subtitle", english: "Display detected listening ports for the active workspace.", simplifiedChinese: "显示当前工作区检测到的监听端口。", traditionalChinese: "顯示目前工作區偵測到的監聽連接埠。")
                         ) {
                             Toggle("", isOn: $sidebarShowPorts)
                                 .labelsHidden()
@@ -4747,8 +5613,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showLog", defaultValue: "Show Latest Log in Sidebar"),
-                            subtitle: String(localized: "settings.app.showLog.subtitle", defaultValue: "Display the latest imperative log/status message.")
+                            localizedSettingsText("settings.app.showLog", english: "Show Latest Log in Sidebar", simplifiedChinese: "在侧边栏显示最新日志", traditionalChinese: "在側邊欄顯示最新日誌"),
+                            subtitle: localizedSettingsText("settings.app.showLog.subtitle", english: "Display the latest imperative log/status message.", simplifiedChinese: "显示最新的指令式日志或状态消息。", traditionalChinese: "顯示最新的指令式日誌或狀態訊息。")
                         ) {
                             Toggle("", isOn: $sidebarShowLog)
                                 .labelsHidden()
@@ -4759,8 +5625,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showProgress", defaultValue: "Show Progress in Sidebar"),
-                            subtitle: String(localized: "settings.app.showProgress.subtitle", defaultValue: "Display the built-in progress bar from set_progress.")
+                            localizedSettingsText("settings.app.showProgress", english: "Show Progress in Sidebar", simplifiedChinese: "在侧边栏显示进度", traditionalChinese: "在側邊欄顯示進度"),
+                            subtitle: localizedSettingsText("settings.app.showProgress.subtitle", english: "Display the built-in progress bar from set_progress.", simplifiedChinese: "显示由 set_progress 提供的内置进度条。", traditionalChinese: "顯示由 set_progress 提供的內建進度條。")
                         ) {
                             Toggle("", isOn: $sidebarShowProgress)
                                 .labelsHidden()
@@ -4771,8 +5637,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.app.showMetadata", defaultValue: "Show Custom Metadata in Sidebar"),
-                            subtitle: String(localized: "settings.app.showMetadata.subtitle", defaultValue: "Display custom metadata from report_meta/set_status and report_meta_block.")
+                            localizedSettingsText("settings.app.showMetadata", english: "Show Custom Metadata in Sidebar", simplifiedChinese: "在侧边栏显示自定义元数据", traditionalChinese: "在側邊欄顯示自訂中繼資料"),
+                            subtitle: localizedSettingsText("settings.app.showMetadata.subtitle", english: "Display custom metadata from report_meta/set_status and report_meta_block.", simplifiedChinese: "显示来自 report_meta、set_status 和 report_meta_block 的自定义元数据。", traditionalChinese: "顯示來自 report_meta、set_status 與 report_meta_block 的自訂中繼資料。")
                         ) {
                             Toggle("", isOn: $sidebarShowMetadata)
                                 .labelsHidden()
@@ -4781,7 +5647,8 @@ struct SettingsView: View {
                         .disabled(sidebarHideAllDetails)
                     }
 
-                    SettingsSectionHeader(title: String(localized: "settings.section.workspaceColors", defaultValue: "Workspace Colors"))
+                    SettingsSectionHeader(title: SettingsSidebarSection.workspaceColors.title)
+                        .id(SettingsSidebarSection.workspaceColors.rawValue)
                     SettingsCard {
                         SettingsPickerRow(
                             String(localized: "settings.workspaceColors.indicator", defaultValue: "Workspace Color Indicator"),
@@ -4869,22 +5736,40 @@ struct SettingsView: View {
                         }
                     }
 
-                    SettingsSectionHeader(title: String(localized: "settings.section.sidebarAppearance", defaultValue: "Sidebar Appearance"))
+                    SettingsSectionHeader(title: SettingsSidebarSection.sidebarAppearance.title)
+                        .id(SettingsSidebarSection.sidebarAppearance.rawValue)
                     SettingsCard {
                         SettingsCardRow(
-                            String(localized: "settings.sidebarAppearance.tintColorLight", defaultValue: "Light Mode Tint"),
-                            subtitle: String(localized: "settings.sidebarAppearance.tintColorLight.subtitle", defaultValue: "Sidebar tint color when using light appearance.")
+                            localizedSettingsText("settings.sidebarAppearance.preset.title", english: "Color Presets", simplifiedChinese: "配色方案", traditionalChinese: "配色方案"),
+                            subtitle: localizedSettingsText("settings.sidebarAppearance.preset.subtitle", english: "Choose a balanced sidebar tint preset, then fine-tune below if needed.", simplifiedChinese: "先选择一个更协调的侧边栏配色，再按需微调。", traditionalChinese: "先選擇一個更協調的側邊欄配色，再按需微調。")
+                        ) {
+                            HStack(spacing: 8) {
+                                ForEach(SidebarColorPreset.allCases) { preset in
+                                    SidebarColorPresetChip(
+                                        preset: preset,
+                                        isSelected: selectedSidebarColorPreset == preset,
+                                        onSelect: { applySidebarColorPreset(preset) }
+                                    )
+                                }
+                            }
+                        }
+
+                        SettingsCardDivider()
+
+                        SettingsCardRow(
+                            localizedSettingsText("settings.sidebarAppearance.tintColorLight", english: "Light Mode Tint", simplifiedChinese: "浅色模式着色", traditionalChinese: "淺色模式著色"),
+                            subtitle: localizedSettingsText("settings.sidebarAppearance.tintColorLight.subtitle", english: "Sidebar tint color when using light appearance.", simplifiedChinese: "浅色外观下侧边栏使用的着色颜色。", traditionalChinese: "淺色外觀下側邊欄使用的著色顏色。")
                         ) {
                             HStack(spacing: 8) {
                                 ColorPicker(
-                                    String(localized: "settings.sidebarAppearance.tintColorLight.picker", defaultValue: "Light tint"),
+                                    localizedSettingsText("settings.sidebarAppearance.tintColorLight.picker", english: "Light tint", simplifiedChinese: "浅色着色", traditionalChinese: "淺色著色"),
                                     selection: settingsSidebarTintLightBinding,
                                     supportsOpacity: false
                                 )
                                 .labelsHidden()
                                 .frame(width: 38)
 
-                                Text(sidebarTintHexLight ?? String(localized: "settings.sidebarAppearance.defaultLabel", defaultValue: "Default"))
+                                Text(sidebarTintHexLight ?? localizedSettingsText("settings.sidebarAppearance.defaultLabel", english: "Default", simplifiedChinese: "默认", traditionalChinese: "預設"))
                                     .font(.system(size: 12, weight: .medium, design: .monospaced))
                                     .foregroundStyle(.secondary)
                                     .frame(width: 76, alignment: .trailing)
@@ -4894,19 +5779,19 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.sidebarAppearance.tintColorDark", defaultValue: "Dark Mode Tint"),
-                            subtitle: String(localized: "settings.sidebarAppearance.tintColorDark.subtitle", defaultValue: "Sidebar tint color when using dark appearance.")
+                            localizedSettingsText("settings.sidebarAppearance.tintColorDark", english: "Dark Mode Tint", simplifiedChinese: "深色模式着色", traditionalChinese: "深色模式著色"),
+                            subtitle: localizedSettingsText("settings.sidebarAppearance.tintColorDark.subtitle", english: "Sidebar tint color when using dark appearance.", simplifiedChinese: "深色外观下侧边栏使用的着色颜色。", traditionalChinese: "深色外觀下側邊欄使用的著色顏色。")
                         ) {
                             HStack(spacing: 8) {
                                 ColorPicker(
-                                    String(localized: "settings.sidebarAppearance.tintColorDark.picker", defaultValue: "Dark tint"),
+                                    localizedSettingsText("settings.sidebarAppearance.tintColorDark.picker", english: "Dark tint", simplifiedChinese: "深色着色", traditionalChinese: "深色著色"),
                                     selection: settingsSidebarTintDarkBinding,
                                     supportsOpacity: false
                                 )
                                 .labelsHidden()
                                 .frame(width: 38)
 
-                                Text(sidebarTintHexDark ?? String(localized: "settings.sidebarAppearance.defaultLabel", defaultValue: "Default"))
+                                Text(sidebarTintHexDark ?? localizedSettingsText("settings.sidebarAppearance.defaultLabel", english: "Default", simplifiedChinese: "默认", traditionalChinese: "預設"))
                                     .font(.system(size: 12, weight: .medium, design: .monospaced))
                                     .foregroundStyle(.secondary)
                                     .frame(width: 76, alignment: .trailing)
@@ -4916,8 +5801,8 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.sidebarAppearance.tintOpacity", defaultValue: "Tint Opacity"),
-                            subtitle: String(localized: "settings.sidebarAppearance.tintOpacity.subtitle", defaultValue: "How strongly the tint color shows over the sidebar material.")
+                            localizedSettingsText("settings.sidebarAppearance.tintOpacity", english: "Tint Opacity", simplifiedChinese: "着色强度", traditionalChinese: "著色強度"),
+                            subtitle: localizedSettingsText("settings.sidebarAppearance.tintOpacity.subtitle", english: "How strongly the tint color shows over the sidebar material.", simplifiedChinese: "控制着色颜色在侧边栏材质上的显现强度。", traditionalChinese: "控制著色顏色在側邊欄材質上的顯現強度。")
                         ) {
                             HStack(spacing: 8) {
                                 Slider(value: $sidebarTintOpacity, in: 0...1)
@@ -4932,10 +5817,10 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.sidebarAppearance.reset", defaultValue: "Reset Sidebar Tint"),
-                            subtitle: String(localized: "settings.sidebarAppearance.reset.subtitle", defaultValue: "Restore default sidebar appearance.")
+                            localizedSettingsText("settings.sidebarAppearance.reset", english: "Reset Sidebar Tint", simplifiedChinese: "重置侧边栏着色", traditionalChinese: "重設側邊欄著色"),
+                            subtitle: localizedSettingsText("settings.sidebarAppearance.reset.subtitle", english: "Restore default sidebar appearance.", simplifiedChinese: "恢复默认的侧边栏外观。", traditionalChinese: "恢復預設的側邊欄外觀。")
                         ) {
-                            Button(String(localized: "settings.sidebarAppearance.reset.button", defaultValue: "Reset")) {
+                            Button(localizedSettingsText("settings.sidebarAppearance.reset.button", english: "Reset", simplifiedChinese: "重置", traditionalChinese: "重設")) {
                                 sidebarTintHexLight = nil
                                 sidebarTintHexDark = nil
                                 sidebarTintHex = SidebarTintDefaults.hex
@@ -4946,7 +5831,656 @@ struct SettingsView: View {
                         }
                     }
 
-                    SettingsSectionHeader(title: String(localized: "settings.section.automation", defaultValue: "Automation"))
+                    SettingsSectionHeader(title: SettingsSidebarSection.automation.title)
+                        .id(SettingsSidebarSection.automation.rawValue)
+                    SettingsCard {
+                        SettingsCardRow(
+                            localizedSettingsText(
+                                "settings.wechat.integration.title",
+                                english: "WeChat Channel",
+                                simplifiedChinese: "微信通道",
+                                traditionalChinese: "微信通道"
+                            ),
+                            subtitle: localizedSettingsText(
+                                "settings.wechat.integration.subtitle",
+                                english: "Bind inbound WeChat chats to specific icc windows or workspaces, so each conversation controls the right target.",
+                                simplifiedChinese: "把微信会话绑定到指定的 icc 窗口或工作区，让每个对话都控制正确的目标。",
+                                traditionalChinese: "把微信會話綁定到指定的 icc 視窗或工作區，讓每個對話都控制正確的目標。"
+                            )
+                        ) {
+                            Toggle("", isOn: weChatConfigurationBinding)
+                                .labelsHidden()
+                                .controlSize(.small)
+                        }
+
+                        SettingsCardDivider()
+
+                        SettingsCardRow(
+                            localizedSettingsText(
+                                "settings.wechat.integration.autoCreate",
+                                english: "Auto-create Window for New Chats",
+                                simplifiedChinese: "新聊天自动创建窗口",
+                                traditionalChinese: "新聊天自動建立視窗"
+                            ),
+                            subtitle: localizedSettingsText(
+                                "settings.wechat.integration.autoCreate.subtitle",
+                                english: "When a chat has no explicit binding yet, create a fresh window so its work stays isolated.",
+                                simplifiedChinese: "当聊天还没有明确绑定时，自动创建新窗口，避免不同会话混在一起。",
+                                traditionalChinese: "當聊天還沒有明確綁定時，自動建立新視窗，避免不同會話混在一起。"
+                            )
+                        ) {
+                            Toggle("", isOn: weChatAutoCreateWindowBinding)
+                                .labelsHidden()
+                                .controlSize(.small)
+                        }
+                        .disabled(!weChatChannelStore.configuration.integrationEnabled)
+
+                        SettingsCardDivider()
+
+                        SettingsCardRow(
+                            localizedSettingsText(
+                                "settings.wechat.integration.typing",
+                                english: "Send Typing While Agent Works",
+                                simplifiedChinese: "执行期间发送“正在输入”",
+                                traditionalChinese: "執行期間傳送「正在輸入」"
+                            ),
+                            subtitle: localizedSettingsText(
+                                "settings.wechat.integration.typing.subtitle",
+                                english: "Use the protocol typing signal while a bound window is still gathering results or executing work.",
+                                simplifiedChinese: "当绑定窗口还在整理结果或执行任务时，通过协议发送“正在输入”提示。",
+                                traditionalChinese: "當綁定視窗還在整理結果或執行任務時，透過協議傳送「正在輸入」提示。"
+                            )
+                        ) {
+                            Toggle("", isOn: weChatTypingBinding)
+                                .labelsHidden()
+                                .controlSize(.small)
+                        }
+                        .disabled(!weChatChannelStore.configuration.integrationEnabled)
+
+                        SettingsCardDivider()
+
+                        SettingsCardRow(
+                            localizedSettingsText(
+                                "settings.wechat.integration.progress",
+                                english: "Mirror Window Progress in Replies",
+                                simplifiedChinese: "在回复中同步窗口进度",
+                                traditionalChinese: "在回覆中同步視窗進度"
+                            ),
+                            subtitle: localizedSettingsText(
+                                "settings.wechat.integration.progress.subtitle",
+                                english: "Summarize the current bound window goal, status, and progress when replying from WeChat.",
+                                simplifiedChinese: "通过微信回复时，附带当前绑定窗口的目标、状态和进度摘要。",
+                                traditionalChinese: "透過微信回覆時，附帶目前綁定視窗的目標、狀態與進度摘要。"
+                            )
+                        ) {
+                            Toggle("", isOn: weChatProgressMirrorBinding)
+                                .labelsHidden()
+                                .controlSize(.small)
+                        }
+                        .disabled(!weChatChannelStore.configuration.integrationEnabled)
+
+                        SettingsCardDivider()
+
+                        SettingsCardNote(
+                            localizedSettingsText(
+                                "settings.wechat.integration.note",
+                                english: "Recommended flow: add one bot account, let each WeChat chat bind to one window or workspace, and keep different projects split across separate chats.",
+                                simplifiedChinese: "推荐流程：先添加一个机器人账号，再让每个微信会话绑定到一个窗口或工作区，不同项目拆分到不同聊天中。",
+                                traditionalChinese: "推薦流程：先新增一個機器人帳號，再讓每個微信會話綁定到一個視窗或工作區，不同專案拆分到不同聊天中。"
+                            )
+                        )
+                    }
+
+                    SettingsCard {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(
+                                        localizedSettingsText(
+                                            "settings.wechat.accounts.title",
+                                            english: "Bot Accounts and Chat Routes",
+                                            simplifiedChinese: "机器人账号与聊天路由",
+                                            traditionalChinese: "機器人帳號與聊天路由"
+                                        )
+                                    )
+                                    .font(.system(size: 13, weight: .semibold))
+
+                                    Text(
+                                        localizedSettingsText(
+                                            "settings.wechat.accounts.subtitle",
+                                            english: "Each account keeps its own token/cursor. Each chat route should point to exactly one destination.",
+                                            simplifiedChinese: "每个账号保存自己的 token 和游标；每个聊天路由都应该只指向一个目标。",
+                                            traditionalChinese: "每個帳號保存自己的 token 與游標；每個聊天路由都應該只指向一個目標。"
+                                        )
+                                    )
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                }
+
+                                Spacer(minLength: 0)
+
+                                Button(
+                                    localizedSettingsText(
+                                        "settings.wechat.accounts.add",
+                                        english: "Add Account",
+                                        simplifiedChinese: "添加账号",
+                                        traditionalChinese: "新增帳號"
+                                    )
+                                ) {
+                                    weChatChannelStore.addAccount()
+                                    if let accountId = weChatChannelStore.configuration.accounts.last?.id {
+                                        expandedWeChatAccountIds.insert(accountId)
+                                        weChatBotTokenDrafts[accountId] = ""
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+
+                            if weChatChannelStore.configuration.accounts.isEmpty {
+                                Text(
+                                    localizedSettingsText(
+                                        "settings.wechat.accounts.empty",
+                                        english: "No WeChat bot accounts yet. Add one account, then define one or more chat routes below it.",
+                                        simplifiedChinese: "还没有微信机器人账号。先添加账号，再在该账号下定义一个或多个聊天路由。",
+                                        traditionalChinese: "還沒有微信機器人帳號。先新增帳號，再在該帳號下定義一個或多個聊天路由。"
+                                    )
+                                )
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 4)
+                            } else {
+                                HStack(spacing: 8) {
+                                    SettingsSummaryBadge(
+                                        title: localizedSettingsText(
+                                            "settings.wechat.summary.accounts",
+                                            english: "Accounts",
+                                            simplifiedChinese: "账号",
+                                            traditionalChinese: "帳號"
+                                        ),
+                                        value: "\(weChatAccountCount)"
+                                    )
+                                    SettingsSummaryBadge(
+                                        title: localizedSettingsText(
+                                            "settings.wechat.summary.enabled",
+                                            english: "Enabled",
+                                            simplifiedChinese: "已启用",
+                                            traditionalChinese: "已啟用"
+                                        ),
+                                        value: "\(weChatEnabledAccountCount)"
+                                    )
+                                    SettingsSummaryBadge(
+                                        title: localizedSettingsText(
+                                            "settings.wechat.summary.connected",
+                                            english: "Connected",
+                                            simplifiedChinese: "已连接",
+                                            traditionalChinese: "已連線"
+                                        ),
+                                        value: "\(weChatConnectedAccountCount)"
+                                    )
+                                    SettingsSummaryBadge(
+                                        title: localizedSettingsText(
+                                            "settings.wechat.summary.routes",
+                                            english: "Routes",
+                                            simplifiedChinese: "路由",
+                                            traditionalChinese: "路由"
+                                        ),
+                                        value: "\(weChatRouteCount)"
+                                    )
+                                }
+                                .padding(.top, 2)
+
+                                ForEach(weChatChannelStore.configuration.accounts) { account in
+                                    DisclosureGroup(
+                                        isExpanded: Binding(
+                                            get: { expandedWeChatAccountIds.contains(account.id) },
+                                            set: { isExpanded in
+                                                if isExpanded {
+                                                    expandedWeChatAccountIds.insert(account.id)
+                                                } else {
+                                                    expandedWeChatAccountIds.remove(account.id)
+                                                }
+                                            }
+                                        )
+                                    ) {
+                                        VStack(alignment: .leading, spacing: 12) {
+                                            HStack(spacing: 10) {
+                                                TextField(
+                                                    localizedSettingsText(
+                                                        "settings.wechat.account.name.placeholder",
+                                                        english: "Account name",
+                                                        simplifiedChinese: "账号名称",
+                                                        traditionalChinese: "帳號名稱"
+                                                    ),
+                                                    text: weChatAccountStringBinding(accountId: account.id, keyPath: \.displayName)
+                                                )
+                                                .textFieldStyle(.roundedBorder)
+
+                                                Toggle(
+                                                    localizedSettingsText(
+                                                        "settings.wechat.account.enabled",
+                                                        english: "Enabled",
+                                                        simplifiedChinese: "启用",
+                                                        traditionalChinese: "啟用"
+                                                    ),
+                                                    isOn: weChatAccountBoolBinding(accountId: account.id, keyPath: \.isEnabled)
+                                                )
+                                                .toggleStyle(.switch)
+                                                .controlSize(.small)
+
+                                                Spacer(minLength: 0)
+
+                                                Button(
+                                                    localizedSettingsText(
+                                                        "settings.wechat.account.remove",
+                                                        english: "Remove",
+                                                        simplifiedChinese: "移除",
+                                                        traditionalChinese: "移除"
+                                                    )
+                                                ) {
+                                                    try? WeChatBotTokenStore.clearToken(for: account.id)
+                                                    weChatChannelStore.removeAccount(account.id)
+                                                    expandedWeChatAccountIds.remove(account.id)
+                                                    weChatBotTokenDrafts[account.id] = nil
+                                                    weChatAccountStatusMessages[account.id] = nil
+                                                    weChatAccountStatusErrors.remove(account.id)
+                                                }
+                                                .buttonStyle(.bordered)
+                                                .controlSize(.small)
+                                            }
+
+                                            HStack(alignment: .center, spacing: 8) {
+                                                SecureField(
+                                                    localizedSettingsText(
+                                                        "settings.wechat.account.token.placeholder",
+                                                        english: "Paste bot token",
+                                                        simplifiedChinese: "粘贴机器人 Token",
+                                                        traditionalChinese: "貼上機器人 Token"
+                                                    ),
+                                                    text: weChatBotTokenDraftBinding(accountId: account.id)
+                                                )
+                                                .textFieldStyle(.roundedBorder)
+
+                                                Button(
+                                                    weChatHasSavedBotToken(account.id)
+                                                        ? localizedSettingsText("settings.wechat.account.token.change", english: "Update Token", simplifiedChinese: "更新 Token", traditionalChinese: "更新 Token")
+                                                        : localizedSettingsText("settings.wechat.account.token.save", english: "Save Token", simplifiedChinese: "保存 Token", traditionalChinese: "儲存 Token")
+                                                ) {
+                                                    saveWeChatBotToken(for: account.id)
+                                                }
+                                                .buttonStyle(.borderedProminent)
+                                                .controlSize(.small)
+                                                .disabled((weChatBotTokenDrafts[account.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                                                if weChatHasSavedBotToken(account.id) {
+                                                    Button(
+                                                        localizedSettingsText(
+                                                            "settings.wechat.account.token.clear",
+                                                            english: "Clear",
+                                                            simplifiedChinese: "清除",
+                                                            traditionalChinese: "清除"
+                                                        )
+                                                    ) {
+                                                        clearWeChatBotToken(for: account.id)
+                                                    }
+                                                    .buttonStyle(.bordered)
+                                                    .controlSize(.small)
+                                                }
+                                            }
+
+                                            HStack(spacing: 8) {
+                                                if weChatHasSavedBotToken(account.id) {
+                                                    SettingsInlinePill(
+                                                        text: localizedSettingsText("settings.wechat.account.token.savedBadge", english: "Token saved locally", simplifiedChinese: "Token 已本地保存", traditionalChinese: "Token 已本地儲存"),
+                                                        tint: .green
+                                                    )
+                                                }
+                                                if !account.tokenHint.isEmpty {
+                                                    SettingsInlinePill(
+                                                        text: localizedSettingsText("settings.wechat.account.token.suffix", english: "Last 6", simplifiedChinese: "后 6 位", traditionalChinese: "後 6 位") + " · \(account.tokenHint)",
+                                                        tint: .secondary
+                                                    )
+                                                }
+                                                SettingsInlinePill(
+                                                    text: "\(account.bindings.count) " + localizedSettingsText("settings.wechat.summary.routes", english: "routes", simplifiedChinese: "路由", traditionalChinese: "路由"),
+                                                    tint: .blue
+                                                )
+                                            }
+
+                                            if let message = weChatAccountStatusMessages[account.id] {
+                                                Text(message)
+                                                    .font(.caption)
+                                                    .foregroundStyle(weChatAccountStatusErrors.contains(account.id) ? Color.red : Color.secondary)
+                                            }
+
+                                            DisclosureGroup(
+                                                localizedSettingsText(
+                                                    "settings.wechat.account.advanced",
+                                                    english: "Advanced account fields",
+                                                    simplifiedChinese: "高级账号字段",
+                                                    traditionalChinese: "進階帳號欄位"
+                                                )
+                                            ) {
+                                                VStack(alignment: .leading, spacing: 10) {
+                                                    HStack(spacing: 10) {
+                                                        TextField(
+                                                            localizedSettingsText(
+                                                                "settings.wechat.account.botId",
+                                                                english: "Bot ID",
+                                                                simplifiedChinese: "机器人 ID",
+                                                                traditionalChinese: "機器人 ID"
+                                                            ),
+                                                            text: weChatAccountStringBinding(accountId: account.id, keyPath: \.botId)
+                                                        )
+                                                            .textFieldStyle(.roundedBorder)
+                                                        TextField(
+                                                            localizedSettingsText(
+                                                                "settings.wechat.account.userId",
+                                                                english: "User ID",
+                                                                simplifiedChinese: "用户 ID",
+                                                                traditionalChinese: "使用者 ID"
+                                                            ),
+                                                            text: weChatAccountStringBinding(accountId: account.id, keyPath: \.userId)
+                                                        )
+                                                            .textFieldStyle(.roundedBorder)
+                                                    }
+
+                                                    HStack(spacing: 10) {
+                                                        TextField(
+                                                            localizedSettingsText(
+                                                                "settings.wechat.account.baseUrl",
+                                                                english: "Base URL",
+                                                                simplifiedChinese: "接口地址",
+                                                                traditionalChinese: "介面位址"
+                                                            ),
+                                                            text: weChatAccountStringBinding(accountId: account.id, keyPath: \.baseURLString)
+                                                        )
+                                                            .textFieldStyle(.roundedBorder)
+                                                        TextField(
+                                                            localizedSettingsText(
+                                                                "settings.wechat.account.routeTag",
+                                                                english: "SKRouteTag",
+                                                                simplifiedChinese: "路由标签",
+                                                                traditionalChinese: "路由標籤"
+                                                            ),
+                                                            text: weChatAccountStringBinding(accountId: account.id, keyPath: \.routeTag)
+                                                        )
+                                                            .textFieldStyle(.roundedBorder)
+                                                            .frame(width: 160)
+                                                    }
+
+                                                    Picker("", selection: weChatAccountStateBinding(accountId: account.id)) {
+                                                        ForEach(WeChatAccountConnectionState.allCases) { state in
+                                                            Text(state.label).tag(state)
+                                                        }
+                                                    }
+                                                    .labelsHidden()
+                                                    .pickerStyle(.menu)
+                                                    .frame(width: 220, alignment: .leading)
+                                                }
+                                                .padding(.top, 8)
+                                            }
+
+                                            Divider()
+
+                                            HStack {
+                                                VStack(alignment: .leading, spacing: 4) {
+                                                    Text(
+                                                        localizedSettingsText(
+                                                            "settings.wechat.routes.title",
+                                                            english: "Chat Routes",
+                                                            simplifiedChinese: "聊天路由",
+                                                            traditionalChinese: "聊天路由"
+                                                        )
+                                                    )
+                                                    .font(.system(size: 12.5, weight: .semibold))
+                                                    Text(
+                                                        localizedSettingsText(
+                                                            "settings.wechat.routes.subtitle",
+                                                            english: "Bind each WeChat chat to exactly one window or workspace.",
+                                                            simplifiedChinese: "让每个微信聊天只绑定到一个窗口或工作区。",
+                                                            traditionalChinese: "讓每個微信聊天只綁定到一個視窗或工作區。"
+                                                        )
+                                                    )
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                                }
+
+                                                Spacer(minLength: 0)
+
+                                                Button(
+                                                    localizedSettingsText(
+                                                        "settings.wechat.binding.add",
+                                                        english: "Add Chat Route",
+                                                        simplifiedChinese: "添加聊天路由",
+                                                        traditionalChinese: "新增聊天路由"
+                                                    )
+                                                ) {
+                                                    weChatChannelStore.addBinding(to: account.id)
+                                                    if let newBindingId = weChatChannelStore.configuration.accounts.first(where: { $0.id == account.id })?.bindings.last?.id {
+                                                        expandedWeChatBindingIds.insert(newBindingId)
+                                                    }
+                                                }
+                                                .buttonStyle(.bordered)
+                                                .controlSize(.small)
+                                            }
+
+                                            if account.bindings.isEmpty {
+                                                Text(
+                                                    localizedSettingsText(
+                                                        "settings.wechat.binding.empty",
+                                                        english: "No chat routes yet. Add at least one route so incoming WeChat sessions know where to run.",
+                                                        simplifiedChinese: "还没有聊天路由。至少添加一个路由，微信会话才能知道该落到哪里执行。",
+                                                        traditionalChinese: "還沒有聊天路由。至少新增一個路由，微信會話才能知道該落到哪裡執行。"
+                                                    )
+                                                )
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                            } else {
+                                                ForEach(account.bindings) { binding in
+                                                    DisclosureGroup(
+                                                        isExpanded: Binding(
+                                                            get: { expandedWeChatBindingIds.contains(binding.id) },
+                                                            set: { isExpanded in
+                                                                if isExpanded {
+                                                                    expandedWeChatBindingIds.insert(binding.id)
+                                                                } else {
+                                                                    expandedWeChatBindingIds.remove(binding.id)
+                                                                }
+                                                            }
+                                                        )
+                                                    ) {
+                                                        VStack(alignment: .leading, spacing: 10) {
+                                                            HStack(spacing: 8) {
+                                                                TextField(
+                                                                    localizedSettingsText(
+                                                                        "settings.wechat.binding.title.placeholder",
+                                                                        english: "Route label",
+                                                                        simplifiedChinese: "路由名称",
+                                                                        traditionalChinese: "路由名稱"
+                                                                    ),
+                                                                    text: weChatBindingStringBinding(accountId: account.id, bindingId: binding.id, keyPath: \.title)
+                                                                )
+                                                                .textFieldStyle(.roundedBorder)
+
+                                                                TextField(
+                                                                    localizedSettingsText(
+                                                                        "settings.wechat.binding.contact.placeholder",
+                                                                        english: "WeChat contact / memo",
+                                                                        simplifiedChinese: "微信联系人 / 备注",
+                                                                        traditionalChinese: "微信聯絡人 / 備註"
+                                                                    ),
+                                                                    text: weChatBindingStringBinding(accountId: account.id, bindingId: binding.id, keyPath: \.contactLabel)
+                                                                )
+                                                                .textFieldStyle(.roundedBorder)
+                                                            }
+
+                                                            HStack(spacing: 8) {
+                                                                TextField(
+                                                                    localizedSettingsText(
+                                                                        "settings.wechat.binding.session.placeholder",
+                                                                        english: "session_id",
+                                                                        simplifiedChinese: "session_id",
+                                                                        traditionalChinese: "session_id"
+                                                                    ),
+                                                                    text: weChatBindingStringBinding(accountId: account.id, bindingId: binding.id, keyPath: \.sessionId)
+                                                                )
+                                                                .textFieldStyle(.roundedBorder)
+
+                                                                weChatDestinationPicker(accountId: account.id, bindingId: binding.id)
+                                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                            }
+
+                                                            HStack(spacing: 8) {
+                                                                Button(weChatCurrentWindowQuickBindTitle) {
+                                                                    bindWeChatRouteToCurrentWindow(accountId: account.id, bindingId: binding.id)
+                                                                }
+                                                                .buttonStyle(.bordered)
+                                                                .controlSize(.small)
+                                                                .disabled(AppDelegate.shared?.currentWindowMoveTarget() == nil)
+
+                                                                Button(weChatCurrentWorkspaceQuickBindTitle) {
+                                                                    bindWeChatRouteToCurrentWorkspace(accountId: account.id, bindingId: binding.id)
+                                                                }
+                                                                .buttonStyle(.bordered)
+                                                                .controlSize(.small)
+                                                                .disabled(AppDelegate.shared?.currentWorkspaceMoveTarget() == nil)
+
+                                                                Spacer(minLength: 0)
+                                                            }
+
+                                                            HStack(spacing: 12) {
+                                                                Toggle(
+                                                                    localizedSettingsText(
+                                                                        "settings.wechat.binding.typing",
+                                                                        english: "Typing",
+                                                                        simplifiedChinese: "输入提示",
+                                                                        traditionalChinese: "輸入提示"
+                                                                    ),
+                                                                    isOn: weChatBindingBoolBinding(accountId: account.id, bindingId: binding.id, keyPath: \.sendTypingIndicator)
+                                                                )
+                                                                .toggleStyle(.switch)
+                                                                .controlSize(.small)
+
+                                                                Spacer(minLength: 0)
+
+                                                                Button(role: .destructive) {
+                                                                    weChatChannelStore.removeBinding(accountId: account.id, bindingId: binding.id)
+                                                                    expandedWeChatBindingIds.remove(binding.id)
+                                                                } label: {
+                                                                    Text(
+                                                                        localizedSettingsText(
+                                                                            "settings.wechat.binding.remove",
+                                                                            english: "Remove Route",
+                                                                            simplifiedChinese: "删除路由",
+                                                                            traditionalChinese: "刪除路由"
+                                                                        )
+                                                                    )
+                                                                }
+                                                                .buttonStyle(.bordered)
+                                                                .controlSize(.small)
+                                                            }
+
+                                                            DisclosureGroup(
+                                                                localizedSettingsText(
+                                                                    "settings.wechat.binding.advanced",
+                                                                    english: "Advanced route fields",
+                                                                    simplifiedChinese: "高级路由字段",
+                                                                    traditionalChinese: "進階路由欄位"
+                                                                )
+                                                            ) {
+                                                                VStack(alignment: .leading, spacing: 8) {
+                                                                    TextField(
+                                                                        localizedSettingsText(
+                                                                            "settings.wechat.binding.context.placeholder",
+                                                                            english: "context_token hint",
+                                                                            simplifiedChinese: "context_token 提示",
+                                                                            traditionalChinese: "context_token 提示"
+                                                                        ),
+                                                                        text: weChatBindingStringBinding(accountId: account.id, bindingId: binding.id, keyPath: \.contextTokenHint)
+                                                                    )
+                                                                    .textFieldStyle(.roundedBorder)
+                                                                }
+                                                                .padding(.top, 8)
+                                                            }
+                                                        }
+                                                        .padding(.top, 8)
+                                                    } label: {
+                                                        VStack(alignment: .leading, spacing: 6) {
+                                                            HStack(spacing: 8) {
+                                                                Text(binding.title.isEmpty ? localizedSettingsText("settings.wechat.binding.newTitle", english: "New Chat Route", simplifiedChinese: "新聊天路由", traditionalChinese: "新聊天路由") : binding.title)
+                                                                    .font(.system(size: 12.5, weight: .semibold))
+                                                                SettingsInlinePill(text: weChatBindingDestinationSummary(binding), tint: .blue)
+                                                            }
+                                                            Text(binding.contactLabel.isEmpty ? weChatBindingStatusSummary(binding) : binding.contactLabel + " · " + weChatBindingStatusSummary(binding))
+                                                                .font(.caption)
+                                                                .foregroundStyle(.secondary)
+                                                                .lineLimit(2)
+                                                        }
+                                                    }
+                                                    .padding(10)
+                                                    .background(
+                                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                            .fill(Color(nsColor: .controlBackgroundColor).opacity(0.72))
+                                                    )
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                            .stroke(Color(nsColor: .separatorColor).opacity(0.35), lineWidth: 1)
+                                                    )
+                                                    .onAppear {
+                                                        ensureWeChatBindingExpanded(binding.id)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        .padding(.top, 10)
+                                    } label: {
+                                        HStack(spacing: 10) {
+                                            VStack(alignment: .leading, spacing: 5) {
+                                                Text(account.displayName.isEmpty ? localizedSettingsText("settings.wechat.account.defaultName", english: "WeChat Bot", simplifiedChinese: "微信机器人", traditionalChinese: "微信機器人") : account.displayName)
+                                                    .font(.system(size: 13, weight: .semibold))
+                                                Text((account.baseURLString.isEmpty ? "https://ilinkai.weixin.qq.com" : account.baseURLString) + " · " + "\(account.bindings.count) " + localizedSettingsText("settings.wechat.summary.routes", english: "routes", simplifiedChinese: "路由", traditionalChinese: "路由"))
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                                    .lineLimit(1)
+                                            }
+
+                                            Spacer(minLength: 0)
+
+                                            Circle()
+                                                .fill(weChatAccountStatusTint(account.connectionState))
+                                                .frame(width: 8, height: 8)
+                                            Text(account.connectionState.label)
+                                                .font(.system(size: 11, weight: .semibold))
+                                                .foregroundStyle(weChatAccountStatusTint(account.connectionState))
+                                            if weChatHasSavedBotToken(account.id) {
+                                                SettingsInlinePill(
+                                                    text: localizedSettingsText("settings.wechat.account.token.savedBadge", english: "Token saved", simplifiedChinese: "已保存 Token", traditionalChinese: "已儲存 Token"),
+                                                    tint: .green
+                                                )
+                                            }
+                                        }
+                                        .contentShape(Rectangle())
+                                    }
+                                    .padding(12)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                            .fill(Color.primary.opacity(0.035))
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                            .stroke(Color.primary.opacity(0.07), lineWidth: 1)
+                                    )
+                                    .onAppear {
+                                        ensureWeChatDraftState(for: account)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                    }
+
                     SettingsCard {
                         SettingsPickerRow(
                             String(localized: "settings.automation.socketMode", defaultValue: "Socket Control Mode"),
@@ -5014,7 +6548,7 @@ struct SettingsView: View {
                             String(localized: "settings.automation.claudeCode", defaultValue: "Claude Code Integration"),
                             subtitle: claudeCodeHooksEnabled
                                 ? String(localized: "settings.automation.claudeCode.subtitleOn", defaultValue: "Sidebar shows Claude session status and notifications.")
-                                : String(localized: "settings.automation.claudeCode.subtitleOff", defaultValue: "Claude Code runs without cmux integration.")
+                                : String(localized: "settings.automation.claudeCode.subtitleOff", defaultValue: "Claude Code runs without icc integration.")
                         ) {
                             Toggle("", isOn: $claudeCodeHooksEnabled)
                                 .labelsHidden()
@@ -5024,7 +6558,7 @@ struct SettingsView: View {
 
                         SettingsCardDivider()
 
-                        SettingsCardNote(String(localized: "settings.automation.claudeCode.note", defaultValue: "When enabled, cmux wraps the claude command to inject session tracking and notification hooks. Disable if you prefer to manage Claude Code hooks yourself."))
+                        SettingsCardNote(String(localized: "settings.automation.claudeCode.note", defaultValue: "When enabled, icc wraps the claude command to inject session tracking and notification hooks. Disable if you prefer to manage Claude Code hooks yourself."))
                     }
 
                     SettingsCard {
@@ -5047,8 +6581,8 @@ struct SettingsView: View {
                         SettingsCardNote(String(localized: "settings.automation.port.note", defaultValue: "Each workspace gets CMUX_PORT and CMUX_PORT_END env vars with a dedicated port range. New terminals inherit these values."))
                     }
 
-                    SettingsSectionHeader(title: String(localized: "settings.section.browser", defaultValue: "Browser"))
-                        .id(SettingsNavigationTarget.browser)
+                    SettingsSectionHeader(title: SettingsSidebarSection.browser.title)
+                        .id(SettingsSidebarSection.browser.rawValue)
                         .accessibilityIdentifier("SettingsBrowserSection")
                     SettingsCard {
                         SettingsPickerRow(
@@ -5088,7 +6622,7 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.browser.openTerminalLinks", defaultValue: "Open Terminal Links in cmux Browser"),
+                            String(localized: "settings.browser.openTerminalLinks", defaultValue: "Open Terminal Links in icc Browser"),
                             subtitle: String(localized: "settings.browser.openTerminalLinks.subtitle", defaultValue: "When off, links clicked in terminal output open in your default browser.")
                         ) {
                             Toggle("", isOn: $openTerminalLinksInCmuxBrowser)
@@ -5113,7 +6647,7 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 6) {
                                 SettingsCardRow(
                                     String(localized: "settings.browser.hostWhitelist", defaultValue: "Hosts to Open in Embedded Browser"),
-                                    subtitle: String(localized: "settings.browser.hostWhitelist.subtitle", defaultValue: "Applies to terminal link clicks and intercepted `open https://...` calls. Only these hosts open in cmux. Others open in your default browser. One host or wildcard per line (for example: example.com, *.internal.example). Leave empty to open all hosts in cmux.")
+                                    subtitle: String(localized: "settings.browser.hostWhitelist.subtitle", defaultValue: "Applies to terminal link clicks and intercepted `open https://...` calls. Only these hosts open in icc. Others open in your default browser. One host or wildcard per line (for example: example.com, *.internal.example). Leave empty to open all hosts in icc.")
                                 ) {
                                     EmptyView()
                                 }
@@ -5165,7 +6699,7 @@ struct SettingsView: View {
                             Text(String(localized: "settings.browser.httpAllowlist", defaultValue: "HTTP Hosts Allowed in Embedded Browser"))
                                 .font(.system(size: 13, weight: .semibold))
 
-                            Text(String(localized: "settings.browser.httpAllowlist.description", defaultValue: "Controls which HTTP (non-HTTPS) hosts can open in cmux without a warning prompt. Defaults include localhost, 127.0.0.1, ::1, 0.0.0.0, and *.localtest.me."))
+                            Text(String(localized: "settings.browser.httpAllowlist.description", defaultValue: "Controls which HTTP (non-HTTPS) hosts can open in icc without a warning prompt. Defaults include localhost, 127.0.0.1, ::1, 0.0.0.0, and *.localtest.me."))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
 
@@ -5304,8 +6838,8 @@ struct SettingsView: View {
                         }
                     }
 
-                    SettingsSectionHeader(title: String(localized: "settings.section.keyboardShortcuts", defaultValue: "Keyboard Shortcuts"))
-                        .id(SettingsNavigationTarget.keyboardShortcuts)
+                    SettingsSectionHeader(title: SettingsSidebarSection.keyboardShortcuts.title)
+                        .id(SettingsSidebarSection.keyboardShortcuts.rawValue)
                         .accessibilityIdentifier("SettingsKeyboardShortcutsSection")
                     SettingsCard {
                         SettingsCardRow(
@@ -5339,7 +6873,8 @@ struct SettingsView: View {
                         .padding(.leading, 2)
                         .accessibilityIdentifier("ShortcutRecordingHint")
 
-                    SettingsSectionHeader(title: String(localized: "settings.section.reset", defaultValue: "Reset"))
+                    SettingsSectionHeader(title: SettingsSidebarSection.reset.title)
+                        .id(SettingsSidebarSection.reset.rawValue)
                     SettingsCard {
                         HStack {
                             Spacer(minLength: 0)
@@ -5373,6 +6908,7 @@ struct SettingsView: View {
                 }
                 topBlurOpacity = blurOpacity(forContentOffset: value)
             }
+                }
 
             ZStack(alignment: .top) {
                 SettingsTitleLeadingInsetReader(inset: $settingsTitleLeadingInset)
@@ -5440,6 +6976,7 @@ struct SettingsView: View {
             refreshDetectedImportBrowsers()
             reloadWorkspaceTabColorSettings()
             refreshNotificationCustomSoundStatus()
+            selectedSettingsSection = .app
         }
         .onChange(of: notificationSound) { _, _ in
             refreshNotificationCustomSoundStatus()
@@ -5461,11 +6998,7 @@ struct SettingsView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: SettingsNavigationRequest.notificationName)) { notification in
             guard let target = SettingsNavigationRequest.target(from: notification) else { return }
-            DispatchQueue.main.async {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    proxy.scrollTo(target, anchor: .top)
-                }
-            }
+            scrollToSettingsSection(SettingsSidebarSection.from(navigationTarget: target), proxy: proxy)
         }
         .confirmationDialog(
             String(localized: "settings.browser.history.clearDialog.title", defaultValue: "Clear browser history?"),
@@ -5863,6 +7396,181 @@ private struct SettingsCardNote: View {
     }
 }
 
+private struct SettingsSummaryBadge: View {
+    let title: String
+    let value: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.system(size: 10.5, weight: .medium))
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.system(size: 14, weight: .semibold))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 9)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color.primary.opacity(0.04))
+        )
+    }
+}
+
+private struct SettingsInlinePill: View {
+    let text: String
+    let tint: Color
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 10.5, weight: .semibold))
+            .foregroundStyle(tint)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(tint.opacity(0.12))
+            )
+    }
+}
+
+private enum SettingsSidebarSection: String, CaseIterable, Identifiable {
+    case app
+    case notifications
+    case workspaceColors
+    case sidebarAppearance
+    case automation
+    case browser
+    case keyboardShortcuts
+    case reset
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .app:
+            return localizedSettingsText("settings.section.app", english: "App", simplifiedChinese: "应用", traditionalChinese: "應用")
+        case .notifications:
+            return localizedSettingsText("settings.section.notifications", english: "Notifications", simplifiedChinese: "通知", traditionalChinese: "通知")
+        case .workspaceColors:
+            return localizedSettingsText("settings.section.workspaceColors", english: "Workspace Colors", simplifiedChinese: "工作区配色", traditionalChinese: "工作區配色")
+        case .sidebarAppearance:
+            return localizedSettingsText("settings.section.sidebarAppearance", english: "Sidebar", simplifiedChinese: "侧边栏", traditionalChinese: "側邊欄")
+        case .automation:
+            return localizedSettingsText("settings.section.automation", english: "Automation", simplifiedChinese: "自动化", traditionalChinese: "自動化")
+        case .browser:
+            return localizedSettingsText("settings.section.browser", english: "Browser", simplifiedChinese: "浏览器", traditionalChinese: "瀏覽器")
+        case .keyboardShortcuts:
+            return localizedSettingsText("settings.section.keyboardShortcuts", english: "Shortcuts", simplifiedChinese: "快捷键", traditionalChinese: "快捷鍵")
+        case .reset:
+            return localizedSettingsText("settings.section.reset", english: "Reset", simplifiedChinese: "重置", traditionalChinese: "重置")
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .app:
+            return localizedSettingsText("settings.nav.app.subtitle", english: "Appearance, behavior, and core defaults", simplifiedChinese: "外观、行为与基础默认项", traditionalChinese: "外觀、行為與基礎預設")
+        case .notifications:
+            return localizedSettingsText("settings.nav.notifications.subtitle", english: "Alerts, permissions, and sounds", simplifiedChinese: "提醒、权限与声音", traditionalChinese: "提醒、權限與聲音")
+        case .workspaceColors:
+            return localizedSettingsText("settings.nav.workspaceColors.subtitle", english: "Color palette and active indicators", simplifiedChinese: "配色方案与激活标记", traditionalChinese: "配色方案與啟用標記")
+        case .sidebarAppearance:
+            return localizedSettingsText("settings.nav.sidebarAppearance.subtitle", english: "Workspace list density and details", simplifiedChinese: "工作区列表密度与细节", traditionalChinese: "工作區清單密度與細節")
+        case .automation:
+            return localizedSettingsText("settings.nav.automation.subtitle", english: "Supervisor, sockets, and local control", simplifiedChinese: "监督器、套接字与本地控制", traditionalChinese: "監督器、Socket 與本地控制")
+        case .browser:
+            return localizedSettingsText("settings.nav.browser.subtitle", english: "Embedded browser and import controls", simplifiedChinese: "内置浏览器与导入控制", traditionalChinese: "內建瀏覽器與匯入控制")
+        case .keyboardShortcuts:
+            return localizedSettingsText("settings.nav.shortcuts.subtitle", english: "Key bindings and hint behavior", simplifiedChinese: "按键绑定与提示行为", traditionalChinese: "按鍵綁定與提示行為")
+        case .reset:
+            return localizedSettingsText("settings.nav.reset.subtitle", english: "Recovery and cleanup", simplifiedChinese: "恢复与清理", traditionalChinese: "恢復與清理")
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .app:
+            return "slider.horizontal.3"
+        case .notifications:
+            return "bell.badge"
+        case .workspaceColors:
+            return "paintpalette"
+        case .sidebarAppearance:
+            return "sidebar.left"
+        case .automation:
+            return "brain"
+        case .browser:
+            return "globe"
+        case .keyboardShortcuts:
+            return "command"
+        case .reset:
+            return "arrow.counterclockwise"
+        }
+    }
+
+    static func from(navigationTarget: SettingsNavigationTarget) -> SettingsSidebarSection {
+        switch navigationTarget {
+        case .notifications:
+            return .notifications
+        case .browser, .browserImport:
+            return .browser
+        case .keyboardShortcuts:
+            return .keyboardShortcuts
+        }
+    }
+}
+
+private struct SettingsSidebarNavButton: View {
+    let section: SettingsSidebarSection
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: section.iconName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .frame(width: 18)
+                    .foregroundStyle(isSelected ? Color.accentColor : Color.primary.opacity(0.84))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(section.title)
+                        .font(.system(size: 12.5, weight: .semibold))
+                        .foregroundStyle(.primary)
+                    Text(section.subtitle)
+                        .font(.system(size: 10.5, weight: .medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(
+                        isSelected
+                            ? Color.accentColor.opacity(0.14)
+                            : Color.primary.opacity(0.035)
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(
+                        isSelected
+                            ? Color.accentColor.opacity(0.28)
+                            : Color.clear,
+                        lineWidth: 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 private struct ThemeWindowThumbnail: View {
     let isDark: Bool
 
@@ -6050,6 +7758,92 @@ private struct ThemePickerRow: View {
     }
 }
 
+private enum SidebarColorPreset: String, CaseIterable, Identifiable {
+    case graphite
+    case ocean
+    case sand
+    case forest
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .graphite:
+            return localizedSettingsText("settings.sidebarAppearance.preset.graphite", english: "Graphite", simplifiedChinese: "石墨", traditionalChinese: "石墨")
+        case .ocean:
+            return localizedSettingsText("settings.sidebarAppearance.preset.ocean", english: "Ocean", simplifiedChinese: "深海", traditionalChinese: "深海")
+        case .sand:
+            return localizedSettingsText("settings.sidebarAppearance.preset.sand", english: "Sand", simplifiedChinese: "沙岩", traditionalChinese: "沙岩")
+        case .forest:
+            return localizedSettingsText("settings.sidebarAppearance.preset.forest", english: "Forest", simplifiedChinese: "森林", traditionalChinese: "森林")
+        }
+    }
+
+    var lightHex: String {
+        switch self {
+        case .graphite: return "#6B7280"
+        case .ocean: return "#4F6D8A"
+        case .sand: return "#A67C52"
+        case .forest: return "#4E7A5D"
+        }
+    }
+
+    var darkHex: String {
+        switch self {
+        case .graphite: return "#111827"
+        case .ocean: return "#102A43"
+        case .sand: return "#5A4632"
+        case .forest: return "#16352A"
+        }
+    }
+
+    var opacity: Double {
+        switch self {
+        case .graphite: return 0.18
+        case .ocean: return 0.20
+        case .sand: return 0.16
+        case .forest: return 0.18
+        }
+    }
+}
+
+private struct SidebarColorPresetChip: View {
+    let preset: SidebarColorPreset
+    let isSelected: Bool
+    let onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(Color(nsColor: NSColor(hex: preset.lightHex) ?? .gray))
+                        .frame(width: 10, height: 10)
+                    Circle()
+                        .fill(Color(nsColor: NSColor(hex: preset.darkHex) ?? .black))
+                        .frame(width: 10, height: 10)
+                }
+
+                Text(preset.title)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.primary)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .frame(minWidth: 74, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(isSelected ? Color.accentColor.opacity(0.14) : Color.primary.opacity(0.04))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(isSelected ? Color.accentColor.opacity(0.34) : Color.primary.opacity(0.08), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 private struct AppIconPickerRow: View {
     let selectedMode: String
     let onSelect: (AppIconMode) -> Void
@@ -6169,7 +7963,7 @@ private struct SettingsRootView: View {
     }
 
     private func configureSettingsWindow(_ window: NSWindow) {
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.settings")
+        window.identifier = NSUserInterfaceItemIdentifier("icc.settings")
         applyCurrentSettingsWindowStyle(to: window)
 
         let accessories = window.titlebarAccessoryViewControllers

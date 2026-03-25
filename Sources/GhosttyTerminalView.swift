@@ -2582,12 +2582,12 @@ class GhosttyApp {
     private func activeMainWindow() -> NSWindow? {
         let keyWindow = NSApp.keyWindow
         if let raw = keyWindow?.identifier?.rawValue,
-           raw == "cmux.main" || raw.hasPrefix("iatlas.main.") {
+           raw == "cmux.main" || raw == "icc.main" || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.") {
             return keyWindow
         }
         return NSApp.windows.first(where: { window in
             guard let raw = window.identifier?.rawValue else { return false }
-            return raw == "cmux.main" || raw.hasPrefix("iatlas.main.")
+            return raw == "cmux.main" || raw == "icc.main" || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
         })
     }
 
@@ -3333,7 +3333,7 @@ final class TerminalSurface: Identifiable, ObservableObject {
         setManagedEnvironmentValue("CMUX_PANEL_ID", id.uuidString)
         setManagedEnvironmentValue("CMUX_TAB_ID", tabId.uuidString)
         setManagedEnvironmentValue("CMUX_SOCKET_PATH", SocketControlSettings.socketPath())
-        if let bundledCLIURL = Bundle.main.resourceURL?.appendingPathComponent("bin/cmux"),
+        if let bundledCLIURL = Bundle.main.resourceURL?.appendingPathComponent("bin/icc"),
            FileManager.default.isExecutableFile(atPath: bundledCLIURL.path) {
             setManagedEnvironmentValue("CMUX_BUNDLED_CLI_PATH", bundledCLIURL.path)
         }
@@ -3928,7 +3928,7 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
         NSPasteboard.PasteboardType(UTType.heif.identifier)
     ]
     private static let tabTransferPasteboardType = NSPasteboard.PasteboardType("com.splittabbar.tabtransfer")
-    private static let sidebarTabReorderPasteboardType = NSPasteboard.PasteboardType("com.iatlas.sidebar-tab-reorder")
+    private static let sidebarTabReorderPasteboardType = NSPasteboard.PasteboardType("com.icc.sidebar-tab-reorder")
 
     fileprivate static func focusLog(_ message: String) {
         guard focusDebugEnabled else { return }
@@ -6632,7 +6632,7 @@ final class GhosttySurfaceScrollView: NSView {
     private var lastDragGeometryLogSignature: String?
     private var dragLayoutLogSequence: UInt64 = 0
     private static let tabTransferPasteboardType = NSPasteboard.PasteboardType("com.splittabbar.tabtransfer")
-    private static let sidebarTabReorderPasteboardType = NSPasteboard.PasteboardType("com.iatlas.sidebar-tab-reorder")
+    private static let sidebarTabReorderPasteboardType = NSPasteboard.PasteboardType("com.icc.sidebar-tab-reorder")
     private static var flashCounts: [UUID: Int] = [:]
     private static var drawCounts: [UUID: Int] = [:]
     private static var lastDrawTimes: [UUID: CFTimeInterval] = [:]

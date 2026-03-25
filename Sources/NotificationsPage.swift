@@ -8,45 +8,38 @@ struct NotificationsPage: View {
     @FocusState private var focusedNotificationId: UUID?
     @AppStorage(KeyboardShortcutSettings.Action.jumpToUnread.defaultsKey) private var jumpToUnreadShortcutData = Data()
 
-    var body: some View {
-        VStack(spacing: 0) {
-            header
-            Divider()
+    private let pageHorizontalPadding: CGFloat = 18
+    private let pageTopPadding: CGFloat = 18
 
-            if notificationStore.notifications.isEmpty {
-                emptyState
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 8) {
-                        ForEach(notificationStore.notifications) { notification in
-                            NotificationRow(
-                                notification: notification,
-                                tabTitle: tabTitle(for: notification.tabId),
-                                onOpen: {
-                                    // SwiftUI action closures are not guaranteed to run on the main actor.
-                                    // Ensure window focus + tab selection happens on the main thread.
-                                    DispatchQueue.main.async {
-                                        _ = AppDelegate.shared?.openNotification(
-                                            tabId: notification.tabId,
-                                            surfaceId: notification.surfaceId,
-                                            notificationId: notification.id
-                                        )
-                                        selection = .tabs
-                                    }
-                                },
-                                onClear: {
-                                    notificationStore.remove(id: notification.id)
-                                },
-                                focusedNotificationId: $focusedNotificationId
-                            )
+    var body: some View {
+        ZStack {
+            Color(nsColor: .windowBackgroundColor)
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                header
+                    .padding(.horizontal, pageHorizontalPadding)
+                    .padding(.top, pageTopPadding)
+                    .padding(.bottom, 14)
+
+                if notificationStore.notifications.isEmpty {
+                    emptyState
+                        .padding(.horizontal, pageHorizontalPadding)
+                        .padding(.bottom, 20)
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            summaryStrip
+                            notificationFeed
                         }
+                        .padding(.horizontal, pageHorizontalPadding)
+                        .padding(.bottom, 20)
                     }
-                    .padding(16)
+                    .scrollIndicators(.visible)
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(nsColor: .windowBackgroundColor))
         .onAppear(perform: setInitialFocus)
         .onChange(of: notificationStore.notifications.first?.id) { _ in
             setInitialFocus()
@@ -54,8 +47,6 @@ struct NotificationsPage: View {
     }
 
     private func setInitialFocus() {
-        // Only set focus when the notifications page is visible
-        // to avoid stealing focus from the terminal when notifications arrive
         guard selection == .notifications else { return }
         guard let firstId = notificationStore.notifications.first?.id else {
             focusedNotificationId = nil
@@ -67,51 +58,187 @@ struct NotificationsPage: View {
     }
 
     private var header: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(String(localized: "notifications.title", defaultValue: "Notifications"))
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                Text("Review alerts here, or open notification preferences.")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-            }
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("通知中心")
+                        .font(.system(size: 26, weight: .semibold))
+                        .foregroundStyle(.primary)
 
-            Spacer()
-
-            Button("Settings") {
-                AppDelegate.shared?.openPreferencesWindow(
-                    debugSource: "notifications.page",
-                    navigationTarget: .notifications
-                )
-            }
-            .buttonStyle(.bordered)
-
-            if !notificationStore.notifications.isEmpty {
-                jumpToUnreadButton
-
-                Button(String(localized: "notifications.clearAll", defaultValue: "Clear All")) {
-                    notificationStore.clearAll()
+                    Text("集中处理任务提醒、终端消息和桌面通知，避免在会话区来回跳转。")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .buttonStyle(.bordered)
+
+                Spacer(minLength: 12)
+
+                notificationStatusBadge
+            }
+
+            ViewThatFits(in: .horizontal) {
+                actionRow
+                compactActionRow
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+    }
+
+    private var actionRow: some View {
+        HStack(spacing: 10) {
+            jumpToUnreadButton
+            openSettingsButton
+
+            if !notificationStore.notifications.isEmpty {
+                clearAllButton
+            }
+        }
+    }
+
+    private var compactActionRow: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                jumpToUnreadButton
+                openSettingsButton
+            }
+
+            if !notificationStore.notifications.isEmpty {
+                clearAllButton
+            }
+        }
+    }
+
+    private var notificationStatusBadge: some View {
+        HStack(spacing: 8) {
+            Image(systemName: hasUnreadNotifications ? "bell.badge.fill" : "bell")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(hasUnreadNotifications ? cmuxAccentColor() : .secondary)
+
+            Text(hasUnreadNotifications ? "有未读提醒" : "全部已读")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(hasUnreadNotifications ? .primary : .secondary)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color.primary.opacity(0.06))
+        )
+    }
+
+    private var summaryStrip: some View {
+        HStack(spacing: 12) {
+            NotificationsSummaryCard(
+                title: "总数",
+                value: "\(notificationStore.notifications.count)",
+                subtitle: "当前收件箱"
+            )
+
+            NotificationsSummaryCard(
+                title: "未读",
+                value: "\(unreadCount)",
+                subtitle: unreadCount == 0 ? "已清空" : "需要处理"
+            )
+
+            NotificationsSummaryCard(
+                title: "最新",
+                value: latestNotificationTimeText,
+                subtitle: "最近一条提醒"
+            )
+        }
+    }
+
+    private var notificationFeed: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("消息列表")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                Text("点击卡片可直接跳转到对应会话")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.tertiary)
+            }
+
+            LazyVStack(spacing: 10) {
+                ForEach(notificationStore.notifications) { notification in
+                    NotificationRow(
+                        notification: notification,
+                        tabTitle: tabTitle(for: notification.tabId),
+                        onOpen: {
+                            DispatchQueue.main.async {
+                                _ = AppDelegate.shared?.openNotification(
+                                    tabId: notification.tabId,
+                                    surfaceId: notification.surfaceId,
+                                    notificationId: notification.id
+                                )
+                                selection = .tabs
+                            }
+                        },
+                        onClear: {
+                            notificationStore.remove(id: notification.id)
+                        },
+                        focusedNotificationId: $focusedNotificationId
+                    )
+                }
+            }
+        }
     }
 
     private var emptyState: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "bell.slash")
-                .font(.system(size: 32))
-                .foregroundColor(.secondary)
-            Text(String(localized: "notifications.empty.title", defaultValue: "No notifications yet"))
-                .font(.headline)
-            Text(String(localized: "notifications.empty.description", defaultValue: "Desktop notifications will appear here for quick review."))
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+        VStack {
+            Spacer(minLength: 20)
+
+            VStack(spacing: 12) {
+                Image(systemName: "bell.slash")
+                    .font(.system(size: 30, weight: .semibold))
+                    .foregroundStyle(.secondary)
+
+                Text("暂时没有通知")
+                    .font(.system(size: 18, weight: .semibold))
+
+                Text("新的桌面通知和任务提醒会出现在这里，方便统一查看和回到对应会话。")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 360)
+
+                HStack(spacing: 10) {
+                    openSettingsButton
+                    jumpToUnreadButton
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 40)
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(Color(nsColor: .controlBackgroundColor))
+            )
+
+            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var openSettingsButton: some View {
+        Button {
+            AppDelegate.shared?.openPreferencesWindow(
+                debugSource: "notifications.page",
+                navigationTarget: .notifications
+            )
+        } label: {
+            Label("通知设置", systemImage: "slider.horizontal.3")
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+    }
+
+    private var clearAllButton: some View {
+        Button("全部清除") {
+            notificationStore.clearAll()
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
     }
 
     @ViewBuilder
@@ -120,26 +247,28 @@ struct NotificationsPage: View {
             Button(action: {
                 AppDelegate.shared?.jumpToLatestUnread()
             }) {
-                HStack(spacing: 6) {
-                    Text(String(localized: "notifications.jumpToLatestUnread", defaultValue: "Jump to Latest Unread"))
+                HStack(spacing: 8) {
+                    Label("跳到最新未读", systemImage: "arrow.turn.down.right")
                     ShortcutAnnotation(text: jumpToUnreadShortcut.displayString)
                 }
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.borderedProminent)
+            .controlSize(.regular)
             .keyboardShortcut(key, modifiers: jumpToUnreadShortcut.eventModifiers)
-            .safeHelp(KeyboardShortcutSettings.Action.jumpToUnread.tooltip(String(localized: "notifications.jumpToLatestUnread", defaultValue: "Jump to Latest Unread")))
+            .safeHelp(KeyboardShortcutSettings.Action.jumpToUnread.tooltip("Jump to Latest Unread"))
             .disabled(!hasUnreadNotifications)
         } else {
             Button(action: {
                 AppDelegate.shared?.jumpToLatestUnread()
             }) {
-                HStack(spacing: 6) {
-                    Text(String(localized: "notifications.jumpToLatestUnread", defaultValue: "Jump to Latest Unread"))
+                HStack(spacing: 8) {
+                    Label("跳到最新未读", systemImage: "arrow.turn.down.right")
                     ShortcutAnnotation(text: jumpToUnreadShortcut.displayString)
                 }
             }
-            .buttonStyle(.bordered)
-            .safeHelp(KeyboardShortcutSettings.Action.jumpToUnread.tooltip(String(localized: "notifications.jumpToLatestUnread", defaultValue: "Jump to Latest Unread")))
+            .buttonStyle(.borderedProminent)
+            .controlSize(.regular)
+            .safeHelp(KeyboardShortcutSettings.Action.jumpToUnread.tooltip("Jump to Latest Unread"))
             .disabled(!hasUnreadNotifications)
         }
     }
@@ -152,7 +281,22 @@ struct NotificationsPage: View {
     }
 
     private var hasUnreadNotifications: Bool {
-        notificationStore.notifications.contains(where: { !$0.isRead })
+        unreadCount > 0
+    }
+
+    private var unreadCount: Int {
+        notificationStore.notifications.reduce(into: 0) { count, notification in
+            if !notification.isRead {
+                count += 1
+            }
+        }
+    }
+
+    private var latestNotificationTimeText: String {
+        guard let latest = notificationStore.notifications.first else {
+            return "--"
+        }
+        return latest.createdAt.formatted(date: .omitted, time: .shortened)
     }
 
     private func decodeShortcut(from data: Data, fallback: StoredShortcut) -> StoredShortcut {
@@ -165,6 +309,34 @@ struct NotificationsPage: View {
 
     private func tabTitle(for tabId: UUID) -> String? {
         AppDelegate.shared?.tabTitle(for: tabId) ?? tabManager.tabs.first(where: { $0.id == tabId })?.title
+    }
+}
+
+private struct NotificationsSummaryCard: View {
+    let title: String
+    let value: String
+    let subtitle: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.secondary)
+
+            Text(value)
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(.primary)
+
+            Text(subtitle)
+                .font(.system(size: 11))
+                .foregroundStyle(.tertiary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(nsColor: .controlBackgroundColor))
+        )
     }
 }
 
@@ -201,47 +373,56 @@ private struct NotificationRow: View {
     let onClear: () -> Void
     let focusedNotificationId: FocusState<UUID?>.Binding
 
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Button(action: onOpen) {
-                HStack(alignment: .top, spacing: 12) {
-                    Circle()
-                        .fill(notification.isRead ? Color.clear : cmuxAccentColor())
-                        .frame(width: 8, height: 8)
-                        .overlay(
-                            Circle()
-                                .stroke(cmuxAccentColor().opacity(notification.isRead ? 0.2 : 1), lineWidth: 1)
-                        )
-                        .padding(.top, 6)
+    @State private var isHovering = false
 
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Button(action: onOpen) {
+                HStack(alignment: .top, spacing: 14) {
+                    unreadIndicator
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
                             Text(notification.title)
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            Spacer()
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(.primary)
+                                .lineLimit(2)
+
+                            Spacer(minLength: 8)
+
                             Text(notification.createdAt.formatted(date: .omitted, time: .shortened))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(.secondary)
                         }
 
                         if !notification.body.isEmpty {
                             Text(notification.body)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .font(.system(size: 13))
+                                .foregroundStyle(.secondary)
                                 .lineLimit(3)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
 
-                        if let tabTitle {
-                            Text(tabTitle)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                        HStack(spacing: 8) {
+                            if let tabTitle, !tabTitle.isEmpty {
+                                notificationMetaPill(systemImage: "rectangle.stack", text: tabTitle)
+                            }
+
+                            notificationMetaPill(
+                                systemImage: notification.isRead ? "checkmark.circle" : "circle.badge",
+                                text: notification.isRead ? "已读" : "未读"
+                            )
+
+                            Spacer(minLength: 8)
+
+                            Label("打开", systemImage: "arrow.up.right")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(isHovering ? .primary : .secondary)
                         }
                     }
 
                     Spacer(minLength: 0)
                 }
-                .padding(.trailing, 6)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
             }
@@ -252,15 +433,65 @@ private struct NotificationRow: View {
             .modifier(DefaultActionModifier(isActive: focusedNotificationId.wrappedValue == notification.id))
 
             Button(action: onClear) {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(.secondary)
+                Image(systemName: "xmark")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 28, height: 28)
+                    .background(
+                        Circle()
+                            .fill(Color.primary.opacity(isHovering ? 0.08 : 0.04))
+                    )
             }
             .buttonStyle(.plain)
+            .opacity(isHovering ? 1 : 0.72)
         }
-        .padding(12)
+        .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(nsColor: .controlBackgroundColor))
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(cardBackgroundColor)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(cardBorderColor, lineWidth: 1)
+                )
+        )
+        .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .onHover { isHovering = $0 }
+    }
+
+    private var unreadIndicator: some View {
+        Circle()
+            .fill(notification.isRead ? Color.clear : cmuxAccentColor())
+            .frame(width: 10, height: 10)
+            .overlay(
+                Circle()
+                    .stroke(cmuxAccentColor().opacity(notification.isRead ? 0.28 : 1), lineWidth: 1.2)
+            )
+            .padding(.top, 6)
+    }
+
+    private var cardBackgroundColor: Color {
+        if isHovering {
+            return Color.primary.opacity(0.055)
+        }
+        return Color(nsColor: .controlBackgroundColor)
+    }
+
+    private var cardBorderColor: Color {
+        notification.isRead ? Color.primary.opacity(0.08) : cmuxAccentColor().opacity(0.24)
+    }
+
+    private func notificationMetaPill(systemImage: String, text: String) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: systemImage)
+            Text(text)
+        }
+        .font(.system(size: 11, weight: .medium))
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color.primary.opacity(0.05))
         )
     }
 }

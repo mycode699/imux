@@ -71,7 +71,7 @@ final class WindowToolbarController: NSObject, NSToolbarDelegate {
 
     private func attach(to window: NSWindow) {
         guard window.toolbar == nil else { return }
-        let toolbar = NSToolbar(identifier: NSToolbar.Identifier("iatlas.toolbar"))
+        let toolbar = NSToolbar(identifier: NSToolbar.Identifier("icc.toolbar"))
         toolbar.delegate = self
         toolbar.displayMode = .iconOnly
         toolbar.sizeMode = .small

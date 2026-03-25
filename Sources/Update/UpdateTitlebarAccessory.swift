@@ -35,29 +35,29 @@ enum TitlebarControlsStyle: Int, CaseIterable, Identifiable {
         switch self {
         case .classic:
             return TitlebarControlsStyleConfig(
-                spacing: 10,
-                iconSize: 15,
+                spacing: 6,
+                iconSize: 14,
                 buttonSize: 24,
                 badgeSize: 14,
                 badgeOffset: CGSize(width: 2, height: -2),
-                groupBackground: false,
-                groupPadding: EdgeInsets(),
+                groupBackground: true,
+                groupPadding: EdgeInsets(top: 2, leading: 5, bottom: 2, trailing: 5),
                 buttonBackground: false,
                 buttonCornerRadius: 8,
-                hoverBackground: false
+                hoverBackground: true
             )
         case .compact:
             return TitlebarControlsStyleConfig(
-                spacing: 6,
+                spacing: 5,
                 iconSize: 13,
-                buttonSize: 20,
+                buttonSize: 19,
                 badgeSize: 12,
                 badgeOffset: CGSize(width: 1, height: -1),
-                groupBackground: false,
-                groupPadding: EdgeInsets(),
+                groupBackground: true,
+                groupPadding: EdgeInsets(top: 1, leading: 3, bottom: 1, trailing: 3),
                 buttonBackground: false,
                 buttonCornerRadius: 6,
-                hoverBackground: false
+                hoverBackground: true
             )
         case .roomy:
             return TitlebarControlsStyleConfig(
@@ -255,7 +255,10 @@ struct TitlebarControlsView: View {
     @ObservedObject var viewModel: TitlebarControlsViewModel
     let onToggleSidebar: () -> Void
     let onToggleNotifications: () -> Void
-    let onNewTab: () -> Void
+    let onOpenFolder: () -> Void
+    let onNewWindow: () -> Void
+    let onNewWorkspace: () -> Void
+    let onOpenRemoteExplorer: () -> Void
     let visibilityMode: TitlebarControlsVisibilityMode
     @AppStorage("titlebarControlsStyle") private var styleRawValue = TitlebarControlsStyle.classic.rawValue
     @AppStorage(ShortcutHintDebugSettings.titlebarHintXKey) private var titlebarShortcutHintXOffset = ShortcutHintDebugSettings.defaultTitlebarHintX
@@ -271,7 +274,7 @@ struct TitlebarControlsView: View {
     private enum HintSlot: Int, CaseIterable {
         case toggleSidebar
         case showNotifications
-        case newTab
+        case openFolder
 
         var action: KeyboardShortcutSettings.Action {
             switch self {
@@ -279,8 +282,8 @@ struct TitlebarControlsView: View {
                 return .toggleSidebar
             case .showNotifications:
                 return .showNotifications
-            case .newTab:
-                return .newTab
+            case .openFolder:
+                return .openFolder
             }
         }
     }
@@ -396,17 +399,7 @@ struct TitlebarControlsView: View {
             .accessibilityLabel(String(localized: "titlebar.notifications.accessibilityLabel", defaultValue: "Notifications"))
             .safeHelp(KeyboardShortcutSettings.Action.showNotifications.tooltip(String(localized: "titlebar.notifications.tooltip", defaultValue: "Show notifications")))
 
-            TitlebarControlButton(config: config, action: {
-                #if DEBUG
-                dlog("titlebar.newTab")
-                #endif
-                onNewTab()
-            }) {
-                iconLabel(systemName: "plus", config: config)
-            }
-            .accessibilityIdentifier("titlebarControl.newTab")
-            .accessibilityLabel(String(localized: "titlebar.newWorkspace.accessibilityLabel", defaultValue: "New Workspace"))
-            .safeHelp(KeyboardShortcutSettings.Action.newTab.tooltip(String(localized: "titlebar.newWorkspace.tooltip", defaultValue: "New workspace")))
+            creationMenuButton(config: config)
         }
 
         let paddedContent = content.padding(config.groupPadding)
@@ -415,11 +408,11 @@ struct TitlebarControlsView: View {
             paddedContent
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(nsColor: .controlBackgroundColor))
+                        .fill(Color(nsColor: .windowBackgroundColor).opacity(0.72))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color(nsColor: .separatorColor).opacity(0.6), lineWidth: 1)
+                        .stroke(Color(nsColor: .separatorColor).opacity(0.28), lineWidth: 1)
                 )
                 .overlay(alignment: .topLeading) {
                     titlebarShortcutHintOverlay(items: hintLayoutItems, config: config)
@@ -545,6 +538,50 @@ struct TitlebarControlsView: View {
             icon
         }
     }
+
+    @ViewBuilder
+    private func creationMenuButton(config: TitlebarControlsStyleConfig) -> some View {
+        Menu {
+            Button(String(localized: "menu.file.openFolder", defaultValue: "Open Folder…")) {
+                #if DEBUG
+                dlog("titlebar.openFolder")
+                #endif
+                onOpenFolder()
+            }
+
+            Button(String(localized: "menu.file.newWindow", defaultValue: "New Window")) {
+                #if DEBUG
+                dlog("titlebar.newWindow")
+                #endif
+                onNewWindow()
+            }
+
+            Button(String(localized: "menu.file.newWorkspace", defaultValue: "New Workspace")) {
+                #if DEBUG
+                dlog("titlebar.newWorkspace")
+                #endif
+                onNewWorkspace()
+            }
+
+            Divider()
+
+            Button(String(localized: "sidebar.remote.title", defaultValue: "Remote Explorer")) {
+                #if DEBUG
+                dlog("titlebar.remoteExplorer")
+                #endif
+                onOpenRemoteExplorer()
+            }
+        } label: {
+            iconLabel(systemName: "plus", config: config)
+                .contentShape(Rectangle())
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .accessibilityIdentifier("titlebarControl.createMenu")
+        .accessibilityLabel(String(localized: "titlebar.createMenu.accessibilityLabel", defaultValue: "Open creation menu"))
+        .safeHelp(KeyboardShortcutSettings.Action.openFolder.tooltip(String(localized: "titlebar.createMenu.tooltip", defaultValue: "Open folder, create workspace, or connect remote")))
+    }
 }
 
 struct HiddenTitlebarSidebarControlsView: View {
@@ -565,7 +602,14 @@ struct HiddenTitlebarSidebarControlsView: View {
                     anchorView: viewModel.notificationsAnchorView
                 )
             },
-            onNewTab: { _ = AppDelegate.shared?.tabManager?.addTab() },
+            onOpenFolder: { AppDelegate.shared?.openFolderFromTitlebar() },
+            onNewWindow: { AppDelegate.shared?.openNewMainWindow(nil) },
+            onNewWorkspace: {
+                if AppDelegate.shared?.addWorkspaceInPreferredMainWindow(debugSource: "titlebar.newWorkspace") == nil {
+                    AppDelegate.shared?.openNewMainWindow(nil)
+                }
+            },
+            onOpenRemoteExplorer: { AppDelegate.shared?.openRemoteExplorerPage() },
             visibilityMode: .onHover
         )
         .frame(width: hostWidth, height: hostHeight, alignment: .leading)
@@ -789,7 +833,14 @@ final class TitlebarControlsAccessoryViewController: NSTitlebarAccessoryViewCont
         self.notificationStore = notificationStore
         let toggleSidebar = { _ = AppDelegate.shared?.sidebarState?.toggle() }
         let toggleNotifications: () -> Void = { _ = AppDelegate.shared?.toggleNotificationsPopover(animated: true) }
-        let newTab = { _ = AppDelegate.shared?.tabManager?.addTab() }
+        let openFolder: () -> Void = { AppDelegate.shared?.openFolderFromTitlebar() }
+        let newWindow: () -> Void = { AppDelegate.shared?.openNewMainWindow(nil) }
+        let newWorkspace = {
+            if AppDelegate.shared?.addWorkspaceInPreferredMainWindow(debugSource: "titlebar.newWorkspace") == nil {
+                AppDelegate.shared?.openNewMainWindow(nil)
+            }
+        }
+        let openRemoteExplorer: () -> Void = { AppDelegate.shared?.openRemoteExplorerPage() }
 
         hostingView = NonDraggableHostingView(
             rootView: TitlebarControlsView(
@@ -797,7 +848,10 @@ final class TitlebarControlsAccessoryViewController: NSTitlebarAccessoryViewCont
                 viewModel: viewModel,
                 onToggleSidebar: toggleSidebar,
                 onToggleNotifications: toggleNotifications,
-                onNewTab: newTab,
+                onOpenFolder: openFolder,
+                onNewWindow: newWindow,
+                onNewWorkspace: newWorkspace,
+                onOpenRemoteExplorer: openRemoteExplorer,
                 visibilityMode: .alwaysVisible
             )
         )
@@ -1014,68 +1068,125 @@ private struct NotificationsPopoverView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text(String(localized: "notifications.title", defaultValue: "Notifications"))
-                    .font(.headline)
-                Spacer()
-                Button(action: jumpToLatestUnread) {
-                    HStack(spacing: 6) {
-                        Text(String(localized: "notifications.jumpToLatest", defaultValue: "Jump to Latest"))
-                        Text(jumpToUnreadShortcut.displayString)
-                    }
-                }
-                .buttonStyle(.bordered)
-                .accessibilityIdentifier("notificationsPopover.jumpToLatest")
-                .accessibilityValue(jumpToUnreadShortcut.displayString)
-                .safeHelp(
-                    KeyboardShortcutSettings.Action.jumpToUnread.tooltip(
-                        String(localized: "notifications.jumpToLatest", defaultValue: "Jump to Latest")
-                    )
-                )
-                .disabled(!hasUnreadNotifications)
-
-                Button(String(localized: "notifications.clearAll", defaultValue: "Clear All")) {
-                    notificationStore.clearAll()
-                }
-                .buttonStyle(.bordered)
-                .accessibilityIdentifier("notificationsPopover.clearAll")
-                .disabled(notificationStore.notifications.isEmpty)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-
-            Divider()
+            popoverHeader
 
             if notificationStore.notifications.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "bell.slash")
-                        .font(.system(size: 28))
-                        .foregroundColor(.secondary)
-                    Text(String(localized: "notifications.empty.title", defaultValue: "No notifications yet"))
-                        .font(.headline)
-                    Text(String(localized: "notifications.empty.subtitle", defaultValue: "Desktop notifications will appear here."))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .frame(minWidth: 420, idealWidth: 520, maxWidth: 640, minHeight: 180)
+                emptyState
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 8) {
-                        ForEach(notificationStore.notifications) { notification in
-                            NotificationPopoverRow(
-                                notification: notification,
-                                tabTitle: tabTitle(for: notification.tabId),
-                                onOpen: { open(notification) },
-                                onClear: { notificationStore.remove(id: notification.id) }
-                            )
+                    VStack(alignment: .leading, spacing: 14) {
+                        popoverSummary
+
+                        LazyVStack(spacing: 10) {
+                            ForEach(notificationStore.notifications) { notification in
+                                NotificationPopoverRow(
+                                    notification: notification,
+                                    tabTitle: tabTitle(for: notification.tabId),
+                                    onOpen: { open(notification) },
+                                    onClear: { notificationStore.remove(id: notification.id) }
+                                )
+                            }
                         }
                     }
-                    .padding(12)
+                    .padding(14)
                 }
-                .frame(minWidth: 420, idealWidth: 520, maxWidth: 640, minHeight: 320, maxHeight: 480)
+                .frame(minWidth: 420, idealWidth: 460, maxWidth: 520, minHeight: 320, maxHeight: 520)
             }
         }
         .background(Color(nsColor: .windowBackgroundColor))
+    }
+
+    private var popoverHeader: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("通知")
+                        .font(.system(size: 18, weight: .semibold))
+
+                    Text("快速处理最新提醒，或跳回对应会话。")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 10)
+
+                HStack(spacing: 6) {
+                    Image(systemName: hasUnreadNotifications ? "bell.badge.fill" : "bell")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(hasUnreadNotifications ? cmuxAccentColor() : .secondary)
+                    Text(hasUnreadNotifications ? "有未读" : "已读")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(hasUnreadNotifications ? .primary : .secondary)
+                }
+                .padding(.horizontal, 9)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(Color.primary.opacity(0.06))
+                )
+            }
+
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    jumpToUnreadButton
+                    clearAllButton
+                    openInboxButton
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        jumpToUnreadButton
+                        clearAllButton
+                    }
+                    openInboxButton
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.top, 14)
+        .padding(.bottom, 12)
+        .background(
+            Rectangle()
+                .fill(Color(nsColor: .windowBackgroundColor))
+                .overlay(alignment: .bottom) {
+                    Divider()
+                }
+        )
+    }
+
+    private var popoverSummary: some View {
+        HStack(spacing: 10) {
+            PopoverSummaryCard(title: "总数", value: "\(notificationStore.notifications.count)")
+            PopoverSummaryCard(title: "未读", value: "\(unreadCount)")
+            PopoverSummaryCard(title: "最新", value: latestTimeText)
+        }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Spacer(minLength: 12)
+
+            Image(systemName: "bell.slash")
+                .font(.system(size: 28, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            Text("暂时没有通知")
+                .font(.system(size: 17, weight: .semibold))
+
+            Text("新的桌面通知会出现在这里。")
+                .font(.system(size: 12))
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 8) {
+                openInboxButton
+                jumpToUnreadButton
+            }
+
+            Spacer(minLength: 12)
+        }
+        .frame(minWidth: 380, idealWidth: 420, maxWidth: 480, minHeight: 210)
+        .padding(.horizontal, 14)
+        .padding(.bottom, 14)
     }
 
     private func tabTitle(for tabId: UUID) -> String? {
@@ -1090,7 +1201,20 @@ private struct NotificationsPopoverView: View {
     }
 
     private var hasUnreadNotifications: Bool {
-        notificationStore.notifications.contains(where: { !$0.isRead })
+        unreadCount > 0
+    }
+
+    private var unreadCount: Int {
+        notificationStore.notifications.reduce(into: 0) { count, notification in
+            if !notification.isRead {
+                count += 1
+            }
+        }
+    }
+
+    private var latestTimeText: String {
+        guard let latest = notificationStore.notifications.first else { return "--" }
+        return latest.createdAt.formatted(date: .omitted, time: .shortened)
     }
 
     private func decodeShortcut(from data: Data, fallback: StoredShortcut) -> StoredShortcut {
@@ -1106,6 +1230,55 @@ private struct NotificationsPopoverView: View {
             AppDelegate.shared?.jumpToLatestUnread()
             onDismiss()
         }
+    }
+
+    private var jumpToUnreadButton: some View {
+        Button(action: jumpToLatestUnread) {
+            HStack(spacing: 6) {
+                Label("跳到未读", systemImage: "arrow.turn.down.right")
+                Text(jumpToUnreadShortcut.displayString)
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(Color.white.opacity(0.18))
+                    )
+            }
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.regular)
+        .accessibilityIdentifier("notificationsPopover.jumpToLatest")
+        .accessibilityValue(jumpToUnreadShortcut.displayString)
+        .safeHelp(
+            KeyboardShortcutSettings.Action.jumpToUnread.tooltip(
+                String(localized: "notifications.jumpToLatest", defaultValue: "Jump to Latest")
+            )
+        )
+        .disabled(!hasUnreadNotifications)
+    }
+
+    private var clearAllButton: some View {
+        Button("全部清除") {
+            notificationStore.clearAll()
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+        .accessibilityIdentifier("notificationsPopover.clearAll")
+        .disabled(notificationStore.notifications.isEmpty)
+    }
+
+    private var openInboxButton: some View {
+        Button {
+            DispatchQueue.main.async {
+                AppDelegate.shared?.openNotificationsPage()
+                onDismiss()
+            }
+        } label: {
+            Label("打开通知页", systemImage: "sidebar.right")
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
     }
 
     private func open(_ notification: TerminalNotification) {
@@ -1127,48 +1300,53 @@ private struct NotificationPopoverRow: View {
     let tabTitle: String?
     let onOpen: () -> Void
     let onClear: () -> Void
+    @State private var isHovering = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .top, spacing: 12) {
             Button(action: onOpen) {
-                HStack(alignment: .top, spacing: 10) {
-                    Circle()
-                        .fill(notification.isRead ? Color.clear : cmuxAccentColor())
-                        .frame(width: 8, height: 8)
-                        .overlay(
-                            Circle()
-                                .stroke(cmuxAccentColor().opacity(notification.isRead ? 0.2 : 1), lineWidth: 1)
-                        )
-                        .padding(.top, 6)
+                HStack(alignment: .top, spacing: 12) {
+                    unreadDot
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
+                    VStack(alignment: .leading, spacing: 7) {
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Text(notification.title)
-                                .font(.headline)
-                                .foregroundColor(.primary)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.primary)
+                                .lineLimit(2)
                             Spacer()
                             Text(notification.createdAt.formatted(date: .omitted, time: .shortened))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(.secondary)
                         }
 
                         if !notification.body.isEmpty {
                             Text(notification.body)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
                                 .lineLimit(3)
                         }
 
-                        if let tabTitle {
-                            Text(tabTitle)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                        HStack(spacing: 7) {
+                            if let tabTitle, !tabTitle.isEmpty {
+                                metaPill(systemImage: "rectangle.stack", text: tabTitle)
+                            }
+
+                            metaPill(
+                                systemImage: notification.isRead ? "checkmark.circle" : "circle.badge",
+                                text: notification.isRead ? "已读" : "未读"
+                            )
+
+                            Spacer(minLength: 0)
+
+                            Image(systemName: "arrow.up.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(isHovering ? .primary : .secondary)
                         }
                     }
 
                     Spacer(minLength: 0)
                 }
-                .padding(.trailing, 6)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
             }
@@ -1179,14 +1357,74 @@ private struct NotificationPopoverRow: View {
             .accessibilityAction { onOpen() }
 
             Button(action: onClear) {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(.secondary)
+                Image(systemName: "xmark")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 26, height: 26)
+                    .background(
+                        Circle()
+                            .fill(Color.primary.opacity(isHovering ? 0.08 : 0.04))
+                    )
             }
             .buttonStyle(.plain)
         }
-        .padding(10)
+        .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(isHovering ? Color.primary.opacity(0.055) : Color(nsColor: .controlBackgroundColor))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(notification.isRead ? Color.primary.opacity(0.08) : cmuxAccentColor().opacity(0.22), lineWidth: 1)
+                )
+        )
+        .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .onHover { isHovering = $0 }
+    }
+
+    private var unreadDot: some View {
+        Circle()
+            .fill(notification.isRead ? Color.clear : cmuxAccentColor())
+            .frame(width: 9, height: 9)
+            .overlay(
+                Circle()
+                    .stroke(cmuxAccentColor().opacity(notification.isRead ? 0.24 : 1), lineWidth: 1.1)
+            )
+            .padding(.top, 5)
+    }
+
+    private func metaPill(systemImage: String, text: String) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: systemImage)
+            Text(text)
+        }
+        .font(.system(size: 10.5, weight: .medium))
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 7)
+        .padding(.vertical, 4)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color.primary.opacity(0.05))
+        )
+    }
+}
+
+private struct PopoverSummaryCard: View {
+    let title: String
+    let value: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.system(size: 10.5, weight: .medium))
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(11)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color(nsColor: .controlBackgroundColor))
         )
     }
@@ -1372,7 +1610,7 @@ final class UpdateTitlebarAccessoryController {
 
     private func isSettingsWindow(_ window: NSWindow) -> Bool {
         if let raw = window.identifier?.rawValue,
-           raw == "cmux.settings" || raw == "iatlas.settings" {
+           raw == "cmux.settings" || raw == "iatlas.settings" || raw == "icc.settings" {
             return true
         }
         return window.title == "Settings"
@@ -1380,7 +1618,7 @@ final class UpdateTitlebarAccessoryController {
 
     private func isMainTerminalWindow(_ window: NSWindow) -> Bool {
         guard let raw = window.identifier?.rawValue else { return false }
-        return raw == "cmux.main" || raw == "iatlas.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.")
+        return raw == "cmux.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
     }
 
     private func preferredNotificationsController(

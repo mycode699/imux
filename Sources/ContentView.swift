@@ -1551,7 +1551,9 @@ struct ContentView: View {
     @EnvironmentObject var sidebarState: SidebarState
     @EnvironmentObject var sidebarSelectionState: SidebarSelectionState
     @State private var sidebarWidth: CGFloat = 200
-    @State private var explorerPaneWidth: CGFloat = 420
+    @State private var explorerPaneWidth: CGFloat = 368
+    @State private var explorerEditorSplitRatio: CGFloat = 0.42
+    @State private var explorerEditorSplitDragStartRatio: CGFloat?
     @State private var selectedExplorerLocation: ExplorerDocumentLocation?
     @State private var selectedExplorerDocument: ExplorerTextDocument?
     @State private var hoveredResizerHandles: Set<SidebarResizerHandle> = []
@@ -2023,7 +2025,7 @@ struct ContentView: View {
     nonisolated private static let commandPaletteCommandsPrefix = ">"
     private static let commandPaletteVisiblePreviewResultLimit = 48
     private static let commandPaletteVisiblePreviewCandidateLimit = 192
-    private static let activityRailWidth: CGFloat = 54
+    private static let activityRailWidth: CGFloat = 42
     private static let minimumSidebarWidth: CGFloat = CGFloat(SessionPersistencePolicy.minimumSidebarWidth)
     private static let maximumSidebarWidthRatio: CGFloat = 1.0 / 3.0
 
@@ -2363,70 +2365,151 @@ struct ContentView: View {
         }
     }
 
+    private var explorerPaneTitle: String {
+        switch sidebarSelectionState.selection {
+        case .files:
+            return "文件"
+        case .remote:
+            return "远程资源管理器"
+        case .supervisor:
+            return "监督器"
+        case .tabs:
+            return "工作区"
+        case .notifications:
+            return "提醒"
+        }
+    }
+
+    private var explorerPaneSubtitle: String {
+        switch sidebarSelectionState.selection {
+        case .files:
+            return SidebarPathFormatter.shortenedPath(activeSidebarDirectory)
+        case .remote:
+            if let workspace = tabManager.selectedWorkspace {
+                return workspace.remoteDisplayTarget ?? "从左侧选择远程主机并建立连接"
+            }
+            return "从左侧选择远程主机并建立连接"
+        case .supervisor:
+            return tabManager.selectedWorkspace?.customTitle ?? tabManager.selectedWorkspace?.title ?? "当前工作区"
+        case .tabs:
+            return ""
+        case .notifications:
+            return "最近提醒"
+        }
+    }
+
+    private var explorerPaneHeader: some View {
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(explorerPaneTitle)
+                    .font(.system(size: 13, weight: .semibold))
+                if !explorerPaneSubtitle.isEmpty {
+                    Text(explorerPaneSubtitle)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            Button {
+                sidebarSelectionState.selection = .tabs
+            } label: {
+                Image(systemName: "panel.right.close")
+                    .font(.system(size: 12, weight: .semibold))
+                    .frame(width: 30, height: 30)
+                    .background(
+                        RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            .fill(Color.primary.opacity(0.06))
+                    )
+            }
+            .buttonStyle(.plain)
+            .help("收起右侧面板")
+        }
+        .padding(.horizontal, 14)
+        .padding(.top, 12)
+        .padding(.bottom, 10)
+        .background(.ultraThinMaterial)
+        .overlay(alignment: .bottom) {
+            Divider()
+        }
+    }
+
+    private func explorerTreeHeight(totalHeight: CGFloat) -> CGFloat {
+        let minTreeHeight: CGFloat = 180
+        let minEditorHeight: CGFloat = 220
+        let splitterHeight: CGFloat = 18
+        let usableHeight = max(minTreeHeight + minEditorHeight + splitterHeight, totalHeight)
+        let preferred = usableHeight * explorerEditorSplitRatio
+        let maxTreeHeight = max(minTreeHeight, usableHeight - minEditorHeight - splitterHeight)
+        return min(max(preferred, minTreeHeight), maxTreeHeight)
+    }
+
+    private var explorerEditorSplitter: some View {
+        HStack(spacing: 10) {
+            Rectangle()
+                .fill(Color.primary.opacity(0.08))
+                .frame(height: 1)
+
+            Capsule(style: .continuous)
+                .fill(Color.primary.opacity(0.18))
+                .frame(width: 36, height: 6)
+
+            Rectangle()
+                .fill(Color.primary.opacity(0.08))
+                .frame(height: 1)
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 18)
+        .background(Color.primary.opacity(0.02))
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    let startRatio = explorerEditorSplitDragStartRatio ?? explorerEditorSplitRatio
+                    if explorerEditorSplitDragStartRatio == nil {
+                        explorerEditorSplitDragStartRatio = explorerEditorSplitRatio
+                    }
+                    let paneHeight = max(420, observedWindow?.contentView?.bounds.height ?? 760)
+                    let deltaRatio = value.translation.height / paneHeight
+                    explorerEditorSplitRatio = min(max(startRatio + deltaRatio, 0.26), 0.72)
+                }
+                .onEnded { _ in
+                    explorerEditorSplitDragStartRatio = nil
+                }
+        )
+    }
+
     private var explorerPaneView: some View {
         VStack(spacing: 0) {
-            SidebarModeSwitcher(
-                selection: $sidebarSelectionState.selection,
-                trailingAccessory: {
-                    Button {
-                        sidebarSelectionState.selection = .tabs
-                    } label: {
-                        Image(systemName: "sidebar.right")
-                    }
-                    .buttonStyle(.plain)
-                    .help("Collapse Explorer")
-                }
-            )
+            explorerPaneHeader
 
             Group {
                 switch sidebarSelectionState.selection {
                 case .files:
-                    VStack(spacing: 0) {
-                        LocalFileExplorerSidebar(
-                            rootPath: activeSidebarDirectory,
-                            onOpenFile: { url in
-                                selectedExplorerLocation = .local(url)
-                                selectedExplorerDocument = ExplorerTextDocumentLoader.load(url: url)
-                                explorerPaneWidth = max(explorerPaneWidth, 520)
-                            }
-                        )
-
-                        if let selectedExplorerDocument {
-                            Divider()
-                            ExplorerTextEditorView(
-                                document: selectedExplorerDocument,
-                                onClose: {
-                                    self.selectedExplorerLocation = nil
-                                    self.selectedExplorerDocument = nil
-                                },
-                                onSave: { updatedText in
-                                    guard case .local(let fileURL) = self.selectedExplorerLocation else { return }
-                                    try? ExplorerTextDocumentLoader.save(text: updatedText, to: fileURL)
-                                    self.selectedExplorerDocument = ExplorerTextDocumentLoader.load(url: fileURL)
-                                }
-                            )
-                            .frame(maxHeight: .infinity)
-                        }
-                    }
-                case .remote:
-                    if let workspace = tabManager.selectedWorkspace,
-                       workspace.remoteConfiguration != nil {
+                    GeometryReader { geometry in
+                        let document = selectedExplorerDocument
+                        let treeHeight = explorerTreeHeight(totalHeight: geometry.size.height)
                         VStack(spacing: 0) {
-                            RemoteWorkspaceExplorerSidebar(
-                                workspace: workspace,
-                                onOpenRemoteFile: { remotePath in
-                                    selectedExplorerLocation = .remote(
-                                        destination: workspace.remoteDisplayTarget ?? workspace.remoteConfiguration?.destination ?? "remote",
-                                        path: remotePath
-                                    )
-                                    selectedExplorerDocument = try? workspace.loadRemoteExplorerDocument(path: remotePath)
-                                    explorerPaneWidth = max(explorerPaneWidth, 520)
+                            LocalFileExplorerSidebar(
+                                rootPath: activeSidebarDirectory,
+                                selectedFilePath: {
+                                    guard case .local(let url) = selectedExplorerLocation else { return nil }
+                                    return url.path
+                                }(),
+                                onOpenFile: { url in
+                                    selectedExplorerLocation = .local(url)
+                                    selectedExplorerDocument = ExplorerTextDocumentLoader.load(url: url)
+                                    explorerPaneWidth = max(explorerPaneWidth, 540)
                                 }
                             )
+                            .frame(maxWidth: .infinity)
+                            .frame(height: document == nil ? geometry.size.height : treeHeight)
 
-                            if let selectedExplorerDocument,
-                               case .remote = selectedExplorerDocument.location {
-                                Divider()
+                            if let selectedExplorerDocument = document {
+                                explorerEditorSplitter
                                 ExplorerTextEditorView(
                                     document: selectedExplorerDocument,
                                     onClose: {
@@ -2434,12 +2517,62 @@ struct ContentView: View {
                                         self.selectedExplorerDocument = nil
                                     },
                                     onSave: { updatedText in
-                                        guard case .remote(_, let remotePath) = self.selectedExplorerLocation else { return }
-                                        try? workspace.saveRemoteExplorerDocument(path: remotePath, text: updatedText)
-                                        self.selectedExplorerDocument = try? workspace.loadRemoteExplorerDocument(path: remotePath)
+                                        guard case .local(let fileURL) = self.selectedExplorerLocation else { return }
+                                        try? ExplorerTextDocumentLoader.save(text: updatedText, to: fileURL)
+                                        self.selectedExplorerDocument = ExplorerTextDocumentLoader.load(url: fileURL)
                                     }
                                 )
-                                .frame(maxHeight: .infinity)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            }
+                        }
+                    }
+                case .remote:
+                    if let workspace = tabManager.selectedWorkspace,
+                       workspace.remoteConfiguration != nil {
+                        GeometryReader { geometry in
+                            let remoteDocument: ExplorerTextDocument? = {
+                                guard let selectedExplorerDocument,
+                                      case .remote = selectedExplorerDocument.location else {
+                                    return nil
+                                }
+                                return selectedExplorerDocument
+                            }()
+                            let treeHeight = explorerTreeHeight(totalHeight: geometry.size.height)
+                            VStack(spacing: 0) {
+                                RemoteWorkspaceExplorerSidebar(
+                                    workspace: workspace,
+                                    selectedRemotePath: {
+                                        guard case .remote(_, let path) = selectedExplorerLocation else { return nil }
+                                        return path
+                                    }(),
+                                    onOpenRemoteFile: { remotePath in
+                                        selectedExplorerLocation = .remote(
+                                            destination: workspace.remoteDisplayTarget ?? workspace.remoteConfiguration?.destination ?? "remote",
+                                            path: remotePath
+                                        )
+                                        selectedExplorerDocument = try? workspace.loadRemoteExplorerDocument(path: remotePath)
+                                        explorerPaneWidth = max(explorerPaneWidth, 540)
+                                    }
+                                )
+                                .frame(maxWidth: .infinity)
+                                .frame(height: remoteDocument == nil ? geometry.size.height : treeHeight)
+
+                                if let selectedExplorerDocument = remoteDocument {
+                                    explorerEditorSplitter
+                                    ExplorerTextEditorView(
+                                        document: selectedExplorerDocument,
+                                        onClose: {
+                                            self.selectedExplorerLocation = nil
+                                            self.selectedExplorerDocument = nil
+                                        },
+                                        onSave: { updatedText in
+                                            guard case .remote(_, let remotePath) = self.selectedExplorerLocation else { return }
+                                            try? workspace.saveRemoteExplorerDocument(path: remotePath, text: updatedText)
+                                            self.selectedExplorerDocument = try? workspace.loadRemoteExplorerDocument(path: remotePath)
+                                        }
+                                    )
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                }
                             }
                         }
                     } else {
@@ -2474,10 +2607,16 @@ struct ContentView: View {
         }
         .frame(width: explorerPaneWidth)
         .frame(maxHeight: .infinity, alignment: .topLeading)
-        .background(SidebarBackdrop().ignoresSafeArea())
+        .background(
+            ZStack {
+                SidebarBackdrop().ignoresSafeArea()
+                Color.primary.opacity(0.015)
+            }
+        )
         .overlay(alignment: .leading) {
             Divider()
         }
+        .shadow(color: Color.black.opacity(0.08), radius: 18, x: -4, y: 0)
         .onChange(of: sidebarSelectionState.selection) {
             if sidebarSelectionState.selection != .files && sidebarSelectionState.selection != .remote {
                 selectedExplorerLocation = nil
@@ -2594,7 +2733,7 @@ struct ContentView: View {
     @AppStorage("debugTitlebarLeadingExtra") private var debugTitlebarLeadingExtra: Double = 0
 
     @State private var titlebarLeadingInset: CGFloat = 12
-    private var windowIdentifier: String { "iatlas.main.\(windowId.uuidString)" }
+    private var windowIdentifier: String { "icc.main.\(windowId.uuidString)" }
     private var fakeTitlebarTextColor: Color {
         _ = titlebarThemeGeneration
         let ghosttyBackground = GhosttyApp.shared.defaultBackgroundColor
@@ -2613,7 +2752,14 @@ struct ContentView: View {
                     anchorView: fullscreenControlsViewModel.notificationsAnchorView
                 )
             },
-            onNewTab: { tabManager.addTab() },
+            onOpenFolder: { AppDelegate.shared?.openFolderFromTitlebar() },
+            onNewWindow: { AppDelegate.shared?.openNewMainWindow(nil) },
+            onNewWorkspace: {
+                if AppDelegate.shared?.addWorkspaceInPreferredMainWindow(debugSource: "titlebar.newWorkspace") == nil {
+                    AppDelegate.shared?.openNewMainWindow(nil)
+                }
+            },
+            onOpenRemoteExplorer: { AppDelegate.shared?.openRemoteExplorerPage() },
             visibilityMode: .alwaysVisible
         )
     }
@@ -5483,7 +5629,7 @@ struct ContentView: View {
         contributions.append(
             CommandPaletteCommandContribution(
                 commandId: "palette.installCLI",
-                title: constant(String(localized: "command.installCLI.title", defaultValue: "Shell Command: Install 'cmux' in PATH")),
+                title: constant(String(localized: "command.installCLI.title", defaultValue: "Shell Command: Install 'icc' in PATH")),
                 subtitle: constant(String(localized: "command.installCLI.subtitle", defaultValue: "CLI")),
                 keywords: ["install", "cli", "path", "shell", "command", "symlink"],
                 when: { !$0.bool(CommandPaletteContextKeys.cliInstalledInPATH) }
@@ -5492,7 +5638,7 @@ struct ContentView: View {
         contributions.append(
             CommandPaletteCommandContribution(
                 commandId: "palette.uninstallCLI",
-                title: constant(String(localized: "command.uninstallCLI.title", defaultValue: "Shell Command: Uninstall 'cmux' from PATH")),
+                title: constant(String(localized: "command.uninstallCLI.title", defaultValue: "Shell Command: Uninstall 'icc' from PATH")),
                 subtitle: constant(String(localized: "command.uninstallCLI.subtitle", defaultValue: "CLI")),
                 keywords: ["uninstall", "remove", "cli", "path", "shell", "command", "symlink"],
                 when: { $0.bool(CommandPaletteContextKeys.cliInstalledInPATH) }
@@ -9691,20 +9837,19 @@ private struct SidebarActivityRail: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-                .frame(height: 16)
+                .frame(height: 10)
 
-            VStack(spacing: 8) {
+            VStack(spacing: 6) {
                 SidebarActivityRailButton(selection: $selection, target: .tabs, systemImage: "square.grid.2x2", label: "工作区")
                 SidebarActivityRailButton(selection: $selection, target: .files, systemImage: "folder", label: "文件")
                 SidebarActivityRailButton(selection: $selection, target: .remote, systemImage: "network", label: "远程")
                 SidebarActivityRailButton(selection: $selection, target: .supervisor, systemImage: "brain", label: "监督器")
-                SidebarActivityRailButton(selection: $selection, target: .notifications, systemImage: "bell.badge", label: "提醒")
             }
-            .padding(.top, 30)
+            .padding(.top, 18)
 
-            Spacer(minLength: 12)
+            Spacer(minLength: 10)
 
-            VStack(spacing: 8) {
+            VStack(spacing: 6) {
                 SidebarHelpMenuButton(onSendFeedback: onSendFeedback)
                     .help("更多")
 
@@ -9715,22 +9860,37 @@ private struct SidebarActivityRail: View {
                         }
                     } label: {
                         Image(systemName: "arrow.down.circle.fill")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(.orange)
-                            .frame(width: 40, height: 40)
+                            .frame(width: 32, height: 32)
                             .background(
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(Color.primary.opacity(0.06))
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(Color.primary.opacity(0.045))
                             )
                     }
                     .buttonStyle(.plain)
                     .help("检查更新")
                 }
             }
-            .padding(.bottom, 12)
+            .padding(.bottom, 10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(.ultraThinMaterial)
+        .background(
+            ZStack {
+                Color(nsColor: .windowBackgroundColor).opacity(0.82)
+                LinearGradient(
+                    colors: [
+                        Color.primary.opacity(0.02),
+                        Color.clear
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+        )
+        .overlay(alignment: .trailing) {
+            Divider()
+        }
     }
 }
 
@@ -9751,21 +9911,22 @@ private struct SidebarActivityRailButton: View {
             }
         } label: {
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(isActive ? Color.accentColor.opacity(0.16) : Color.clear)
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .fill(isActive ? Color.accentColor.opacity(0.12) : Color.clear)
 
                 if isActive {
                     RoundedRectangle(cornerRadius: 2, style: .continuous)
                         .fill(Color.accentColor)
-                        .frame(width: 3, height: 18)
+                        .frame(width: 3, height: 14)
                 }
 
                 Image(systemName: systemImage)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(isActive ? Color.accentColor : Color.primary.opacity(0.84))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(isActive ? Color.accentColor : Color.primary.opacity(0.76))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(width: 40, height: 40)
+            .frame(width: 30, height: 30)
+            .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
         }
         .buttonStyle(.plain)
         .help(label)
@@ -10164,7 +10325,7 @@ private struct SidebarFeedbackComposerSheet: View {
             Text(
                 String(
                     localized: "sidebar.help.feedback.successBody",
-                    defaultValue: "You can also reach us on the iatlas issue tracker."
+                    defaultValue: "You can also reach us on the icc issue tracker."
                 )
             )
             .font(.system(size: 12))
@@ -10186,7 +10347,7 @@ private struct SidebarFeedbackComposerSheet: View {
             Text(
                 String(
                     localized: "sidebar.help.feedback.note",
-                    defaultValue: "A human will read this. You can also reach us on the iatlas issue tracker."
+                    defaultValue: "A human will read this. You can also reach us on the icc issue tracker."
                 )
             )
             .font(.system(size: 12))
@@ -10439,7 +10600,7 @@ private struct SidebarFeedbackComposerSheet: View {
         case .invalidEndpoint:
             return String(
                 localized: "sidebar.help.feedback.endpointError",
-                defaultValue: "Feedback is unavailable right now. Open an issue in the iatlas repository instead."
+                defaultValue: "Feedback is unavailable right now. Open an issue in the icc repository instead."
             )
         case .invalidResponse:
             return String(
@@ -10482,7 +10643,7 @@ private struct SidebarFeedbackComposerSheet: View {
             case 500...599:
                 return String(
                     localized: "sidebar.help.feedback.endpointError",
-                    defaultValue: "Feedback is unavailable right now. Open an issue in the iatlas repository instead."
+                    defaultValue: "Feedback is unavailable right now. Open an issue in the icc repository instead."
                 )
             default:
                 return String(
@@ -10583,7 +10744,7 @@ enum FeedbackComposerBridge {
 
         switch submissionError {
         case .invalidEndpoint:
-            return "Feedback is unavailable right now. Open an issue in the iatlas repository instead."
+            return "Feedback is unavailable right now. Open an issue in the icc repository instead."
         case .invalidResponse:
             return "Couldn't send feedback. Please try again."
         case .attachmentReadFailed:
@@ -10602,7 +10763,7 @@ enum FeedbackComposerBridge {
             case 429:
                 return "Too many feedback attempts. Please try again later."
             case 500...599:
-                return "Feedback is unavailable right now. Open an issue in the iatlas repository instead."
+                return "Feedback is unavailable right now. Open an issue in the icc repository instead."
             default:
                 return "Couldn't send feedback. Please try again."
             }
@@ -10660,7 +10821,7 @@ private struct SidebarHelpMenuButton: View {
     private var helpPopover: some View {
         VStack(alignment: .leading, spacing: 2) {
             helpOptionButton(
-                title: String(localized: "sidebar.help.welcome", defaultValue: "Welcome to iatlas!"),
+                title: String(localized: "sidebar.help.welcome", defaultValue: "Welcome to icc!"),
                 action: .welcome,
                 accessibilityIdentifier: "SidebarHelpMenuOptionWelcome",
                 isExternalLink: false
@@ -13285,7 +13446,7 @@ private final class SidebarDragAutoScrollController: ObservableObject {
 }
 
 private enum SidebarTabDragPayload {
-    static let typeIdentifier = "com.cmux.sidebar-tab-reorder"
+    static let typeIdentifier = "com.icc.sidebar-tab-reorder"
     static let dropContentType = UTType(exportedAs: typeIdentifier)
     static let dropContentTypes: [UTType] = [dropContentType]
     private static let prefix = "cmux.sidebar-tab."

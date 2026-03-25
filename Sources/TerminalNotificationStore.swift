@@ -616,7 +616,7 @@ enum AppFocusState {
         // Only treat the app as "focused" for notification suppression when a main terminal window
         // is key. If Settings/About/debug panels are key, we still want notifications to show.
         if let raw = keyWindow.identifier?.rawValue {
-            return raw == "cmux.main" || raw == "iatlas.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.")
+            return raw == "cmux.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
         }
         return false
     }
@@ -683,8 +683,8 @@ final class TerminalNotificationStore: ObservableObject {
 
     static let shared = TerminalNotificationStore()
 
-    static let categoryIdentifier = "com.iatlas.app.userNotification"
-    static let actionShowIdentifier = "com.iatlas.app.userNotification.show"
+    static let categoryIdentifier = "com.icc.app.userNotification"
+    static let actionShowIdentifier = "com.icc.app.userNotification.show"
     private enum AuthorizationRequestOrigin: String {
         case notificationDelivery = "notification_delivery"
         case settingsButton = "settings_button"
@@ -838,7 +838,7 @@ final class TerminalNotificationStore: ObservableObject {
             content.categoryIdentifier = Self.categoryIdentifier
 
             let request = UNNotificationRequest(
-                identifier: "iatlas.settings.test.\(UUID().uuidString)",
+                identifier: "icc.settings.test.\(UUID().uuidString)",
                 content: content,
                 trigger: nil
             )
@@ -1248,7 +1248,7 @@ final class TerminalNotificationStore: ObservableObject {
 
         let alert = notificationSettingsAlertFactory()
         alert.messageText = String(localized: "dialog.enableNotifications.title", defaultValue: "Enable Notifications for iatlas")
-        alert.informativeText = String(localized: "dialog.enableNotifications.message", defaultValue: "Notifications are disabled for iatlas. Enable them in System Settings to see alerts.")
+        alert.informativeText = String(localized: "dialog.enableNotifications.message", defaultValue: "Notifications are disabled for icc. Enable them in System Settings to see alerts.")
         alert.addButton(withTitle: String(localized: "dialog.enableNotifications.openSettings", defaultValue: "Open Settings"))
         alert.addButton(withTitle: String(localized: "dialog.enableNotifications.notNow", defaultValue: "Not Now"))
         alert.beginSheetModal(for: window) { [weak self] response in

@@ -34,7 +34,7 @@ final class MainWindowHostingView<Content: View>: NSHostingView<Content> {
 }
 
 private enum CmuxThemeNotifications {
-    static let reloadConfig = Notification.Name("com.iatlas.themes.reload-config")
+    static let reloadConfig = Notification.Name("com.icc.themes.reload-config")
 }
 
 #if DEBUG
@@ -1165,13 +1165,13 @@ struct CmuxCLIPathInstaller {
         var errorDescription: String? {
             switch self {
             case .bundledCLIMissing(let expectedPath):
-                return "Bundled cmux CLI was not found at \(expectedPath)."
+                return "Bundled icc CLI was not found at \(expectedPath)."
             case .destinationParentNotDirectory(let path):
                 return "Expected \(path) to be a directory."
             case .destinationIsDirectory(let path):
                 return "\(path) is a directory. Remove or rename it and try again."
             case .installVerificationFailed(let path):
-                return "Installed symlink at \(path) did not point to the bundled cmux CLI."
+                return "Installed symlink at \(path) did not point to the bundled icc CLI."
             case .uninstallVerificationFailed(let path):
                 return "Failed to remove \(path)."
             case .privilegedCommandFailed(let message):
@@ -1192,7 +1192,7 @@ struct CmuxCLIPathInstaller {
 
     init(
         fileManager: FileManager = .default,
-        destinationURL: URL = URL(fileURLWithPath: "/usr/local/bin/cmux"),
+        destinationURL: URL = URL(fileURLWithPath: "/usr/local/bin/icc"),
         bundledCLIURLProvider: @escaping () -> URL? = {
             CmuxCLIPathInstaller.defaultBundledCLIURL()
         },
@@ -1368,12 +1368,12 @@ struct CmuxCLIPathInstaller {
     }
 
     private static func defaultBundledCLIURL(bundle: Bundle = .main) -> URL? {
-        bundle.resourceURL?.appendingPathComponent("bin/cmux", isDirectory: false)
+        bundle.resourceURL?.appendingPathComponent("bin/icc", isDirectory: false)
     }
 
     private static func defaultBundledCLIExpectedPath(bundle: Bundle = .main) -> String {
         bundle.bundleURL
-            .appendingPathComponent("Contents/Resources/bin/cmux", isDirectory: false)
+            .appendingPathComponent("Contents/Resources/bin/icc", isDirectory: false)
             .path
     }
 
@@ -2140,11 +2140,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private var sessionAutosaveTickInFlight = false
     private var sessionAutosaveDeferredRetryPending = false
     private let sessionPersistenceQueue = DispatchQueue(
-        label: "com.iatlas.app.sessionPersistence",
+        label: "com.icc.app.sessionPersistence",
         qos: .utility
     )
     private nonisolated static let launchServicesRegistrationQueue = DispatchQueue(
-        label: "com.iatlas.app.launchServicesRegistration",
+        label: "com.icc.app.launchServicesRegistration",
         qos: .utility
     )
     private nonisolated static func enqueueLaunchServicesRegistrationWork(_ work: @escaping @Sendable () -> Void) {
@@ -3881,6 +3881,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         return targets
     }
 
+    func currentWindowMoveTarget() -> WindowMoveTarget? {
+        synchronizeActiveMainWindowContext(preferredWindow: NSApp.keyWindow ?? NSApp.mainWindow)
+        let referenceWindowId = contextForMainWindow(NSApp.keyWindow)?.windowId
+            ?? contextForMainWindow(NSApp.mainWindow)?.windowId
+        return windowMoveTargets(referenceWindowId: referenceWindowId).first(where: \.isCurrentWindow)
+    }
+
+    func currentWorkspaceMoveTarget() -> WorkspaceMoveTarget? {
+        synchronizeActiveMainWindowContext(preferredWindow: NSApp.keyWindow ?? NSApp.mainWindow)
+        let referenceWindowId = contextForMainWindow(NSApp.keyWindow)?.windowId
+            ?? contextForMainWindow(NSApp.mainWindow)?.windowId
+        return workspaceMoveTargets(referenceWindowId: referenceWindowId).first(where: \.isCurrentWindow)
+    }
+
     @discardableResult
     func moveWorkspaceToWindow(workspaceId: UUID, windowId: UUID, focus: Bool = true) -> Bool {
         guard let sourceManager = tabManagerFor(tabId: workspaceId),
@@ -4893,7 +4907,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
            let window = ctx.window {
             return window
         }
-        let expectedIdentifier = "iatlas.main.\(windowId.uuidString)"
+        let expectedIdentifier = "icc.main.\(windowId.uuidString)"
         return NSApp.windows.first(where: { $0.identifier?.rawValue == expectedIdentifier })
     }
 
@@ -4907,7 +4921,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
     private func mainWindowId(from window: NSWindow) -> UUID? {
         guard let raw = window.identifier?.rawValue else { return nil }
-        let prefix = "iatlas.main."
+        let prefix = "icc.main."
         guard raw.hasPrefix(prefix) else { return nil }
         let suffix = String(raw.dropFirst(prefix.count))
         return UUID(uuidString: suffix)
@@ -5027,8 +5041,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             return context.windowId
         }
         guard let rawIdentifier = window.identifier?.rawValue,
-              rawIdentifier.hasPrefix("iatlas.main.") else { return nil }
-        let idPart = String(rawIdentifier.dropFirst("iatlas.main.".count))
+              rawIdentifier.hasPrefix("icc.main.") else { return nil }
+        let idPart = String(rawIdentifier.dropFirst("icc.main.".count))
         return UUID(uuidString: idPart)
     }
 
@@ -5873,7 +5887,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     }
 
     func sendWelcomeCommandWhenReady(to workspace: Workspace, markShownOnSend: Bool = false) {
-        sendTextWhenReady("cmux welcome\n", to: workspace) {
+        sendTextWhenReady("icc welcome\n", to: workspace) {
             if markShownOnSend {
                 UserDefaults.standard.set(true, forKey: WelcomeSettings.shownKey)
             }
@@ -5903,13 +5917,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
                 informativeText += "\n\n" + String(localized: "cli.install.adminRequired", defaultValue: "Administrator privileges were required to write to /usr/local/bin.")
             }
             presentCLIPathAlert(
-                title: String(localized: "cli.installed", defaultValue: "cmux CLI Installed"),
+                title: String(localized: "cli.installed", defaultValue: "icc CLI Installed"),
                 informativeText: informativeText,
                 style: .informational
             )
         } catch {
             presentCLIPathAlert(
-                title: String(localized: "cli.installFailed", defaultValue: "Couldn't Install cmux CLI"),
+                title: String(localized: "cli.installFailed", defaultValue: "Couldn't Install icc CLI"),
                 informativeText: error.localizedDescription,
                 style: .warning
             )
@@ -5922,19 +5936,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             let outcome = try installer.uninstall()
             let prefix = outcome.removedExistingEntry
                 ? String(localized: "cli.uninstall.removed", defaultValue: "Removed \(outcome.destinationURL.path).")
-                : String(localized: "cli.uninstall.notFound", defaultValue: "No cmux CLI symlink was found at \(outcome.destinationURL.path).")
+                : String(localized: "cli.uninstall.notFound", defaultValue: "No icc CLI symlink was found at \(outcome.destinationURL.path).")
             var informativeText = prefix
             if outcome.usedAdministratorPrivileges {
                 informativeText += "\n\n" + String(localized: "cli.uninstall.adminRequired", defaultValue: "Administrator privileges were required to modify /usr/local/bin.")
             }
             presentCLIPathAlert(
-                title: String(localized: "cli.uninstalled", defaultValue: "cmux CLI Uninstalled"),
+                title: String(localized: "cli.uninstalled", defaultValue: "icc CLI Uninstalled"),
                 informativeText: informativeText,
                 style: .informational
             )
         } catch {
             presentCLIPathAlert(
-                title: String(localized: "cli.uninstallFailed", defaultValue: "Couldn't Uninstall cmux CLI"),
+                title: String(localized: "cli.uninstallFailed", defaultValue: "Couldn't Uninstall icc CLI"),
                 informativeText: error.localizedDescription,
                 style: .warning
             )
@@ -6960,7 +6974,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         func hasMainTerminalWindow() -> Bool {
             NSApp.windows.contains { window in
                 guard let raw = window.identifier?.rawValue else { return false }
-                return raw == "cmux.main" || raw == "iatlas.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.")
+                return raw == "cmux.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
             }
         }
 
@@ -7015,7 +7029,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         func hasMainTerminalWindow() -> Bool {
             NSApp.windows.contains { window in
                 guard let raw = window.identifier?.rawValue else { return false }
-                return raw == "cmux.main" || raw == "iatlas.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.")
+                return raw == "cmux.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
             }
         }
 
@@ -7032,7 +7046,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             }
             if let mainWindow = NSApp.windows.first(where: { window in
                 guard let raw = window.identifier?.rawValue else { return false }
-                return raw == "cmux.main" || raw == "iatlas.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.")
+                return raw == "cmux.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
             }) {
                 let screenFrame = mainWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame
                 if let screenFrame {
@@ -8554,6 +8568,86 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         titlebarAccessoryController.toggleNotificationsPopover(animated: animated, anchorView: anchorView)
     }
 
+    @MainActor
+    func openNotificationsPage() {
+        let context: MainWindowContext? = {
+            if let keyWindow = NSApp.keyWindow,
+               let keyContext = contextForMainTerminalWindow(keyWindow) {
+                return keyContext
+            }
+            if let mainWindow = NSApp.mainWindow,
+               let mainContext = contextForMainTerminalWindow(mainWindow) {
+                return mainContext
+            }
+            if let first = mainWindowContexts.values.first {
+                return first
+            }
+            let windowId = createMainWindow()
+            return mainWindowContexts.values.first(where: { $0.windowId == windowId })
+        }()
+
+        guard let context,
+              let window = context.window ?? windowForMainWindowId(context.windowId) else {
+            return
+        }
+
+        setActiveMainWindow(window)
+        context.sidebarState.isVisible = true
+        context.sidebarSelectionState.selection = .notifications
+        bringToFront(window)
+    }
+
+    @MainActor
+    func openRemoteExplorerPage() {
+        let context: MainWindowContext? = {
+            if let keyWindow = NSApp.keyWindow,
+               let keyContext = contextForMainTerminalWindow(keyWindow) {
+                return keyContext
+            }
+            if let mainWindow = NSApp.mainWindow,
+               let mainContext = contextForMainTerminalWindow(mainWindow) {
+                return mainContext
+            }
+            if let first = mainWindowContexts.values.first {
+                return first
+            }
+            let windowId = createMainWindow()
+            return mainWindowContexts.values.first(where: { $0.windowId == windowId })
+        }()
+
+        guard let context,
+              let window = context.window ?? windowForMainWindowId(context.windowId) else {
+            return
+        }
+
+        setActiveMainWindow(window)
+        context.sidebarState.isVisible = true
+        context.sidebarSelectionState.selection = .remote
+        bringToFront(window)
+    }
+
+    @MainActor
+    func openFolderFromTitlebar() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.title = String(localized: "menu.file.openFolder.panelTitle", defaultValue: "Open Folder")
+        panel.prompt = String(localized: "menu.file.openFolder.panelPrompt", defaultValue: "Open")
+
+        guard panel.runModal() == .OK, let url = panel.url else {
+            return
+        }
+
+        if addWorkspaceInPreferredMainWindow(
+            workingDirectory: url.path,
+            shouldBringToFront: true,
+            debugSource: "titlebar.openFolder"
+        ) == nil {
+            _ = createMainWindow(initialWorkingDirectory: url.path)
+        }
+    }
+
     @discardableResult
     func dismissNotificationsPopoverIfShown() -> Bool {
         titlebarAccessoryController.dismissNotificationsPopoverIfShown()
@@ -8844,7 +8938,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
         let alert = NSAlert()
         alert.alertStyle = .warning
-        alert.messageText = String(localized: "dialog.quitCmux.title", defaultValue: "Quit cmux?")
+        alert.messageText = String(localized: "dialog.quitCmux.title", defaultValue: "Quit icc?")
         alert.informativeText = String(localized: "dialog.quitCmux.message", defaultValue: "This will close all windows and workspaces.")
         alert.addButton(withTitle: String(localized: "dialog.quitCmux.quit", defaultValue: "Quit"))
         alert.addButton(withTitle: String(localized: "common.cancel", defaultValue: "Cancel"))
@@ -9404,7 +9498,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             shortcut: StoredShortcut(key: "t", command: true, shift: false, option: true, control: false)
         ) {
             if let targetWindow = event.window ?? NSApp.keyWindow ?? NSApp.mainWindow,
-               targetWindow.identifier?.rawValue == "iatlas.settings" {
+               targetWindow.identifier?.rawValue == "icc.settings" {
                 targetWindow.performClose(nil)
             } else {
                 let targetWindow = event.window ?? NSApp.keyWindow ?? NSApp.mainWindow
@@ -9428,7 +9522,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             // event through the global shortcut handler first.
             if let targetWindow = [NSApp.keyWindow, event.window]
                 .compactMap({ $0 })
-                .first(where: { $0.identifier?.rawValue == "iatlas.browser-popup" }) {
+                .first(where: { $0.identifier?.rawValue == "icc.browser-popup" }) {
 #if DEBUG
                 dlog("shortcut.cmdW route=browserPopup")
 #endif
@@ -10852,7 +10946,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private func observeDuplicateLaunches() {
         guard let bundleId = Bundle.main.bundleIdentifier else { return }
         let embeddedCLIURL = Bundle.main.bundleURL
-            .appendingPathComponent("Contents/Resources/bin/cmux", isDirectory: false)
+            .appendingPathComponent("Contents/Resources/bin/icc", isDirectory: false)
             .standardizedFileURL
             .resolvingSymlinksInPath()
         let currentPid = ProcessInfo.processInfo.processIdentifier
@@ -11071,7 +11165,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             return true
         }
         guard let raw = window.identifier?.rawValue else { return false }
-        return raw == "cmux.main" || raw == "iatlas.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.")
+        return raw == "cmux.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("cmux.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
     }
 
     private func contextContainingTabId(_ tabId: UUID) -> MainWindowContext? {
@@ -11100,7 +11194,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
     func closeMainWindowContainingTabId(_ tabId: UUID) {
         guard let context = contextContainingTabId(tabId) else { return }
-        let expectedIdentifier = "iatlas.main.\(context.windowId.uuidString)"
+        let expectedIdentifier = "icc.main.\(context.windowId.uuidString)"
         let window: NSWindow? = context.window ?? NSApp.windows.first(where: { $0.identifier?.rawValue == expectedIdentifier })
         window?.performClose(nil)
     }
@@ -11148,7 +11242,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     }
 
     private func openNotificationInContext(_ context: MainWindowContext, tabId: UUID, surfaceId: UUID?, notificationId: UUID?) -> Bool {
-        let expectedIdentifier = "iatlas.main.\(context.windowId.uuidString)"
+        let expectedIdentifier = "icc.main.\(context.windowId.uuidString)"
         let window: NSWindow? = context.window ?? NSApp.windows.first(where: { $0.identifier?.rawValue == expectedIdentifier })
         guard let window else {
 #if DEBUG

@@ -127,7 +127,7 @@ struct SSHConfigHostEntry: Identifiable, Equatable {
 }
 
 enum RemoteHostPasswordStore {
-    static let serviceName = "com.iatlas.app.remote-ssh"
+    static let serviceName = "com.icc.app.remote-ssh"
 
     static func loadPassword(for account: String) -> String? {
 #if canImport(Security)
@@ -650,52 +650,176 @@ final class LocalFileExplorerNode: ObservableObject, Identifiable {
     let url: URL
     let isDirectory: Bool
     let depth: Int
+    let rootPath: String
 
     @Published var isExpanded = false
+    @Published var isLoading = false
     @Published var children: [LocalFileExplorerNode] = []
     @Published var didLoadChildren = false
 
-    init(url: URL, isDirectory: Bool, depth: Int) {
+    init(url: URL, isDirectory: Bool, depth: Int, rootPath: String) {
         self.url = url
         self.isDirectory = isDirectory
         self.depth = depth
+        self.rootPath = rootPath
     }
 
     var id: String { url.path }
     var name: String { url.lastPathComponent.isEmpty ? url.path : url.lastPathComponent }
 
-    func loadChildren(fileManager: FileManager = .default) {
-        guard isDirectory, !didLoadChildren else { return }
-        didLoadChildren = true
+    func loadChildren(fileManager: FileManager = .default, forceRefresh: Bool = false) {
+        guard isDirectory, (!didLoadChildren || forceRefresh || children.isEmpty), !isLoading else { return }
+        let parentURL = url
+        let nextDepth = depth + 1
+        let path = parentURL.path
 
-        let keys: Set<URLResourceKey> = [.isDirectoryKey, .localizedNameKey]
-        let urls = (try? fileManager.contentsOfDirectory(
-            at: url,
-            includingPropertiesForKeys: Array(keys),
-            options: [.skipsPackageDescendants]
-        )) ?? []
-
-        let nodes = urls.compactMap { childURL -> LocalFileExplorerNode? in
-            let values = try? childURL.resourceValues(forKeys: keys)
-            let isDirectory = values?.isDirectory ?? false
-            return LocalFileExplorerNode(url: childURL, isDirectory: isDirectory, depth: depth + 1)
+        if let cachedEntries = LocalFileExplorerCache.entries(for: path) {
+            didLoadChildren = true
+            children = reconcileLocalChildNodes(
+                existing: children,
+                from: cachedEntries,
+                depth: nextDepth,
+                rootPath: rootPath
+            )
+        } else if !didLoadChildren {
+            didLoadChildren = true
         }
 
-        children = nodes.sorted { lhs, rhs in
-            if lhs.isDirectory != rhs.isDirectory {
-                return lhs.isDirectory && !rhs.isDirectory
+        isLoading = true
+
+        Task.detached(priority: .userInitiated) {
+            let entries = loadLocalExplorerChildren(
+                at: parentURL,
+                fileManager: fileManager
+            )
+            await MainActor.run {
+                LocalFileExplorerCache.store(entries: entries, for: path)
+                self.isLoading = false
+                self.children = reconcileLocalChildNodes(
+                    existing: self.children,
+                    from: entries,
+                    depth: nextDepth,
+                    rootPath: self.rootPath
+                )
             }
-            return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
         }
+    }
+}
+
+private struct LocalFileExplorerEntrySnapshot {
+    let url: URL
+    let isDirectory: Bool
+    let name: String
+}
+
+@MainActor
+private enum LocalFileExplorerCache {
+    private static var entriesByPath: [String: [LocalFileExplorerEntrySnapshot]] = [:]
+    private static var expandedPathsByRootPath: [String: Set<String>] = [:]
+
+    static func entries(for path: String) -> [LocalFileExplorerEntrySnapshot]? {
+        entriesByPath[path]
+    }
+
+    static func store(entries: [LocalFileExplorerEntrySnapshot], for path: String) {
+        entriesByPath[path] = entries
+    }
+
+    static func expandedPaths(for rootPath: String) -> Set<String> {
+        expandedPathsByRootPath[rootPath] ?? []
+    }
+
+    static func isExpanded(_ path: String, within rootPath: String) -> Bool {
+        expandedPaths(for: rootPath).contains(path)
+    }
+
+    static func setExpanded(_ expanded: Bool, for path: String, within rootPath: String) {
+        var paths = expandedPathsByRootPath[rootPath] ?? []
+        if expanded {
+            paths.insert(path)
+        } else {
+            paths.remove(path)
+        }
+        expandedPathsByRootPath[rootPath] = paths
+    }
+}
+
+@MainActor
+private func reconcileLocalChildNodes(
+    existing: [LocalFileExplorerNode],
+    from entries: [LocalFileExplorerEntrySnapshot],
+    depth: Int,
+    rootPath: String
+) -> [LocalFileExplorerNode] {
+    let existingByPath = Dictionary(uniqueKeysWithValues: existing.map { ($0.url.path, $0) })
+
+    return entries.map { entry in
+        let node = existingByPath[entry.url.path] ?? LocalFileExplorerNode(
+            url: entry.url,
+            isDirectory: entry.isDirectory,
+            depth: depth,
+            rootPath: rootPath
+        )
+
+        let shouldBeExpanded = entry.isDirectory && LocalFileExplorerCache.isExpanded(entry.url.path, within: rootPath)
+        node.isExpanded = shouldBeExpanded
+
+        guard shouldBeExpanded else {
+            if !node.isLoading {
+                node.didLoadChildren = false
+                node.children = []
+            }
+            return node
+        }
+
+        if let cachedChildren = LocalFileExplorerCache.entries(for: entry.url.path) {
+            node.didLoadChildren = true
+            node.children = reconcileLocalChildNodes(
+                existing: node.children,
+                from: cachedChildren,
+                depth: depth + 1,
+                rootPath: rootPath
+            )
+        }
+        return node
+    }
+}
+
+private func loadLocalExplorerChildren(
+    at url: URL,
+    fileManager: FileManager = .default
+) -> [LocalFileExplorerEntrySnapshot] {
+    let keys: Set<URLResourceKey> = [.isDirectoryKey, .localizedNameKey]
+    let urls = (try? fileManager.contentsOfDirectory(
+        at: url,
+        includingPropertiesForKeys: Array(keys),
+        options: [.skipsPackageDescendants]
+    )) ?? []
+
+    let entries = urls.compactMap { childURL -> LocalFileExplorerEntrySnapshot? in
+        let values = try? childURL.resourceValues(forKeys: keys)
+        let isDirectory = values?.isDirectory ?? false
+        let displayName = childURL.lastPathComponent.isEmpty ? childURL.path : childURL.lastPathComponent
+        return LocalFileExplorerEntrySnapshot(url: childURL, isDirectory: isDirectory, name: displayName)
+    }
+
+    return entries.sorted { lhs, rhs in
+        if lhs.isDirectory != rhs.isDirectory {
+            return lhs.isDirectory && !rhs.isDirectory
+        }
+        return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
     }
 }
 
 struct LocalFileExplorerSidebar: View {
     let rootPath: String
+    let selectedFilePath: String?
     let onOpenFile: (URL) -> Void
 
     @State private var rootNode: LocalFileExplorerNode?
     @State private var errorMessage: String?
+    @State private var isLoading = false
+    @State private var displayedRootPath: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -709,9 +833,22 @@ struct LocalFileExplorerSidebar: View {
                             .foregroundStyle(.secondary)
                             .padding(12)
                     } else if let rootNode {
-                        FileExplorerNodeRows(node: rootNode, onOpenFile: onOpenFile)
+                        FileExplorerNodeRows(
+                            node: rootNode,
+                            selectedFilePath: selectedFilePath,
+                            onOpenFile: onOpenFile
+                        )
+                    } else if isLoading {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("正在读取目录…")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(12)
                     } else {
-                        Text("No files")
+                        Text("没有可显示的文件")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .padding(12)
@@ -719,16 +856,33 @@ struct LocalFileExplorerSidebar: View {
                 }
                 .padding(.vertical, 8)
             }
+            .overlay(alignment: .topTrailing) {
+                if isLoading, rootNode != nil {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("正在刷新")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial, in: Capsule(style: .continuous))
+                    .padding(.top, 8)
+                    .padding(.trailing, 10)
+                    .transition(.opacity)
+                }
+            }
         }
         .background(SidebarBackdrop().ignoresSafeArea())
         .task(id: rootPath) {
-            reload()
+            await reload()
         }
     }
 
     private var explorerHeader: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Explorer")
+            Text("目录")
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(.secondary)
             Text(SidebarPathFormatter.shortenedPath(rootPath))
@@ -737,15 +891,17 @@ struct LocalFileExplorerSidebar: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 12)
-        .padding(.top, 34)
+        .padding(.top, 12)
         .padding(.bottom, 8)
     }
 
-    private func reload() {
+    private func reload() async {
         let trimmedPath = rootPath.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedPath.isEmpty else {
             rootNode = nil
             errorMessage = "Current workspace has no directory."
+            isLoading = false
+            displayedRootPath = nil
             return
         }
 
@@ -753,30 +909,74 @@ struct LocalFileExplorerSidebar: View {
         guard FileManager.default.fileExists(atPath: trimmedPath, isDirectory: &isDirectory), isDirectory.boolValue else {
             rootNode = nil
             errorMessage = "Directory not found: \(trimmedPath)"
+            isLoading = false
+            displayedRootPath = nil
             return
         }
 
-        let node = LocalFileExplorerNode(url: URL(fileURLWithPath: trimmedPath), isDirectory: true, depth: 0)
-        node.isExpanded = true
-        node.loadChildren()
-        rootNode = node
+        let pathChanged = displayedRootPath != trimmedPath
+        if pathChanged, let cachedEntries = LocalFileExplorerCache.entries(for: trimmedPath) {
+            rootNode = makeRootNode(path: trimmedPath, entries: cachedEntries, existingRoot: rootNode)
+            displayedRootPath = trimmedPath
+        }
+
+        isLoading = true
         errorMessage = nil
+
+        let rootURL = URL(fileURLWithPath: trimmedPath)
+        let entries = await Task.detached(priority: .userInitiated) {
+            loadLocalExplorerChildren(at: rootURL)
+        }.value
+
+        LocalFileExplorerCache.store(entries: entries, for: trimmedPath)
+        rootNode = makeRootNode(path: trimmedPath, entries: entries, existingRoot: rootNode)
+        errorMessage = nil
+        isLoading = false
+        displayedRootPath = trimmedPath
+    }
+
+    private func makeRootNode(
+        path: String,
+        entries: [LocalFileExplorerEntrySnapshot],
+        existingRoot: LocalFileExplorerNode?
+    ) -> LocalFileExplorerNode {
+        let node = existingRoot?.url.path == path
+            ? existingRoot!
+            : LocalFileExplorerNode(url: URL(fileURLWithPath: path), isDirectory: true, depth: 0, rootPath: path)
+        node.isExpanded = true
+        node.didLoadChildren = true
+        node.children = reconcileLocalChildNodes(
+            existing: node.children,
+            from: entries,
+            depth: 1,
+            rootPath: path
+        )
+        return node
     }
 }
 
 private struct FileExplorerNodeRows: View {
     @ObservedObject var node: LocalFileExplorerNode
+    let selectedFilePath: String?
     let onOpenFile: (URL) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             if node.depth > 0 {
-                FileExplorerRow(node: node, onOpenFile: onOpenFile)
+                FileExplorerRow(
+                    node: node,
+                    isSelected: selectedFilePath == node.url.path,
+                    onOpenFile: onOpenFile
+                )
             }
 
             if node.isExpanded {
                 ForEach(node.children) { child in
-                    FileExplorerNodeRows(node: child, onOpenFile: onOpenFile)
+                    FileExplorerNodeRows(
+                        node: child,
+                        selectedFilePath: selectedFilePath,
+                        onOpenFile: onOpenFile
+                    )
                 }
             }
         }
@@ -785,15 +985,23 @@ private struct FileExplorerNodeRows: View {
 
 private struct FileExplorerRow: View {
     @ObservedObject var node: LocalFileExplorerNode
+    let isSelected: Bool
     let onOpenFile: (URL) -> Void
+    @State private var isHovering = false
 
     var body: some View {
         Button {
             if node.isDirectory {
-                if !node.didLoadChildren {
+                let nextExpandedState = !node.isExpanded
+                LocalFileExplorerCache.setExpanded(
+                    nextExpandedState,
+                    for: node.url.path,
+                    within: node.rootPath
+                )
+                if nextExpandedState, (!node.didLoadChildren || node.children.isEmpty) {
                     node.loadChildren()
                 }
-                node.isExpanded.toggle()
+                node.isExpanded = nextExpandedState
             } else {
                 onOpenFile(node.url)
             }
@@ -812,16 +1020,46 @@ private struct FileExplorerRow: View {
                 Text(node.name)
                     .font(.system(size: 12))
                     .lineLimit(1)
+
+                if node.isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.8)
+                }
+
                 Spacer(minLength: 0)
             }
             .padding(.leading, CGFloat(max(0, node.depth - 1)) * 14 + 10)
             .padding(.trailing, 8)
-            .padding(.vertical, 4)
+            .padding(.vertical, 5)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(
+                        isSelected
+                            ? Color.accentColor.opacity(0.14)
+                            : (isHovering ? Color.primary.opacity(0.05) : Color.clear)
+                    )
+            )
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { hovering in
+            isHovering = hovering
+        }
         .onDrag {
             NSItemProvider(object: node.url as NSURL)
+        }
+        .contextMenu {
+            if !node.isDirectory {
+                Button("Copy Path") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(node.url.path, forType: .string)
+                }
+            }
+
+            Button(node.isDirectory ? "Reveal in Finder" : "Show in Finder") {
+                NSWorkspace.shared.activateFileViewerSelecting([node.url])
+            }
         }
     }
 }
@@ -887,17 +1125,26 @@ final class RemoteFileExplorerNode: ObservableObject, Identifiable {
 
 private struct RemoteFileExplorerNodeRows: View {
     @ObservedObject var node: RemoteFileExplorerNode
+    let selectedRemotePath: String?
     let onOpenFile: (String) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             if node.depth > 0 {
-                RemoteFileExplorerRow(node: node, onOpenFile: onOpenFile)
+                RemoteFileExplorerRow(
+                    node: node,
+                    isSelected: selectedRemotePath == node.path,
+                    onOpenFile: onOpenFile
+                )
             }
 
             if node.isExpanded {
                 ForEach(node.children) { child in
-                    RemoteFileExplorerNodeRows(node: child, onOpenFile: onOpenFile)
+                    RemoteFileExplorerNodeRows(
+                        node: child,
+                        selectedRemotePath: selectedRemotePath,
+                        onOpenFile: onOpenFile
+                    )
                 }
             }
         }
@@ -906,6 +1153,7 @@ private struct RemoteFileExplorerNodeRows: View {
 
 private struct RemoteFileExplorerRow: View {
     @ObservedObject var node: RemoteFileExplorerNode
+    let isSelected: Bool
     let onOpenFile: (String) -> Void
 
     var body: some View {
@@ -945,6 +1193,10 @@ private struct RemoteFileExplorerRow: View {
             .padding(.leading, CGFloat(max(0, node.depth - 1)) * 14 + 10)
             .padding(.trailing, 8)
             .padding(.vertical, 4)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(isSelected ? Color.accentColor.opacity(0.14) : Color.clear)
+            )
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -1092,7 +1344,7 @@ struct ExplorerTextEditorView: View {
                         Text(document.fileName)
                             .font(.system(size: 12, weight: .semibold))
                         if document.isEditable && draftText != document.originalText {
-                            Text("Edited")
+                            Text("已修改")
                                 .font(.system(size: 10, weight: .semibold))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
@@ -1108,14 +1360,14 @@ struct ExplorerTextEditorView: View {
                 Spacer(minLength: 0)
 
                 if document.isEditable {
-                    Button("Save") {
+                    Button("保存") {
                         onSave(draftText)
-                        statusMessage = "Saved"
+                        statusMessage = "已保存"
                     }
                     .keyboardShortcut("s", modifiers: [.command])
                 }
 
-                Button("Close") {
+                Button("关闭") {
                     onClose()
                 }
             }
@@ -1147,6 +1399,7 @@ struct ExplorerTextEditorView: View {
                 .background(Color.primary.opacity(0.04))
             }
         }
+        .background(Color.primary.opacity(0.02))
         .onAppear {
             draftText = document.text
         }
@@ -1235,24 +1488,24 @@ struct RemoteHostsSidebar: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Remote Explorer")
+                Text("SSH 主机")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
-                Text("Hosts from ~/.ssh/config")
+                Text("来自 ~/.ssh/config")
                     .font(.system(size: 12, weight: .medium))
-                Text("Saved passwords are stored in your local Keychain.")
+                Text("密码仅保存在本机钥匙串中。")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 12)
-            .padding(.top, 34)
+            .padding(.top, 12)
             .padding(.bottom, 8)
 
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 2) {
                     if hosts.isEmpty {
-                        Text("No SSH hosts found.")
+                        Text("未找到 SSH 主机。")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .padding(12)
@@ -1304,7 +1557,7 @@ struct RemoteHostsSidebar: View {
                                         )
                                 }
                                 .buttonStyle(.plain)
-                                .help("Save password in Keychain")
+                                .help("保存到钥匙串")
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 2)
@@ -1321,13 +1574,13 @@ struct RemoteHostsSidebar: View {
         .sheet(item: $editingCredentialHost) { host in
             NavigationStack {
                 Form {
-                    Section("Host") {
-                        LabeledContent("Alias", value: host.alias)
-                        LabeledContent("Target", value: host.subtitle)
+                    Section("主机") {
+                        LabeledContent("别名", value: host.alias)
+                        LabeledContent("目标", value: host.subtitle)
                     }
-                    Section("Password") {
-                        SecureField("Password", text: $credentialDraft)
-                        Text("The password is stored only in the local macOS Keychain. iatlas can reuse it for faster SSH login on this Mac.")
+                    Section("密码") {
+                        SecureField("密码", text: $credentialDraft)
+                        Text("密码仅保存在当前 Mac 的本地钥匙串中，iatlas 会在后续连接时复用它。")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         if let credentialStatusMessage {
@@ -1338,32 +1591,32 @@ struct RemoteHostsSidebar: View {
                     }
                 }
                 .formStyle(.grouped)
-                .navigationTitle("Remote Credentials")
+                .navigationTitle("远程凭据")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Close") {
+                        Button("关闭") {
                             editingCredentialHost = nil
                         }
                     }
                     ToolbarItemGroup(placement: .confirmationAction) {
-                        Button("Clear") {
+                        Button("清除") {
                             do {
                                 try RemoteHostPasswordStore.clearPassword(for: host.alias)
                                 credentialDraft = ""
-                                credentialStatusMessage = "Password removed from Keychain."
+                                credentialStatusMessage = "已从钥匙串移除密码。"
                                 credentialStatusIsError = false
                             } catch {
-                                credentialStatusMessage = "Failed to clear Keychain password: \(error.localizedDescription)"
+                                credentialStatusMessage = "清除钥匙串密码失败：\(error.localizedDescription)"
                                 credentialStatusIsError = true
                             }
                         }
-                        Button("Save") {
+                        Button("保存") {
                             do {
                                 try RemoteHostPasswordStore.savePassword(credentialDraft, for: host.alias)
-                                credentialStatusMessage = "Password saved to Keychain."
+                                credentialStatusMessage = "密码已保存到钥匙串。"
                                 credentialStatusIsError = false
                             } catch {
-                                credentialStatusMessage = "Failed to save Keychain password: \(error.localizedDescription)"
+                                credentialStatusMessage = "保存到钥匙串失败：\(error.localizedDescription)"
                                 credentialStatusIsError = true
                             }
                         }
@@ -1377,6 +1630,7 @@ struct RemoteHostsSidebar: View {
 
 struct RemoteWorkspaceExplorerSidebar: View {
     @ObservedObject var workspace: Workspace
+    let selectedRemotePath: String?
     let onOpenRemoteFile: (String) -> Void
 
     @State private var rootNode: RemoteFileExplorerNode?
@@ -1399,13 +1653,17 @@ struct RemoteWorkspaceExplorerSidebar: View {
                         HStack(spacing: 8) {
                             ProgressView()
                                 .controlSize(.small)
-                            Text("Connecting to remote host and reading files...")
+                            Text("正在连接远程主机并读取文件...")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
                         .padding(12)
                     } else if let rootNode {
-                        RemoteFileExplorerNodeRows(node: rootNode, onOpenFile: onOpenRemoteFile)
+                        RemoteFileExplorerNodeRows(
+                            node: rootNode,
+                            selectedRemotePath: selectedRemotePath,
+                            onOpenFile: onOpenRemoteFile
+                        )
                     } else {
                         emptyStateView
                     }
@@ -1431,10 +1689,10 @@ struct RemoteWorkspaceExplorerSidebar: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Remote Explorer")
+                    Text("远程文件")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.secondary)
-                    Text(workspace.remoteDisplayTarget ?? "Not Connected")
+                    Text(workspace.remoteDisplayTarget ?? "未连接")
                         .font(.system(size: 12, weight: .medium))
                         .lineLimit(1)
                 }
@@ -1457,7 +1715,7 @@ struct RemoteWorkspaceExplorerSidebar: View {
             }
 
             HStack(spacing: 8) {
-                Button("Connect") {
+                Button("连接") {
                     workspace.reconnectRemoteConnection()
                 }
                 .disabled(
@@ -1466,12 +1724,12 @@ struct RemoteWorkspaceExplorerSidebar: View {
                     !canAttemptRemoteConnection
                 )
 
-                Button("Refresh") {
+                Button("刷新") {
                     Task { await reload(forceRootReload: false) }
                 }
                 .disabled(workspace.remoteConfiguration == nil || workspace.remoteConnectionState != .connected)
 
-                Button("Disconnect") {
+                Button("断开") {
                     workspace.disconnectRemoteConnection(clearConfiguration: false)
                 }
                 .disabled(workspace.remoteConfiguration == nil)
@@ -1479,20 +1737,20 @@ struct RemoteWorkspaceExplorerSidebar: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 12)
-        .padding(.top, 34)
+        .padding(.top, 12)
         .padding(.bottom, 8)
     }
 
     private var remoteStatusText: String {
         switch workspace.remoteConnectionState {
         case .connected:
-            return "Connected"
+            return "已连接"
         case .connecting:
-            return "Connecting"
+            return "连接中"
         case .error:
-            return "Error"
+            return "错误"
         case .disconnected:
-            return workspace.hasInteractiveRemoteSSHSession ? "Awaiting Login" : "Disconnected"
+            return workspace.hasInteractiveRemoteSSHSession ? "等待登录" : "未连接"
         }
     }
 
@@ -1529,13 +1787,13 @@ struct RemoteWorkspaceExplorerSidebar: View {
     private var emptyStateTitle: String {
         switch workspace.remoteConnectionState {
         case .connected:
-            return "No files loaded"
+            return "尚未加载文件"
         case .connecting:
-            return "Connecting remote workspace"
+            return "正在连接远程工作区"
         case .error:
-            return "Remote connection failed"
+            return "远程连接失败"
         case .disconnected:
-            return canAttemptRemoteConnection ? "Finish SSH login in the terminal" : "Start SSH login from the terminal"
+            return canAttemptRemoteConnection ? "请先在终端完成 SSH 登录" : "请先从终端发起 SSH 登录"
         }
     }
 
@@ -1547,16 +1805,16 @@ struct RemoteWorkspaceExplorerSidebar: View {
         }
         switch workspace.remoteConnectionState {
         case .connected:
-            return "Use Refresh if the remote tree did not load yet."
+            return "如果远程文件树没有出现，请点击刷新。"
         case .connecting:
-            return "iatlas is starting the remote workspace services. The file tree will appear after the SSH-backed connection is ready."
+            return "iatlas 正在启动远程工作区服务。SSH 连接准备完成后，文件树会自动出现。"
         case .error:
-            return "Complete the SSH login in the terminal, then try Connect again."
+            return "先在终端完成 SSH 登录，然后再点击连接。"
         case .disconnected:
             if canAttemptRemoteConnection {
-                return "After the terminal finishes SSH login, click Connect to enable the remote file tree and remote file editing."
+                return "终端完成 SSH 登录后，点击连接即可启用远程文件树和远程文件编辑。"
             }
-            return "Select a host to open an interactive SSH session in the terminal. The file tree stays hidden until that login succeeds."
+            return "先选择主机，在终端中打开交互式 SSH 会话。登录成功前，右侧不会展示远程文件树。"
         }
     }
 

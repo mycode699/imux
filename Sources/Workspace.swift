@@ -249,12 +249,22 @@ extension Workspace {
             logEntries: logSnapshots,
             progress: progressSnapshot,
             gitBranch: gitBranchSnapshot,
+            supervisorTaskCharter: supervisorTaskCharter,
             supervisorGoal: supervisorGoal,
             supervisorEnabled: supervisorEnabled,
             supervisorHealth: supervisorHealth,
             supervisorLastReview: supervisorLastReview,
             supervisorInteractionNotes: supervisorInteractionNotes,
-            supervisorStartupPlan: supervisorStartupPlan
+            supervisorStartupPlan: supervisorStartupPlan,
+            supervisorExecutionBrief: supervisorExecutionBrief,
+            supervisorPanelHandoffs: supervisorPanelHandoffs,
+            supervisorPanelRoundStates: supervisorPanelRoundStates,
+            supervisorExecutionQueue: supervisorExecutionQueue,
+            supervisorActiveLoopTarget: supervisorActiveLoopTarget,
+            supervisorRunJournal: supervisorRunJournal,
+            supervisorLoopSettings: supervisorLoopSettings,
+            supervisorLoopState: supervisorLoopState,
+            supervisorLoopStatusSummary: supervisorLoopStatusSummary
         )
     }
 
@@ -302,12 +312,36 @@ extension Workspace {
         }
         progress = snapshot.progress.map { SidebarProgressState(value: $0.value, label: $0.label) }
         gitBranch = snapshot.gitBranch.map { SidebarGitBranchState(branch: $0.branch, isDirty: $0.isDirty) }
-        supervisorGoal = snapshot.supervisorGoal ?? ""
+        supervisorTaskCharter = snapshot.supervisorTaskCharter ?? WorkspaceSupervisorTaskCharter(goal: snapshot.supervisorGoal ?? "")
+        supervisorGoal = snapshot.supervisorGoal ?? supervisorTaskCharter.goal
         supervisorEnabled = snapshot.supervisorEnabled ?? false
         supervisorHealth = snapshot.supervisorHealth ?? .idle
         supervisorLastReview = snapshot.supervisorLastReview
         supervisorInteractionNotes = snapshot.supervisorInteractionNotes ?? ""
         supervisorStartupPlan = snapshot.supervisorStartupPlan
+        supervisorExecutionBrief = snapshot.supervisorExecutionBrief
+        supervisorPanelHandoffs = snapshot.supervisorPanelHandoffs ?? []
+        supervisorPanelRoundStates = snapshot.supervisorPanelRoundStates ?? []
+        supervisorExecutionQueue = snapshot.supervisorExecutionQueue ?? []
+        supervisorActiveLoopTarget = snapshot.supervisorActiveLoopTarget
+        supervisorRunJournal = snapshot.supervisorRunJournal ?? []
+        supervisorLoopSettings = snapshot.supervisorLoopSettings ?? .init()
+        let restoredLoopState = snapshot.supervisorLoopState ?? .idle
+        supervisorLoopState = restoredLoopState == .running ? .idle : restoredLoopState
+        supervisorLoopStatusSummary = restoredLoopState == .running
+            ? "Auto loop reset after app relaunch."
+            : snapshot.supervisorLoopStatusSummary
+        if restoredLoopState == .running {
+            supervisorActiveLoopTarget = nil
+            supervisorPanelRoundStates = supervisorPanelRoundStates.map { state in
+                var next = state
+                if next.status == "running" || next.status == "supporting" {
+                    next.status = "pending"
+                    next.lastOutcome = "Auto loop reset after app relaunch."
+                }
+                return next
+            }
+        }
         supervisorUpdatedAt = supervisorLastReview.map { Date(timeIntervalSince1970: $0.generatedAt) }
         publishSupervisorStatusEntry()
 
@@ -5246,6 +5280,7 @@ final class Workspace: Identifiable, ObservableObject {
     @Published var remoteConfiguration: WorkspaceRemoteConfiguration?
     @Published var remoteConnectionState: WorkspaceRemoteConnectionState = .disconnected
     @Published var remoteConnectionDetail: String?
+    @Published var supervisorTaskCharter: WorkspaceSupervisorTaskCharter = .init()
     @Published var supervisorGoal: String = ""
     @Published var supervisorEnabled: Bool = false
     @Published var supervisorHealth: WorkspaceSupervisorHealth = .idle
@@ -5253,6 +5288,15 @@ final class Workspace: Identifiable, ObservableObject {
     @Published var supervisorUpdatedAt: Date?
     @Published var supervisorInteractionNotes: String = ""
     @Published var supervisorStartupPlan: WorkspaceSupervisorStartupPlan?
+    @Published var supervisorExecutionBrief: WorkspaceSupervisorExecutionBrief?
+    @Published var supervisorPanelHandoffs: [WorkspaceSupervisorPanelHandoff] = []
+    @Published var supervisorPanelRoundStates: [WorkspaceSupervisorPanelRoundState] = []
+    @Published var supervisorExecutionQueue: [WorkspaceSupervisorQueueItem] = []
+    @Published var supervisorActiveLoopTarget: WorkspaceSupervisorLoopTarget?
+    @Published var supervisorRunJournal: [WorkspaceSupervisorRunEntry] = []
+    @Published var supervisorLoopSettings: WorkspaceSupervisorLoopSettings = .init()
+    @Published var supervisorLoopState: WorkspaceSupervisorLoopState = .idle
+    @Published var supervisorLoopStatusSummary: String?
     @Published var remoteDaemonStatus: WorkspaceRemoteDaemonStatus = WorkspaceRemoteDaemonStatus()
     @Published var remoteDetectedPorts: [Int] = []
     @Published var remoteForwardedPorts: [Int] = []
@@ -5270,6 +5314,7 @@ final class Workspace: Identifiable, ObservableObject {
     private var remoteLastPortConflictFingerprint: String?
     private var activeRemoteTerminalSurfaceIds: Set<UUID> = []
     private var supervisorHeuristicRefreshTask: Task<Void, Never>?
+    var supervisorAutonomyLoopTask: Task<Void, Never>?
 
     private static let remoteErrorStatusKey = "remote.error"
     private static let remotePortConflictStatusKey = "remote.port_conflicts"

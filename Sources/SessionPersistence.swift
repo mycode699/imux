@@ -355,12 +355,22 @@ struct SessionWorkspaceSnapshot: Codable, Sendable {
     var logEntries: [SessionLogEntrySnapshot]
     var progress: SessionProgressSnapshot?
     var gitBranch: SessionGitBranchSnapshot?
+    var supervisorTaskCharter: WorkspaceSupervisorTaskCharter?
     var supervisorGoal: String?
     var supervisorEnabled: Bool?
     var supervisorHealth: WorkspaceSupervisorHealth?
     var supervisorLastReview: WorkspaceSupervisorReview?
     var supervisorInteractionNotes: String?
     var supervisorStartupPlan: WorkspaceSupervisorStartupPlan?
+    var supervisorExecutionBrief: WorkspaceSupervisorExecutionBrief?
+    var supervisorPanelHandoffs: [WorkspaceSupervisorPanelHandoff]?
+    var supervisorPanelRoundStates: [WorkspaceSupervisorPanelRoundState]?
+    var supervisorExecutionQueue: [WorkspaceSupervisorQueueItem]?
+    var supervisorActiveLoopTarget: WorkspaceSupervisorLoopTarget?
+    var supervisorRunJournal: [WorkspaceSupervisorRunEntry]?
+    var supervisorLoopSettings: WorkspaceSupervisorLoopSettings?
+    var supervisorLoopState: WorkspaceSupervisorLoopState?
+    var supervisorLoopStatusSummary: String?
 }
 
 struct SessionTabManagerSnapshot: Codable, Sendable {
@@ -434,7 +444,7 @@ enum SessionPersistenceStore {
         }
         let bundleId = (bundleIdentifier?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false)
             ? bundleIdentifier!
-            : "com.iatlas.app"
+            : "com.icc.app"
         let safeBundleId = bundleId.replacingOccurrences(
             of: "[^A-Za-z0-9._-]",
             with: "_",
