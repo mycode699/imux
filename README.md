@@ -1,10 +1,20 @@
 # icc
 
-Native macOS terminal workspace software for AI execution. `icc` keeps Ghostty-grade terminal rendering, adds a right-side local and remote explorer, and gives every workspace a supervisor layer that can watch progress, prepare prompts, and coordinate parallel task windows.
+> AI Command Center for macOS
+
+`icc` is a native macOS command center for AI work. It combines Ghostty-grade terminal rendering, local and remote explorers, in-app file editing, browser-assisted execution, and a supervisor layer that can prepare plans, monitor progress, and coordinate active workspaces.
 
 Repository: <https://github.com/miounet11/icc>
 
 Language docs: English | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [Dansk](README.da.md) | [Polski](README.pl.md) | [Русский](README.ru.md) | [Bosanski](README.bs.md) | [العربية](README.ar.md) | [Norsk](README.no.md) | [Português (Brasil)](README.pt-BR.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [ភាសាខ្មែរ](README.km.md) | [Tiếng Việt](README.vi.md)
+
+Brand guide: [docs/brand-guidelines.md](docs/brand-guidelines.md)
+
+## Brand promise
+
+- Keep terminals, files, remote hosts, and browser-assisted execution inside one native macOS workspace.
+- Help a user reach a workable plan after only a few turns, not after a long setup phase.
+- Preserve Ghostty-level terminal quality while adding operational context that a plain terminal does not provide.
 
 ## What icc ships today
 
@@ -118,6 +128,7 @@ Open Settings → Automation to configure:
 
 - [CONTRIBUTING.md](CONTRIBUTING.md): local development workflow
 - [CHANGELOG.md](CHANGELOG.md): release history and rename note
+- [docs/brand-guidelines.md](docs/brand-guidelines.md): ICC naming, positioning, and voice
 - [docs/notifications.md](docs/notifications.md): notification hooks and CLI usage
 - [docs/remote-daemon-spec.md](docs/remote-daemon-spec.md): managed SSH architecture and status
 - [docs/agent-browser-port-spec.md](docs/agent-browser-port-spec.md): browser automation contract

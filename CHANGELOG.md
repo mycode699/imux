@@ -11,6 +11,7 @@ Historical note:
 
 ### Changed
 - Refreshed the release-facing documentation for the `icc` launch: README files, install guidance, contributing notes, remote SSH docs, browser automation notes, notification docs, and legacy Homebrew/web documentation were updated to describe the current product and repository.
+- Added an ICC brand guide and upgraded the translated README files from temporary placeholders into localized landing pages for the public `v0.0.1` release.
 
 ## [0.62.2] - 2026-03-14
 

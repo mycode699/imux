@@ -9,6 +9,7 @@ Historical note:
 - The shipped app and CLI are named `icc`.
 - Some Xcode targets, scripts, sockets, helpers, and internal protocols still use legacy `cmux` names.
 - Do not rename those blindly while contributing. Many are still part of the active build and automation surface.
+- Follow [docs/brand-guidelines.md](docs/brand-guidelines.md) for user-facing naming and positioning.
 
 ## Prerequisites
 
@@ -62,6 +63,7 @@ Useful scripts:
 - Prefer tagged debug runs so your app instance does not collide with other local sessions.
 - Assume the repo may already contain unrelated user changes. Do not revert work you did not make.
 - Keep user-facing documentation and product references on `icc`, even when the underlying code still says `cmux`.
+- Use the canonical short descriptor `AI Command Center for macOS` when a concise product label is needed.
 - When changing Ghostty behavior, update [docs/ghostty-fork.md](docs/ghostty-fork.md) together with the submodule pointer.
 
 ## Tests

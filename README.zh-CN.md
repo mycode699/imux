@@ -1,10 +1,20 @@
 # icc
 
-`icc` 是一个面向 AI 执行场景的原生 macOS 终端工作台。它保留 Ghostty 级别的终端渲染能力，同时加入右侧本地与远程资源管理器、文件查看编辑、浏览器面板，以及可由 LLM 驱动的监督器。
+> 面向 macOS 的 AI 指挥中心
+
+`icc` 是一个面向 AI 工作流的原生 macOS 指挥台。它把 Ghostty 级别的终端渲染、本地与远程资源管理器、文件查看编辑、浏览器执行面板，以及可由 LLM 驱动的监督器整合到同一个工作界面里。
 
 仓库地址：<https://github.com/miounet11/icc>
 
 语言文档：[English](README.md) | 简体中文 | [繁體中文](README.zh-TW.md)
+
+品牌指南：[docs/brand-guidelines.md](docs/brand-guidelines.md)
+
+## 品牌定位
+
+- 让终端、文件、远程主机、浏览器和监督器保持在一个原生 macOS 工作面内协同工作。
+- 目标不是“多一个功能按钮”，而是让用户在很少几轮交流后就能进入可执行状态。
+- 在保留 Ghostty 级别终端体验的同时，补足项目上下文、远程管理和自动化调度能力。
 
 ## 当前版本的核心能力
 
@@ -118,6 +128,7 @@ icc clear-notifications
 - [README.md](README.md)：英文主文档
 - [CONTRIBUTING.md](CONTRIBUTING.md)：开发与提交说明
 - [CHANGELOG.md](CHANGELOG.md)：版本历史
+- [docs/brand-guidelines.md](docs/brand-guidelines.md)：ICC 品牌命名与文案规则
 - [docs/notifications.md](docs/notifications.md)：通知与 Hook 集成
 - [docs/remote-daemon-spec.md](docs/remote-daemon-spec.md)：受管 SSH 架构
 - [docs/agent-browser-port-spec.md](docs/agent-browser-port-spec.md)：浏览器自动化接口说明
