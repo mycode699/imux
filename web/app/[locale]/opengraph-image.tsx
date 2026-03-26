@@ -18,16 +18,7 @@ export default async function Image({
 }) {
   const { locale } = await params;
   const copy = getMarketingCopy(locale);
-  const [logoData, geistRegular, geistSemiBold] =
-    await Promise.all([
-      readFile(join(process.cwd(), "public", "logo.png")),
-      fetch(
-        "https://fonts.gstatic.com/s/geist/v4/gyBhhwUxId8gMGYQMKR3pzfaWI_RnOM4nQ.ttf"
-      ).then((res) => res.arrayBuffer()),
-      fetch(
-        "https://fonts.gstatic.com/s/geist/v4/gyBhhwUxId8gMGYQMKR3pzfaWI_RQuQ4nQ.ttf"
-      ).then((res) => res.arrayBuffer()),
-    ]);
+  const logoData = await readFile(join(process.cwd(), "public", "logo.png"));
 
   const logoSrc = `data:image/png;base64,${logoData.toString("base64")}`;
 
@@ -41,7 +32,7 @@ export default async function Image({
           flexDirection: "column",
           background:
             "radial-gradient(circle at top left, rgba(37,99,235,0.38), transparent 34%), radial-gradient(circle at top right, rgba(249,115,22,0.28), transparent 28%), linear-gradient(180deg, #08101d 0%, #0f172a 100%)",
-          fontFamily: "Geist",
+          fontFamily: "sans-serif",
           padding: 48 * S,
         }}
       >
@@ -176,10 +167,6 @@ export default async function Image({
     {
       width: size.width * S,
       height: size.height * S,
-      fonts: [
-        { name: "Geist", data: geistRegular, weight: 400, style: "normal" },
-        { name: "Geist", data: geistSemiBold, weight: 600, style: "normal" },
-      ],
     }
   );
 }

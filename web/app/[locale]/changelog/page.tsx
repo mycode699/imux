@@ -96,6 +96,34 @@ export default async function ChangelogPage({
           </div>
         </section>
 
+        <section className="rounded-[28px] border border-border/70 bg-background/84 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="max-w-3xl space-y-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">{copy.changelog.releaseModelTitle}</div>
+            <p className="text-base leading-8 text-muted">{copy.changelog.releaseModelIntro}</p>
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {copy.changelog.releaseModel.map((section) => (
+              <article
+                key={section.title}
+                className="rounded-[24px] border border-border/60 bg-background/72 p-6"
+              >
+                <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">{section.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-muted">{section.body}</p>
+                <ul className="mt-5 space-y-3">
+                  {section.points.map((point) => (
+                    <li
+                      key={point}
+                      className="rounded-2xl border border-border/60 bg-background px-4 py-4 text-sm leading-7 text-foreground/90"
+                    >
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="space-y-5">
           <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">{copy.changelog.entriesTitle}</div>
           {copy.changelog.entries.map((entry) => (
@@ -132,6 +160,52 @@ export default async function ChangelogPage({
                 {step}
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="rounded-[28px] border border-border/70 bg-background/84 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="max-w-3xl space-y-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">{copy.changelog.supportTitle}</div>
+            <p className="text-base leading-8 text-muted">{copy.changelog.supportBody}</p>
+          </div>
+          <div className="mt-6">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+              {copy.changelog.supportChecklistTitle}
+            </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {copy.changelog.supportChecklist.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-border/60 bg-background/72 px-5 py-5 text-sm leading-7 text-foreground/90"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href={siteConfig.releasesUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-full border border-border px-5 py-2.5 text-[15px] font-medium text-foreground transition-colors hover:bg-code-bg"
+            >
+              {copy.shared.viewReleases}
+            </a>
+            <a
+              href={siteConfig.issuesUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-full border border-border px-5 py-2.5 text-[15px] font-medium text-foreground transition-colors hover:bg-code-bg"
+            >
+              {copy.shared.reportIssue}
+            </a>
+            <a
+              href={guideHref}
+              className="inline-flex items-center rounded-full border border-border px-5 py-2.5 text-[15px] font-medium text-foreground transition-colors hover:bg-code-bg"
+            >
+              {copy.changelog.secondaryCta}
+            </a>
           </div>
         </section>
       </main>

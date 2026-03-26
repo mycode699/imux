@@ -6,6 +6,9 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
+  turbopack: {
+    root: process.cwd(),
+  },
   images: {
     remotePatterns: [
       {

@@ -104,6 +104,34 @@ export default async function GuidePage({
           </ol>
         </section>
 
+        <section className="rounded-[28px] border border-border/70 bg-background/84 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="max-w-3xl space-y-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">{copy.guide.workflowsTitle}</div>
+            <p className="text-base leading-8 text-muted">{copy.guide.workflowsIntro}</p>
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {copy.guide.workflows.map((workflow) => (
+              <article
+                key={workflow.title}
+                className="rounded-[24px] border border-border/60 bg-background/72 p-6"
+              >
+                <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">{workflow.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-muted">{workflow.body}</p>
+                <ul className="mt-5 space-y-3">
+                  {workflow.points.map((point) => (
+                    <li
+                      key={point}
+                      className="rounded-2xl border border-border/60 bg-background px-4 py-4 text-sm leading-7 text-foreground/90"
+                    >
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="grid gap-5">
           {copy.guide.sections.map((section) => (
             <article
@@ -121,6 +149,68 @@ export default async function GuidePage({
               </ul>
             </article>
           ))}
+        </section>
+
+        <section className="rounded-[28px] border border-border/70 bg-background/84 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="max-w-3xl space-y-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">{copy.guide.bestPracticesTitle}</div>
+            <p className="text-base leading-8 text-muted">{copy.guide.bestPracticesIntro}</p>
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {copy.guide.bestPractices.map((item) => (
+              <div
+                key={item}
+                className="rounded-2xl border border-border/60 bg-background/72 px-5 py-5 text-sm leading-7 text-foreground/90"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[28px] border border-border/70 bg-background/84 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="max-w-3xl space-y-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">{copy.guide.briefingTitle}</div>
+            <p className="text-base leading-8 text-muted">{copy.guide.briefingIntro}</p>
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {copy.guide.briefingChecklist.map((item) => (
+              <div
+                key={item}
+                className="rounded-2xl border border-border/60 bg-background/72 px-5 py-5 text-sm leading-7 text-foreground/90"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[28px] border border-border/70 bg-background/84 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <div className="max-w-3xl space-y-4">
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">{copy.guide.troubleshootingTitle}</div>
+            <p className="text-base leading-8 text-muted">{copy.guide.troubleshootingIntro}</p>
+          </div>
+          <div className="mt-6 grid gap-5">
+            {copy.guide.troubleshooting.map((section) => (
+              <article
+                key={section.title}
+                className="rounded-[24px] border border-border/60 bg-background/72 p-6"
+              >
+                <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">{section.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-muted">{section.body}</p>
+                <ul className="mt-5 space-y-3">
+                  {section.points.map((point) => (
+                    <li
+                      key={point}
+                      className="rounded-2xl border border-border/60 bg-background px-4 py-4 text-sm leading-7 text-foreground/90"
+                    >
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section className="rounded-[28px] border border-border/70 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(30,41,59,0.96))] p-8 text-slate-100 shadow-[0_30px_100px_rgba(15,23,42,0.24)]">
