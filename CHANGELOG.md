@@ -7,7 +7,7 @@ Historical note:
 - This codebase originated from `cmux`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
-## [0.1.0] - 2026-03-30
+## [1.0.3] - 2026-03-30
 
 ### Added
 - Quick settings import shortcuts for VS Code, Cursor, Claude Code, and Codex so users can move into `icc` faster without rebuilding their terminal preferences by hand.

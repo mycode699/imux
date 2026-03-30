@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "icc",
-  version: "v0.1.0",
+  version: "v1.0.3",
   descriptor: "AI Command Center for macOS",
   title: "icc",
   tagline: "One cockpit for terminal-first AI execution.",
