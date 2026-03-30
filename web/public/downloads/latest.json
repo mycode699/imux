@@ -3,12 +3,12 @@
   "downloads": {
     "macos": {
       "appcastUrl": "https://www.iccjk.com/downloads/appcast.xml",
-      "archiveUrl": "https://www.iccjk.com/downloads/archive/v0.0.1/icc-v0.0.1-macos.dmg",
+      "archiveUrl": "https://www.iccjk.com/downloads/archive/v1.0.3/icc-v1.0.3-macos.dmg",
       "artifactType": "dmg",
       "bundleId": "com.icc.app",
       "sha256": "08ced3720b9aac50b962c5a1043256df330ad0818fbaf29ddc21d2b5cbd5ac64",
       "size": 48838855,
-      "url": "https://www.iccjk.com/downloads/icc-v0.0.1-macos.dmg"
+      "url": "https://www.iccjk.com/downloads/icc-v1.0.3-macos.dmg"
     },
     "windows": {
       "available": false,
@@ -17,17 +17,17 @@
   },
   "notesUrl": "https://www.iccjk.com/changelog",
   "product": "icc",
-  "publishedAt": "2026-03-30T04:24:46Z",
+  "publishedAt": "2026-03-30T09:55:00Z",
   "remoteDaemon": {
-    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v0.0.1",
+    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v1.0.3",
     "available": false,
     "manifestUrl": "https://www.iccjk.com/downloads/remote/cmuxd-remote-manifest.json"
   },
   "schemaVersion": 1,
-  "tag": "v0.0.1",
+  "tag": "v1.0.3",
   "update": {
     "feedUrl": "https://www.iccjk.com/downloads/appcast.xml",
     "manifestUrl": "https://www.iccjk.com/downloads/latest.json"
   },
-  "version": "0.0.1"
+  "version": "1.0.3"
 }
