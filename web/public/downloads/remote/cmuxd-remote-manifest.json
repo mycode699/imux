@@ -1,0 +1,11 @@
+{
+  "available": false,
+  "channel": "stable",
+  "manifestUrl": "https://www.iccjk.com/downloads/remote/cmuxd-remote-manifest.json",
+  "product": "icc",
+  "publishedAt": "2026-03-30T04:25:06Z",
+  "reason": "Remote helper assets were not staged for this release from this build host.",
+  "schemaVersion": 1,
+  "tag": "v0.0.1",
+  "version": "0.0.1"
+}

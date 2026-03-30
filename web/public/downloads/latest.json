@@ -1,0 +1,33 @@
+{
+  "channel": "stable",
+  "downloads": {
+    "macos": {
+      "appcastUrl": "https://www.iccjk.com/downloads/appcast.xml",
+      "archiveUrl": "https://www.iccjk.com/downloads/archive/v0.0.1/icc-macos.dmg",
+      "artifactType": "dmg",
+      "bundleId": "com.icc.app",
+      "sha256": "08ced3720b9aac50b962c5a1043256df330ad0818fbaf29ddc21d2b5cbd5ac64",
+      "size": 48838855,
+      "url": "https://www.iccjk.com/downloads/icc-macos.dmg"
+    },
+    "windows": {
+      "available": false,
+      "reason": "icc currently ships as a native macOS AppKit application and does not have a real Windows desktop build target yet."
+    }
+  },
+  "notesUrl": "https://www.iccjk.com/changelog",
+  "product": "icc",
+  "publishedAt": "2026-03-30T04:24:46Z",
+  "remoteDaemon": {
+    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v0.0.1",
+    "available": false,
+    "manifestUrl": "https://www.iccjk.com/downloads/remote/cmuxd-remote-manifest.json"
+  },
+  "schemaVersion": 1,
+  "tag": "v0.0.1",
+  "update": {
+    "feedUrl": "https://www.iccjk.com/downloads/appcast.xml",
+    "manifestUrl": "https://www.iccjk.com/downloads/latest.json"
+  },
+  "version": "0.0.1"
+}
