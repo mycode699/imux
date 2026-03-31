@@ -1,11 +1,38 @@
 {
-  "available": false,
-  "channel": "stable",
-  "manifestUrl": "https://www.iccjk.com/downloads/remote/cmuxd-remote-manifest.json",
-  "product": "icc",
-  "publishedAt": "2026-03-30T09:55:00Z",
-  "reason": "Remote helper assets were not staged for this release from this build host.",
-  "schemaVersion": 1,
-  "tag": "v1.0.3",
-  "version": "1.0.3"
+  "appVersion": "1.0.6",
+  "checksumsAssetName": "cmuxd-remote-checksums.txt",
+  "checksumsURL": "https://github.com/miounet11/icc/releases/download/v1.0.6/cmuxd-remote-checksums.txt",
+  "entries": [
+    {
+      "assetName": "cmuxd-remote-darwin-arm64",
+      "downloadURL": "https://github.com/miounet11/icc/releases/download/v1.0.6/cmuxd-remote-darwin-arm64",
+      "goArch": "arm64",
+      "goOS": "darwin",
+      "sha256": "d1dd554b011f3d35e0fcb4a8dbf1874785470dc7ac2f86761f807f7978fbcbae"
+    },
+    {
+      "assetName": "cmuxd-remote-darwin-amd64",
+      "downloadURL": "https://github.com/miounet11/icc/releases/download/v1.0.6/cmuxd-remote-darwin-amd64",
+      "goArch": "amd64",
+      "goOS": "darwin",
+      "sha256": "6a8ebe67c507020fd74f78c77ef08cc515d826d5acf59cd34c676d2c3b50e914"
+    },
+    {
+      "assetName": "cmuxd-remote-linux-arm64",
+      "downloadURL": "https://github.com/miounet11/icc/releases/download/v1.0.6/cmuxd-remote-linux-arm64",
+      "goArch": "arm64",
+      "goOS": "linux",
+      "sha256": "cfc8401d6dfb1c90f7204775256f753119aba265a0d27dfdc0f89f0950f8c084"
+    },
+    {
+      "assetName": "cmuxd-remote-linux-amd64",
+      "downloadURL": "https://github.com/miounet11/icc/releases/download/v1.0.6/cmuxd-remote-linux-amd64",
+      "goArch": "amd64",
+      "goOS": "linux",
+      "sha256": "7d3b800a094781eb84afecee8d3b4737d9665d27de009cbb2c039b16c3d5e1e3"
+    }
+  ],
+  "releaseTag": "v1.0.6",
+  "releaseURL": "https://github.com/miounet11/icc/releases/download/v1.0.6",
+  "schemaVersion": 1
 }
