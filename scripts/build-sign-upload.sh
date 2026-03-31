@@ -56,7 +56,6 @@ fi
 TAG="$1"
 VERSION="$(icc_release_version "$TAG")"
 ICC_RELEASE_DMG_NAME="$(icc_release_dmg_name "$VERSION")"
-SIGN_HASH="A050CC7E193C8221BDBA204E731B046CDCCC1B30"
 ENTITLEMENTS="icc.entitlements"
 APP_PATH="build/Build/Products/Release/${ICC_APP_BUNDLE_NAME}"
 
@@ -67,9 +66,14 @@ if [[ ! -f "$ENV_FILE" ]]; then
 fi
 source "$ENV_FILE"
 export SPARKLE_PRIVATE_KEY
+SIGN_IDENTITY="${APPLE_SIGNING_IDENTITY:-}"
 for tool in zig xcodebuild create-dmg xcrun codesign ditto gh; do
   command -v "$tool" >/dev/null || { echo "MISSING: $tool" >&2; exit 1; }
 done
+if [[ -z "$SIGN_IDENTITY" ]]; then
+  echo "Missing APPLE_SIGNING_IDENTITY in $ENV_FILE" >&2
+  exit 1
+fi
 echo "Pre-flight checks passed"
 
 # --- Build GhosttyKit (if needed) ---
@@ -108,12 +112,12 @@ echo "Sparkle keys injected"
 echo "Codesigning..."
 CLI_PATH="$APP_PATH/Contents/Resources/bin/$ICC_CLI_NAME"
 if [ -f "$CLI_PATH" ]; then
-  /usr/bin/codesign --force --options runtime --timestamp --sign "$SIGN_HASH" --entitlements "$ENTITLEMENTS" "$CLI_PATH"
+  /usr/bin/codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" --entitlements "$ENTITLEMENTS" "$CLI_PATH"
 fi
 if [ -f "$HELPER_PATH" ]; then
-  /usr/bin/codesign --force --options runtime --timestamp --sign "$SIGN_HASH" --entitlements "$ENTITLEMENTS" "$HELPER_PATH"
+  /usr/bin/codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" --entitlements "$ENTITLEMENTS" "$HELPER_PATH"
 fi
-/usr/bin/codesign --force --options runtime --timestamp --sign "$SIGN_HASH" --entitlements "$ENTITLEMENTS" --deep "$APP_PATH"
+/usr/bin/codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" --entitlements "$ENTITLEMENTS" --deep "$APP_PATH"
 /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP_PATH"
 echo "Codesign verified"
 
@@ -153,7 +157,7 @@ rm -f "$ICC_RELEASE_DMG_NAME"
 ./scripts/create_release_dmg.sh \
   --app-path "$APP_PATH" \
   --output "$ICC_RELEASE_DMG_NAME" \
-  --identity "$SIGN_HASH" \
+  --identity "$SIGN_IDENTITY" \
   --volume-name "icc ${VERSION}"
 ./scripts/verify_release_artifact.sh --dmg "$ICC_RELEASE_DMG_NAME" --expected-app "$ICC_APP_BUNDLE_NAME"
 echo "Notarizing DMG..."
