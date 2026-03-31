@@ -7,7 +7,14 @@ Historical note:
 - This codebase originated from `cmux`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
-## [1.0.6] - 2026-03-31
+## [1.0.9] - 2026-03-31
+
+### Changed
+- Rebranded active website docs, legal, and community surfaces to `icc`, and aligned active GitHub links with the current `miounet11/icc` repository.
+- Updated localized message packs for active product surfaces so install and product copy no longer present legacy `cmux` naming.
+
+### Fixed
+- Sidebar interaction flow now supports a persistent left navigation pane while right-side tool panes are open, and workspace switches reset file and remote explorer editor context correctly.
 
 ## [1.0.8] - 2026-03-31
 

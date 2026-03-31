@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — cmux",
-  description: "Terms of service for cmux",
+  title: "Terms of Service — icc",
+  description: "Terms of service for icc",
   alternates: { canonical: "./" },
 };
 
@@ -14,8 +14,8 @@ export default function TermsOfServicePage() {
 
       <p>
         The website located at{" "}
-        <a href="https://cmux.com">cmux.com</a> (the
-        &ldquo;Site&rdquo;) and the cmux desktop application (the
+        <a href="https://icc.com">icc.com</a> (the
+        &ldquo;Site&rdquo;) and the icc desktop application (the
         &ldquo;Application&rdquo;) are copyrighted works belonging to Manaflow
         (&ldquo;Company&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;, and
         &ldquo;we&rdquo;). These Terms of Use (these &ldquo;Terms&rdquo;) set

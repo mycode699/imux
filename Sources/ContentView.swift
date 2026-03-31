@@ -1826,6 +1826,7 @@ struct ContentView: View {
     @State private var explorerEditorSplitDragStartRatio: CGFloat?
     @State private var selectedExplorerLocation: ExplorerDocumentLocation?
     @State private var selectedExplorerDocument: ExplorerTextDocument?
+    @State private var lastExplorerWorkspaceContextId: UUID?
     @State private var hoveredResizerHandles: Set<SidebarResizerHandle> = []
     @State private var isResizerDragging = false
     @State private var sidebarDragStartWidth: CGFloat?
@@ -2612,36 +2613,48 @@ struct ContentView: View {
             )
             .frame(width: Self.activityRailWidth)
 
-            if showsWorkspaceSidebarList {
+            if showsLeadingSidebarPane {
                 Divider()
 
-                VerticalTabsSidebar(
-                    updateViewModel: updateViewModel,
-                    onSendFeedback: presentFeedbackComposer,
-                    selection: $sidebarSelectionState.selection,
-                    selectedTabIds: $selectedTabIds,
-                    lastSidebarSelectionIndex: $lastSidebarSelectionIndex
-                )
+                leadingSidebarContent
             }
         }
         .frame(width: effectiveSidebarWidth)
         .frame(maxHeight: .infinity, alignment: .topLeading)
     }
 
-    private var showsWorkspaceSidebarList: Bool {
-        sidebarSelectionState.selection == .tabs
+    private var showsLeadingSidebarPane: Bool {
+        sidebarSelectionState.selection != .notifications
     }
 
     private var effectiveSidebarWidth: CGFloat {
-        showsWorkspaceSidebarList ? sidebarWidth : Self.activityRailWidth
+        showsLeadingSidebarPane ? sidebarWidth : Self.activityRailWidth
     }
 
     private var explorerPaneVisible: Bool {
         switch sidebarSelectionState.selection {
-        case .files, .sourceControl, .remote, .wechat, .supervisor:
+        case .files, .sourceControl, .wechat, .supervisor:
             return true
-        case .tabs, .notifications:
+        case .tabs, .remote, .notifications:
             return false
+        }
+    }
+
+    @ViewBuilder
+    private var leadingSidebarContent: some View {
+        switch sidebarSelectionState.selection {
+        case .remote:
+            remoteLeadingSidebarView
+        case .notifications:
+            EmptyView()
+        case .tabs, .files, .sourceControl, .wechat, .supervisor:
+            VerticalTabsSidebar(
+                updateViewModel: updateViewModel,
+                onSendFeedback: presentFeedbackComposer,
+                selection: $sidebarSelectionState.selection,
+                selectedTabIds: $selectedTabIds,
+                lastSidebarSelectionIndex: $lastSidebarSelectionIndex
+            )
         }
     }
 
@@ -2818,7 +2831,13 @@ struct ContentView: View {
                 switch sidebarSelectionState.selection {
                 case .files:
                     GeometryReader { geometry in
-                        let document = selectedExplorerDocument
+                        let document: ExplorerTextDocument? = {
+                            guard let selectedExplorerDocument,
+                                  case .local = selectedExplorerDocument.location else {
+                                return nil
+                            }
+                            return selectedExplorerDocument
+                        }()
                         let treeHeight = explorerTreeHeight(totalHeight: geometry.size.height)
                         VStack(spacing: 0) {
                             LocalFileExplorerSidebar(
@@ -2864,70 +2883,6 @@ struct ContentView: View {
                             description: Text("Select a workspace to inspect its Git and GitHub state.")
                         )
                     }
-                case .remote:
-                    if let workspace = tabManager.selectedWorkspace,
-                       workspace.remoteConfiguration != nil {
-                        GeometryReader { geometry in
-                            let remoteDocument: ExplorerTextDocument? = {
-                                guard let selectedExplorerDocument,
-                                      case .remote = selectedExplorerDocument.location else {
-                                    return nil
-                                }
-                                return selectedExplorerDocument
-                            }()
-                            let treeHeight = explorerTreeHeight(totalHeight: geometry.size.height)
-                            VStack(spacing: 0) {
-                                RemoteWorkspaceExplorerSidebar(
-                                    workspace: workspace,
-                                    selectedRemotePath: {
-                                        guard case .remote(_, let path) = selectedExplorerLocation else { return nil }
-                                        return path
-                                    }(),
-                                    onOpenRemoteFile: { remotePath in
-                                        selectedExplorerLocation = .remote(
-                                            destination: workspace.remoteDisplayTarget ?? workspace.remoteConfiguration?.destination ?? "remote",
-                                            path: remotePath
-                                        )
-                                        selectedExplorerDocument = try? workspace.loadRemoteExplorerDocument(path: remotePath)
-                                        explorerPaneWidth = max(explorerPaneWidth, 540)
-                                    }
-                                )
-                                .frame(maxWidth: .infinity)
-                                .frame(height: remoteDocument == nil ? geometry.size.height : treeHeight)
-
-                                if let selectedExplorerDocument = remoteDocument {
-                                    explorerEditorSplitter
-                                    ExplorerTextEditorView(
-                                        document: selectedExplorerDocument,
-                                        onClose: {
-                                            self.selectedExplorerLocation = nil
-                                            self.selectedExplorerDocument = nil
-                                        },
-                                        onSave: { updatedText in
-                                            guard case .remote(_, let remotePath) = self.selectedExplorerLocation else { return }
-                                            try? workspace.saveRemoteExplorerDocument(path: remotePath, text: updatedText)
-                                            self.selectedExplorerDocument = try? workspace.loadRemoteExplorerDocument(path: remotePath)
-                                        }
-                                    )
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                }
-                            }
-                        }
-                    } else {
-                        RemoteHostsSidebar(
-                            onConnect: { host in
-                                let configuration = host.workspaceConfiguration()
-                                let workspace = tabManager.addWorkspace(
-                                    initialTerminalCommand: configuration.terminalStartupCommand,
-                                    select: true,
-                                    autoWelcomeIfNeeded: false
-                                )
-                                workspace.customTitle = host.alias
-                                workspace.configureRemoteConnection(configuration, autoConnect: false)
-                                sidebarSelectionState.selection = .remote
-                            }
-                        )
-                    }
                 case .wechat:
                     WeChatSidebarPaneView()
                 case .supervisor:
@@ -2940,7 +2895,7 @@ struct ContentView: View {
                             description: Text("Select a workspace to configure its supervisor goal and review state.")
                         )
                     }
-                case .tabs, .notifications:
+                case .tabs, .remote, .notifications:
                     EmptyView()
                 }
             }
@@ -2967,12 +2922,108 @@ struct ContentView: View {
         }
     }
 
+    private var remoteLeadingSidebarView: some View {
+        VStack(spacing: 0) {
+            explorerPaneHeader
+
+            Group {
+                if let workspace = tabManager.selectedWorkspace,
+                   workspace.remoteConfiguration != nil {
+                    GeometryReader { geometry in
+                        let remoteDocument: ExplorerTextDocument? = {
+                            guard let selectedExplorerDocument,
+                                  case .remote = selectedExplorerDocument.location else {
+                                return nil
+                            }
+                            return selectedExplorerDocument
+                        }()
+                        let treeHeight = explorerTreeHeight(totalHeight: geometry.size.height)
+                        VStack(spacing: 0) {
+                            RemoteWorkspaceExplorerSidebar(
+                                workspace: workspace,
+                                selectedRemotePath: {
+                                    guard case .remote(_, let path) = selectedExplorerLocation else { return nil }
+                                    return path
+                                }(),
+                                onOpenRemoteFile: { remotePath in
+                                    selectedExplorerLocation = .remote(
+                                        destination: workspace.remoteDisplayTarget ?? workspace.remoteConfiguration?.destination ?? "remote",
+                                        path: remotePath
+                                    )
+                                    selectedExplorerDocument = try? workspace.loadRemoteExplorerDocument(path: remotePath)
+                                    sidebarWidth = max(sidebarWidth, 280)
+                                }
+                            )
+                            .frame(maxWidth: .infinity)
+                            .frame(height: remoteDocument == nil ? geometry.size.height : treeHeight)
+
+                            if let selectedExplorerDocument = remoteDocument {
+                                explorerEditorSplitter
+                                ExplorerTextEditorView(
+                                    document: selectedExplorerDocument,
+                                    onClose: {
+                                        self.selectedExplorerLocation = nil
+                                        self.selectedExplorerDocument = nil
+                                    },
+                                    onSave: { updatedText in
+                                        guard case .remote(_, let remotePath) = self.selectedExplorerLocation else { return }
+                                        try? workspace.saveRemoteExplorerDocument(path: remotePath, text: updatedText)
+                                        self.selectedExplorerDocument = try? workspace.loadRemoteExplorerDocument(path: remotePath)
+                                    }
+                                )
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            }
+                        }
+                    }
+                } else {
+                    RemoteHostsSidebar(
+                        onConnect: { host in
+                            let configuration = host.workspaceConfiguration()
+                            let workspace = tabManager.addWorkspace(
+                                initialTerminalCommand: configuration.terminalStartupCommand,
+                                select: true,
+                                autoWelcomeIfNeeded: false
+                            )
+                            workspace.customTitle = host.alias
+                            workspace.configureRemoteConnection(configuration, autoConnect: false)
+                            sidebarSelectionState.selection = .remote
+                        }
+                    )
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(
+            ZStack {
+                SidebarBackdrop().ignoresSafeArea()
+                ICCChrome.panelGradient(for: colorScheme)
+                    .opacity(colorScheme == .dark ? 0.82 : 0.90)
+                LinearGradient(
+                    colors: [
+                        ICCChrome.accent(for: colorScheme).opacity(colorScheme == .dark ? 0.08 : 0.05),
+                        Color.clear
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
+        )
+    }
+
     private var activeSidebarDirectory: String {
         let candidate = tabManager.selectedWorkspace?.currentDirectory.trimmingCharacters(in: .whitespacesAndNewlines)
         if let candidate, !candidate.isEmpty {
             return candidate
         }
         return FileManager.default.currentDirectoryPath
+    }
+
+    private func synchronizeSidebarContextForSelectedWorkspace(_ workspaceId: UUID?) {
+        defer { lastExplorerWorkspaceContextId = workspaceId }
+        guard lastExplorerWorkspaceContextId != workspaceId else { return }
+        guard sidebarSelectionState.selection == .files || sidebarSelectionState.selection == .remote else { return }
+        selectedExplorerLocation = nil
+        selectedExplorerDocument = nil
     }
 
     /// Space at top of content area for the titlebar. This must be at least the actual titlebar
@@ -3281,7 +3332,7 @@ struct ContentView: View {
         return AnyView(
             layout
                 .overlay(alignment: .leading) {
-                    if sidebarState.isVisible && showsWorkspaceSidebarList {
+                    if sidebarState.isVisible && showsLeadingSidebarPane {
                         sidebarResizerOverlay
                             .zIndex(1000)
                     }
@@ -3391,6 +3442,7 @@ struct ContentView: View {
                 selectedTabIds = [newValue]
                 lastSidebarSelectionIndex = tabManager.tabs.firstIndex { $0.id == newValue }
             }
+            synchronizeSidebarContextForSelectedWorkspace(newValue)
             updateTitlebarText()
         })
 
@@ -3431,7 +3483,6 @@ struct ContentView: View {
         })
 
         view = AnyView(view.onReceive(NotificationCenter.default.publisher(for: .ghosttyDidFocusTab)) { _ in
-            sidebarSelectionState.selection = .tabs
             scheduleTitlebarTextRefresh()
         })
 
@@ -4070,7 +4121,6 @@ struct ContentView: View {
 
     private func addTab() {
         tabManager.addTab()
-        sidebarSelectionState.selection = .tabs
     }
 
     private func makeViewHierarchyTransparent(_ root: NSView) {
@@ -9135,7 +9185,6 @@ struct VerticalTabsSidebar: View {
                         selectedTabIds = [selectedId]
                         lastSidebarSelectionIndex = tabManager.tabs.firstIndex { $0.id == selectedId }
                     }
-                    selection = .tabs
                 } label: {
                     Image(systemName: "plus")
                         .font(.system(size: 11, weight: .bold))
@@ -9242,7 +9291,7 @@ struct VerticalTabsSidebar: View {
                                     return trimmed.isEmpty ? nil : trimmed
                                 }(),
                                 rowSpacing: tabRowSpacing,
-                                setSelectionToTabs: { selection = .tabs },
+                                setSelectionToTabs: {},
                                 selectedTabIds: $selectedTabIds,
                                 lastSidebarSelectionIndex: $lastSidebarSelectionIndex,
                                 showsModifierShortcutHints: modifierKeyMonitor.isModifierPressed,
@@ -13197,7 +13246,6 @@ private struct SidebarEmptyArea: View {
                         selectedTabIds = [selectedId]
                         lastSidebarSelectionIndex = tabManager.tabs.firstIndex { $0.id == selectedId }
                     }
-                    selection = .tabs
                 }
                 .onDrop(of: SidebarTabDragPayload.dropContentTypes, delegate: SidebarTabDropDelegate(
                     targetTabId: nil,
@@ -13237,7 +13285,6 @@ private struct SidebarEmptyArea: View {
                                     selectedTabIds = [selectedId]
                                     lastSidebarSelectionIndex = tabManager.tabs.firstIndex { $0.id == selectedId }
                                 }
-                                selection = .tabs
                             }
                             .buttonStyle(.borderedProminent)
                             .controlSize(.small)

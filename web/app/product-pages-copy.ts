@@ -320,7 +320,7 @@ const englishCopy: ProductPageCopy = {
       "This log is the public release record for ICC. It tracks the current product line, the official website rollout, documentation changes, and the operating notes you should check before replacing your current build.",
     currentReleaseLabel: "Current release line",
     currentReleaseBody:
-      "ICC is currently published as v1.0.8. The desktop product, official website, multilingual marketing layer, and release assets now align to the current stable line.",
+      "ICC is currently published as v1.0.9. The desktop product, official website, multilingual marketing layer, and release assets now align to the current stable line.",
     releaseModelTitle: "How to read ICC releases",
     releaseModelIntro:
       "Use the changelog as an operating document, not just a marketing page. A good release note helps you decide whether to adopt immediately, validate first, or hold until an active workflow is done.",
@@ -358,6 +358,18 @@ const englishCopy: ProductPageCopy = {
     ],
     entriesTitle: "Release history",
     entries: [
+      {
+        date: "March 31, 2026",
+        version: "v1.0.9",
+        title: "Brand consistency sweep and sidebar interaction consolidation",
+        body:
+          "This stable release unifies active website copy around the ICC brand, aligns docs and legal surfaces to current repository endpoints, and stabilizes the sidebar interaction model so workspace navigation and tool panes no longer fight each other.",
+        bullets: [
+          "Rebranded active docs, legal, community, and localized website strings from legacy naming to ICC while keeping historical blog and changelog archive content intentionally untouched.",
+          "Aligned active GitHub links and release-facing website routes to the current ICC repository and download endpoints.",
+          "Updated sidebar behavior so left navigation can stay visible while right-side tools are open, and ensured file/remote explorer editor context resets correctly on workspace switches.",
+        ],
+      },
       {
         date: "March 31, 2026",
         version: "v1.0.8",
@@ -691,7 +703,7 @@ const zhCnCopy: ProductPageCopy = {
       "这份页面是 ICC 的公开发布记录。它追踪当前产品线、官网上线、多语言站点扩展，以及替换当前构建前应该检查的操作说明。",
     currentReleaseLabel: "当前发布线",
     currentReleaseBody:
-      "ICC 当前对外发布版本为 v1.0.8。桌面产品、官方网站、多语言营销层以及发布资产现在都已经对齐到当前稳定版本线上。",
+      "ICC 当前对外发布版本为 v1.0.9。桌面产品、官方网站、多语言营销层以及发布资产现在都已经对齐到当前稳定版本线上。",
     releaseModelTitle: "应该怎么读 ICC 的版本发布",
     releaseModelIntro:
       "把升级日志当成操作文档，而不仅仅是宣传页。好的发布记录应该帮助你判断是马上采用、先验证，还是等当前任务结束后再更新。",
@@ -729,6 +741,18 @@ const zhCnCopy: ProductPageCopy = {
     ],
     entriesTitle: "发布历史",
     entries: [
+      {
+        date: "2026年3月31日",
+        version: "v1.0.9",
+        title: "品牌一致性清理与侧栏交互整合",
+        body:
+          "这个稳定版本集中完成了 ICC 活跃站点面的品牌一致性清理，把文档与法务页面的发布入口对齐到当前仓库，并收敛了侧栏交互模型，避免工作区导航与工具面板互相打架。",
+        bullets: [
+          "把当前仍在使用的文档、法务、社区与多语言页面中的旧命名统一为 ICC，同时保留历史博客与历史更新记录中的旧称呼作为档案信息。",
+          "把活跃页面里的 GitHub 链接和发布下载入口统一到当前 ICC 仓库与下载路径。",
+          "调整侧栏行为，让左侧导航与右侧工具面板可同时工作，并在切换工作区时正确重置文件/远程编辑上下文。",
+        ],
+      },
       {
         date: "2026年3月31日",
         version: "v1.0.8",
