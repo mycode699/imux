@@ -1062,6 +1062,22 @@ class TabManager: ObservableObject {
         placementOverride: NewWorkspacePlacement? = nil,
         autoWelcomeIfNeeded: Bool = true
     ) -> Workspace {
+        // Workspace mutations are UI-state mutations and must run on main.
+        // External open intents or service callbacks can arrive off-main.
+        if !Thread.isMainThread {
+            return DispatchQueue.main.sync {
+                addWorkspace(
+                    workingDirectory: overrideWorkingDirectory,
+                    initialTerminalCommand: initialTerminalCommand,
+                    initialTerminalEnvironment: initialTerminalEnvironment,
+                    select: select,
+                    eagerLoadTerminal: eagerLoadTerminal,
+                    placementOverride: placementOverride,
+                    autoWelcomeIfNeeded: autoWelcomeIfNeeded
+                )
+            }
+        }
+
         // Snapshot current published state once so workspace creation doesn't repeatedly
         // bounce through Combine-backed accessors while we're preparing the new workspace.
         let snapshot = workspaceCreationSnapshot()
@@ -2007,7 +2023,7 @@ class TabManager: ObservableObject {
         let selectedIndex = snapshot.selectedTabId.flatMap { tabId in
             snapshot.tabs.firstIndex(where: { $0.id == tabId })
         }
-        let selectedIsPinned = selectedIndex.map { snapshot.tabs[$0].isPinned } ?? false
+        let selectedIsPinned = snapshot.selectedWorkspace?.isPinned ?? false
         return WorkspacePlacementSettings.insertionIndex(
             placement: placement,
             selectedIndex: selectedIndex,
