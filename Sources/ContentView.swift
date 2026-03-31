@@ -75,6 +75,51 @@ func iccAccentColor() -> Color {
     Color(nsColor: iccAccentNSColor())
 }
 
+enum SidebarTextWidthClass: Sendable {
+    case regular
+    case compact
+    case tight
+
+    var isCompact: Bool {
+        self != .regular
+    }
+
+    var hidesSupplementaryText: Bool {
+        self == .tight
+    }
+
+    static func leadingSidebar(for width: CGFloat) -> Self {
+        if width < 190 {
+            return .tight
+        }
+        if width < 236 {
+            return .compact
+        }
+        return .regular
+    }
+
+    static func detailSidebar(for width: CGFloat) -> Self {
+        if width < 320 {
+            return .tight
+        }
+        if width < 400 {
+            return .compact
+        }
+        return .regular
+    }
+}
+
+private struct SidebarTextWidthClassKey: EnvironmentKey {
+    static let defaultValue: SidebarTextWidthClass = .regular
+}
+
+extension EnvironmentValues {
+    var sidebarTextWidthClass: SidebarTextWidthClass {
+        get { self[SidebarTextWidthClassKey.self] }
+        set { self[SidebarTextWidthClassKey.self] = newValue }
+    }
+}
+
 enum ICCChrome {
     static func accent(for colorScheme: ColorScheme) -> Color {
         Color(nsColor: iccAccentNSColor(for: colorScheme))
@@ -271,16 +316,20 @@ struct ICCMetricCard: View {
             Text(title)
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
 
             Text(value)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(tint ?? .primary)
+                .lineLimit(1)
 
             if let subtitle {
                 Text(subtitle)
                     .font(.system(size: 11.5, weight: .medium))
                     .foregroundStyle(.secondary.opacity(ICCChrome.secondaryTextOpacity(for: colorScheme)))
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .safeHelp(subtitle)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -325,6 +374,8 @@ struct ICCIconBadge: View {
     let systemImage: String
     let primary: Color
     let secondary: Color
+    var size: CGFloat = 44
+    var iconSize: CGFloat = 18
 
     var body: some View {
         RoundedRectangle(cornerRadius: 15, style: .continuous)
@@ -335,10 +386,10 @@ struct ICCIconBadge: View {
                     endPoint: .bottomTrailing
                 )
             )
-            .frame(width: 44, height: 44)
+            .frame(width: size, height: size)
             .overlay {
                 Image(systemName: systemImage)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: iconSize, weight: .bold))
                     .foregroundStyle(.white)
             }
     }
@@ -2719,24 +2770,34 @@ struct ContentView: View {
     }
 
     private var explorerPaneHeader: some View {
-        HStack(alignment: .center, spacing: 12) {
+        let widthClass = SidebarTextWidthClass.detailSidebar(for: explorerPaneWidth)
+
+        return HStack(alignment: .center, spacing: widthClass.isCompact ? 10 : 12) {
             ICCIconBadge(
                 systemImage: explorerPaneSystemImage(for: sidebarSelectionState.selection),
                 primary: ICCChrome.accent(for: colorScheme),
-                secondary: ICCChrome.secondaryAccent(for: colorScheme)
+                secondary: ICCChrome.secondaryAccent(for: colorScheme),
+                size: widthClass.isCompact ? 38 : 44,
+                iconSize: widthClass.isCompact ? 15 : 18
             )
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(explorerPaneTitle)
                     .font(.system(size: 14, weight: .bold))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                 if !explorerPaneSubtitle.isEmpty {
-                    Text(explorerPaneSubtitle)
-                        .font(.system(size: 11.5, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
+                    if !widthClass.hidesSupplementaryText {
+                        Text(explorerPaneSubtitle)
+                            .font(.system(size: 11.5, weight: .medium))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .safeHelp(explorerPaneSubtitle)
+                    }
                 }
             }
+            .layoutPriority(1)
 
             Spacer(minLength: 0)
 
@@ -2746,7 +2807,7 @@ struct ContentView: View {
                 Image(systemName: "xmark")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Color.primary.opacity(0.78))
-                    .frame(width: 30, height: 30)
+                    .frame(width: widthClass.isCompact ? 28 : 30, height: widthClass.isCompact ? 28 : 30)
                     .background(
                         RoundedRectangle(cornerRadius: 9, style: .continuous)
                             .fill(ICCChrome.mutedFill(for: colorScheme))
@@ -2824,7 +2885,9 @@ struct ContentView: View {
     }
 
     private var explorerPaneView: some View {
-        VStack(spacing: 0) {
+        let widthClass = SidebarTextWidthClass.detailSidebar(for: explorerPaneWidth)
+
+        return VStack(spacing: 0) {
             explorerPaneHeader
 
             Group {
@@ -2900,6 +2963,7 @@ struct ContentView: View {
                 }
             }
         }
+        .environment(\.sidebarTextWidthClass, widthClass)
         .frame(width: explorerPaneWidth)
         .frame(maxHeight: .infinity, alignment: .topLeading)
         .background(
@@ -9190,22 +9254,29 @@ struct VerticalTabsSidebar: View {
     private let tabRowSpacing: CGFloat = 4
     private let hiddenTitlebarControlsLeadingInset: CGFloat = 72
 
-    private var workspaceHeader: some View {
-        HStack(spacing: 10) {
+    private func workspaceHeader(widthClass: SidebarTextWidthClass) -> some View {
+        let buttonSize: CGFloat = widthClass.isCompact ? 24 : 26
+
+        return HStack(spacing: widthClass.isCompact ? 8 : 10) {
             VStack(alignment: .leading, spacing: 3) {
                 Text("工作区")
                     .font(.system(size: 11.5, weight: .bold))
                     .tracking(0.6)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
 
-                Text(tabManager.tabs.count == 1 ? "1 个窗口已打开" : "\(tabManager.tabs.count) 个窗口已打开")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.secondary.opacity(0.82))
+                if !widthClass.hidesSupplementaryText {
+                    Text(tabManager.tabs.count == 1 ? "1 个窗口已打开" : "\(tabManager.tabs.count) 个窗口已打开")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary.opacity(0.82))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
             }
 
             Spacer(minLength: 0)
 
-            HStack(spacing: 6) {
+            HStack(spacing: widthClass.isCompact ? 4 : 6) {
                 Button {
                     tabManager.addWorkspace(placementOverride: .end)
                     if let selectedId = tabManager.selectedTabId {
@@ -9215,7 +9286,7 @@ struct VerticalTabsSidebar: View {
                 } label: {
                     Image(systemName: "plus")
                         .font(.system(size: 11, weight: .bold))
-                        .frame(width: 26, height: 26)
+                        .frame(width: buttonSize, height: buttonSize)
                 }
                 .buttonStyle(.plain)
                 .background(
@@ -9229,7 +9300,7 @@ struct VerticalTabsSidebar: View {
                 } label: {
                     Image(systemName: "folder.badge.plus")
                         .font(.system(size: 11, weight: .semibold))
-                        .frame(width: 26, height: 26)
+                        .frame(width: buttonSize, height: buttonSize)
                 }
                 .buttonStyle(.plain)
                 .background(
@@ -9277,13 +9348,15 @@ struct VerticalTabsSidebar: View {
         let workspaceNumberShortcut = self.workspaceNumberShortcut
 
         GeometryReader { proxy in
+            let widthClass = SidebarTextWidthClass.leadingSidebar(for: proxy.size.width)
+
             ScrollView {
                 VStack(spacing: 0) {
                     // Space for traffic lights / fullscreen controls
                     Spacer()
                         .frame(height: trafficLightPadding)
 
-                    workspaceHeader
+                    workspaceHeader(widthClass: widthClass)
 
                     LazyVStack(spacing: tabRowSpacing) {
                         ForEach(Array(tabManager.tabs.enumerated()), id: \.element.id) { index, tab in
@@ -9347,6 +9420,7 @@ struct VerticalTabsSidebar: View {
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                .environment(\.sidebarTextWidthClass, widthClass)
                 .frame(minHeight: proxy.size.height, alignment: .top)
             }
             .background(
@@ -10326,10 +10400,32 @@ private final class SidebarShortcutHintModifierMonitor: ObservableObject {
 private struct WeChatSidebarPaneView: View {
     @ObservedObject private var store = WeChatChannelSettingsStore.shared
     @ObservedObject private var bindingCatalog = WeChatBindingTargetCatalog.shared
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
 
-    private let metricColumns = [
-        GridItem(.adaptive(minimum: 94, maximum: 160), spacing: 8, alignment: .top)
-    ]
+    private var metricColumns: [GridItem] {
+        [
+            GridItem(
+                .adaptive(
+                    minimum: sidebarTextWidthClass.hidesSupplementaryText ? 80 : 94,
+                    maximum: 160
+                ),
+                spacing: 8,
+                alignment: .top
+            )
+        ]
+    }
+
+    private var showsSupplementaryText: Bool {
+        !sidebarTextWidthClass.hidesSupplementaryText
+    }
+
+    private var usesCompactCardChrome: Bool {
+        sidebarTextWidthClass.isCompact
+    }
+
+    private var cardButtonControlSize: ControlSize {
+        sidebarTextWidthClass.hidesSupplementaryText ? .mini : .small
+    }
 
     private var configuration: WeChatChannelConfiguration {
         store.configuration
@@ -10430,33 +10526,29 @@ private struct WeChatSidebarPaneView: View {
     private var overviewCard: some View {
         WeChatSidebarCard {
             VStack(alignment: .leading, spacing: 14) {
-                HStack(alignment: .top, spacing: 12) {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.green.opacity(0.88),
-                                    Color.blue.opacity(0.7)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 42, height: 42)
-                        .overlay {
-                            Image(systemName: "message")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundStyle(.white)
-                        }
+                HStack(alignment: .top, spacing: usesCompactCardChrome ? 10 : 12) {
+                    ICCIconBadge(
+                        systemImage: "message",
+                        primary: Color.green.opacity(0.88),
+                        secondary: Color.blue.opacity(0.7),
+                        size: usesCompactCardChrome ? 38 : 42,
+                        iconSize: usesCompactCardChrome ? 15 : 18
+                    )
 
                     VStack(alignment: .leading, spacing: 5) {
                         Text("微信 Bot 绑定")
                             .font(.system(size: 15, weight: .semibold))
-                        Text("左侧进入绑定面板，右侧快速检查账号、路由和当前窗口绑定情况。详细字段仍在设置里统一管理。")
-                            .font(.system(size: 12))
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                        if showsSupplementaryText {
+                            Text("左侧进入绑定面板，右侧快速检查账号、路由和当前窗口绑定情况。详细字段仍在设置里统一管理。")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                                .lineLimit(sidebarTextWidthClass.isCompact ? 1 : 2)
+                                .truncationMode(.tail)
+                        }
                     }
+                    .layoutPriority(1)
 
                     Spacer(minLength: 0)
 
@@ -10466,27 +10558,80 @@ private struct WeChatSidebarPaneView: View {
                         .controlSize(.small)
                 }
 
-                HStack(spacing: 8) {
-                    Button("添加账号") {
-                        store.addAccount()
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        Button("添加账号") {
+                            store.addAccount()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+
+                        Button("打开设置") {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+
+                        Spacer(minLength: 0)
+
+                        WeChatSidebarStatusPill(
+                            text: configuration.integrationEnabled ? "已启用" : "未启用",
+                            tint: configuration.integrationEnabled ? .green : .secondary,
+                            emphasized: configuration.integrationEnabled
+                        )
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
 
-                    Button("打开设置") {
-                        SettingsWindowController.shared.show(navigationTarget: .wechat)
+                    HStack(spacing: 6) {
+                        Button("添加") {
+                            store.addAccount()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+
+                        Button("设置") {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+
+                        Spacer(minLength: 0)
+
+                        WeChatSidebarStatusPill(
+                            text: configuration.integrationEnabled ? "已启用" : "未启用",
+                            tint: configuration.integrationEnabled ? .green : .secondary,
+                            emphasized: configuration.integrationEnabled
+                        )
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
 
-                    Spacer(minLength: 0)
+                    HStack(spacing: 6) {
+                        Button {
+                            store.addAccount()
+                        } label: {
+                            Label("添加账号", systemImage: "plus")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
 
-                    WeChatSidebarStatusPill(
-                        text: configuration.integrationEnabled ? "已启用" : "未启用",
-                        tint: configuration.integrationEnabled ? .green : .secondary,
-                        emphasized: configuration.integrationEnabled
-                    )
+                        Button {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        } label: {
+                            Label("打开设置", systemImage: "gearshape")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+
+                        Spacer(minLength: 0)
+
+                        WeChatSidebarStatusPill(
+                            text: configuration.integrationEnabled ? "开" : "关",
+                            tint: configuration.integrationEnabled ? .green : .secondary,
+                            emphasized: configuration.integrationEnabled
+                        )
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -10533,24 +10678,65 @@ private struct WeChatSidebarPaneView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("还没有微信账号")
                     .font(.system(size: 13, weight: .semibold))
-                Text("先添加一个 Bot 账号，再为不同微信会话分配独立窗口或工作区。这样左侧按钮就不只是入口，而是完整的操作面板。")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                HStack(spacing: 8) {
-                    Button("添加首个账号") {
-                        store.addAccount()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-
-                    Button("前往详细设置") {
-                        SettingsWindowController.shared.show(navigationTarget: .wechat)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .lineLimit(1)
+                if showsSupplementaryText {
+                    Text("先添加一个 Bot 账号，再为不同微信会话分配独立窗口或工作区。这样左侧按钮就不只是入口，而是完整的操作面板。")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(sidebarTextWidthClass.isCompact ? 1 : 2)
+                        .truncationMode(.tail)
                 }
+
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        Button("添加首个账号") {
+                            store.addAccount()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+
+                        Button("前往详细设置") {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                    }
+
+                    HStack(spacing: 6) {
+                        Button("添加账号") {
+                            store.addAccount()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+
+                        Button("设置") {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                    }
+
+                    HStack(spacing: 6) {
+                        Button {
+                            store.addAccount()
+                        } label: {
+                            Label("添加账号", systemImage: "plus")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+
+                        Button {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        } label: {
+                            Label("设置", systemImage: "gearshape")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -10579,11 +10765,16 @@ private struct WeChatSidebarPaneView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(account.displayName.isEmpty ? "微信机器人" : account.displayName)
                             .font(.system(size: 13.5, weight: .semibold))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
                         Text(accountBaseURL(account) + " · \(account.bindings.count) 条路由")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
+                            .truncationMode(.middle)
+                            .safeHelp(accountBaseURL(account))
                     }
+                    .layoutPriority(1)
 
                     Spacer(minLength: 0)
 
@@ -10600,15 +10791,17 @@ private struct WeChatSidebarPaneView: View {
                     )
                 }
 
-                HStack(spacing: 8) {
-                    if WeChatBotTokenStore.hasToken(for: account.id) {
-                        WeChatSidebarStatusPill(text: "Token 已保存", tint: .green)
-                    }
-                    if !account.isEnabled {
-                        WeChatSidebarStatusPill(text: "已停用", tint: .secondary)
-                    }
-                    if !account.routeTag.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        WeChatSidebarStatusPill(text: "#\(account.routeTag)", tint: .blue)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        if WeChatBotTokenStore.hasToken(for: account.id) {
+                            WeChatSidebarStatusPill(text: "Token 已保存", tint: .green)
+                        }
+                        if !account.isEnabled {
+                            WeChatSidebarStatusPill(text: "已停用", tint: .secondary)
+                        }
+                        if !account.routeTag.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            WeChatSidebarStatusPill(text: "#\(account.routeTag)", tint: .blue)
+                        }
                     }
                 }
 
@@ -10616,6 +10809,8 @@ private struct WeChatSidebarPaneView: View {
                     Text("还没有聊天路由。至少添加一个路由，微信会话才能知道该连接到哪个窗口。")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(showsSupplementaryText ? 2 : 1)
+                        .truncationMode(.tail)
                 } else {
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(account.bindings) { binding in
@@ -10624,22 +10819,65 @@ private struct WeChatSidebarPaneView: View {
                     }
                 }
 
-                HStack(spacing: 8) {
-                    Button("添加路由") {
-                        store.addBinding(to: account.id)
-                        bindingCatalog.refresh()
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        Button("添加路由") {
+                            store.addBinding(to: account.id)
+                            bindingCatalog.refresh()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
 
-                    Button("更多设置") {
-                        SettingsWindowController.shared.show(navigationTarget: .wechat)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+                        Button("更多设置") {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
 
-                    Spacer(minLength: 0)
+                        Spacer(minLength: 0)
+                    }
+
+                    HStack(spacing: 6) {
+                        Button("添加") {
+                            store.addBinding(to: account.id)
+                            bindingCatalog.refresh()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+
+                        Button("设置") {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+
+                        Spacer(minLength: 0)
+                    }
+
+                    HStack(spacing: 6) {
+                        Button {
+                            store.addBinding(to: account.id)
+                            bindingCatalog.refresh()
+                        } label: {
+                            Label("添加路由", systemImage: "plus")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+
+                        Button {
+                            SettingsWindowController.shared.show(navigationTarget: .wechat)
+                        } label: {
+                            Label("更多设置", systemImage: "gearshape")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+
+                        Spacer(minLength: 0)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -10666,7 +10904,10 @@ private struct WeChatSidebarPaneView: View {
             Text(routeSubtitle(binding))
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .lineLimit(2)
+                .lineLimit(showsSupplementaryText ? 1 : 0)
+                .truncationMode(.middle)
+                .opacity(showsSupplementaryText ? 1 : 0)
+                .frame(height: showsSupplementaryText ? nil : 0)
 
             HStack(alignment: .center, spacing: 8) {
                 Text("目标")
@@ -10682,22 +10923,66 @@ private struct WeChatSidebarPaneView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            HStack(spacing: 8) {
-                Button("绑定当前窗口") {
-                    bindRouteToCurrentWindow(accountId: accountId, bindingId: binding.id)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .disabled(AppDelegate.shared?.currentWindowMoveTarget() == nil)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    Button("绑定当前窗口") {
+                        bindRouteToCurrentWindow(accountId: accountId, bindingId: binding.id)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                    .disabled(AppDelegate.shared?.currentWindowMoveTarget() == nil)
 
-                Button("绑定当前工作区") {
-                    bindRouteToCurrentWorkspace(accountId: accountId, bindingId: binding.id)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .disabled(AppDelegate.shared?.currentWorkspaceMoveTarget() == nil)
+                    Button("绑定当前工作区") {
+                        bindRouteToCurrentWorkspace(accountId: accountId, bindingId: binding.id)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                    .disabled(AppDelegate.shared?.currentWorkspaceMoveTarget() == nil)
 
-                Spacer(minLength: 0)
+                    Spacer(minLength: 0)
+                }
+
+                HStack(spacing: 6) {
+                    Button("绑窗口") {
+                        bindRouteToCurrentWindow(accountId: accountId, bindingId: binding.id)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                    .disabled(AppDelegate.shared?.currentWindowMoveTarget() == nil)
+
+                    Button("绑工作区") {
+                        bindRouteToCurrentWorkspace(accountId: accountId, bindingId: binding.id)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                    .disabled(AppDelegate.shared?.currentWorkspaceMoveTarget() == nil)
+
+                    Spacer(minLength: 0)
+                }
+
+                HStack(spacing: 6) {
+                    Button {
+                        bindRouteToCurrentWindow(accountId: accountId, bindingId: binding.id)
+                    } label: {
+                        Label("绑定当前窗口", systemImage: "macwindow")
+                            .labelStyle(.iconOnly)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                    .disabled(AppDelegate.shared?.currentWindowMoveTarget() == nil)
+
+                    Button {
+                        bindRouteToCurrentWorkspace(accountId: accountId, bindingId: binding.id)
+                    } label: {
+                        Label("绑定当前工作区", systemImage: "square.grid.2x2")
+                            .labelStyle(.iconOnly)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                    .disabled(AppDelegate.shared?.currentWorkspaceMoveTarget() == nil)
+
+                    Spacer(minLength: 0)
+                }
             }
         }
         .padding(10)
@@ -11035,8 +11320,11 @@ private struct WeChatSidebarMetricCard: View {
             Text(title)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.tail)
             Text(value)
                 .font(.system(size: 16, weight: .semibold))
+                .lineLimit(1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 10)
@@ -11063,20 +11351,27 @@ private struct WeChatSidebarStatusPill: View {
 }
 
 private struct WeChatSidebarToggleRow: View {
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
     let title: String
     let subtitle: String
     @Binding var isOn: Bool
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .center, spacing: 10) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 12.5, weight: .semibold))
-                Text(subtitle)
-                    .font(.system(size: 11.5))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                if !sidebarTextWidthClass.hidesSupplementaryText {
+                    Text(subtitle)
+                        .font(.system(size: 11.5))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(sidebarTextWidthClass.isCompact ? 1 : 2)
+                        .truncationMode(.tail)
+                }
             }
+            .layoutPriority(1)
 
             Spacer(minLength: 0)
 
@@ -11092,11 +11387,32 @@ private struct WeChatSidebarToggleRow: View {
 private struct SourceControlSidebarPaneView: View {
     @ObservedObject var workspace: Workspace
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
     @State private var snapshot: SourceControlSidebarSnapshot?
     @State private var isRefreshing = false
     @State private var isPerformingSidebarAction = false
     @State private var actionStatusMessage: String?
     @State private var actionStatusIsError = false
+
+    private var showsSupplementaryText: Bool {
+        !sidebarTextWidthClass.hidesSupplementaryText
+    }
+
+    private var usesCompactCardChrome: Bool {
+        sidebarTextWidthClass.isCompact
+    }
+
+    private var cardButtonControlSize: ControlSize {
+        sidebarTextWidthClass.hidesSupplementaryText ? .mini : .small
+    }
+
+    private var overviewBadgeSize: CGFloat {
+        usesCompactCardChrome ? 38 : 44
+    }
+
+    private var overviewBadgeIconSize: CGFloat {
+        usesCompactCardChrome ? 15 : 18
+    }
 
     private var currentDirectory: String {
         let trimmed = workspace.currentDirectory.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -11168,25 +11484,36 @@ private struct SourceControlSidebarPaneView: View {
     private var overviewCard: some View {
         WeChatSidebarCard {
             VStack(alignment: .leading, spacing: 14) {
-                HStack(alignment: .top, spacing: 12) {
+                HStack(alignment: .top, spacing: usesCompactCardChrome ? 10 : 12) {
                     ICCIconBadge(
                         systemImage: "arrow.triangle.branch",
                         primary: ICCChrome.accent(for: colorScheme),
-                        secondary: ICCChrome.secondaryAccent(for: colorScheme)
+                        secondary: ICCChrome.secondaryAccent(for: colorScheme),
+                        size: overviewBadgeSize,
+                        iconSize: overviewBadgeIconSize
                     )
 
                     VStack(alignment: .leading, spacing: 5) {
                         Text("源码管理器")
                             .font(.system(size: 15, weight: .semibold))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
                         Text(repositoryRoot.map { SidebarPathFormatter.shortenedPath($0) } ?? SidebarPathFormatter.shortenedPath(currentDirectory))
                             .font(.system(size: 11.5, weight: .medium))
                             .foregroundStyle(.secondary)
-                            .lineLimit(2)
-                        Text(branchHeadline)
-                            .font(.system(size: 12))
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .safeHelp(repositoryRoot ?? currentDirectory)
+                        if showsSupplementaryText {
+                            Text(branchHeadline)
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .safeHelp(branchHeadline)
+                        }
                     }
+                    .layoutPriority(1)
 
                     Spacer(minLength: 0)
 
@@ -11215,44 +11542,90 @@ private struct SourceControlSidebarPaneView: View {
                     }
                 }
 
-                HStack(spacing: 8) {
-                    Button("刷新") {
-                        Task {
-                            await refreshSnapshot()
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        Button("刷新") {
+                            Task {
+                                await refreshSnapshot()
+                            }
                         }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
 
-                    Button("打开仓库") {
-                        openRepositoryInFinder()
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(repositoryRoot == nil)
+                        Button("打开仓库") {
+                            openRepositoryInFinder()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(repositoryRoot == nil)
 
-                    Button("打开 GitHub") {
-                        openPrimaryRepositoryOnGitHub()
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(primaryRepositoryURL == nil)
+                        Button("打开 GitHub") {
+                            openPrimaryRepositoryOnGitHub()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(primaryRepositoryURL == nil)
 
-                    Button("复制分支") {
-                        copyBranchHeadline()
+                        Button("复制分支") {
+                            copyBranchHeadline()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(branchHeadline == "未检测到 Git 分支")
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(branchHeadline == "未检测到 Git 分支")
 
-                    Spacer(minLength: 0)
+                    HStack(spacing: 6) {
+                        Button {
+                            Task {
+                                await refreshSnapshot()
+                            }
+                        } label: {
+                            Label("刷新", systemImage: "arrow.clockwise")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+
+                        Button {
+                            openRepositoryInFinder()
+                        } label: {
+                            Label("打开仓库", systemImage: "folder")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(repositoryRoot == nil)
+
+                        Button {
+                            openPrimaryRepositoryOnGitHub()
+                        } label: {
+                            Label("打开 GitHub", systemImage: "arrow.up.right.square")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(primaryRepositoryURL == nil)
+
+                        Button {
+                            copyBranchHeadline()
+                        } label: {
+                            Label("复制分支", systemImage: "doc.on.doc")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(branchHeadline == "未检测到 Git 分支")
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 if let actionStatusMessage {
                     Text(actionStatusMessage)
                         .font(.caption)
                         .foregroundStyle(actionStatusIsError ? Color.red : Color.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(showsSupplementaryText ? 2 : 1)
+                        .truncationMode(.tail)
+                        .safeHelp(actionStatusMessage)
                 }
             }
         }
@@ -11272,39 +11645,83 @@ private struct SourceControlSidebarPaneView: View {
                     }
                 }
 
-                Text("直接为当前项目打开一个新的终端分屏执行 Pull / Push / Status，保留完整输出，避免把 Git 操作做成不可见的后台按钮。")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                HStack(spacing: 8) {
-                    Button("快速 Pull") {
-                        performDeferredSidebarAction {
-                            runRepositoryAction(title: "Git Pull", command: "git pull --rebase --autostash")
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
-
-                    Button("快速 Push") {
-                        performDeferredSidebarAction {
-                            runRepositoryAction(title: "Git Push", command: "git push")
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
-
-                    Button("状态") {
-                        performDeferredSidebarAction {
-                            runRepositoryAction(title: "Git Status", command: "git status -sb")
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
+                if showsSupplementaryText {
+                    Text("直接为当前项目打开一个新的终端分屏执行 Pull / Push / Status，保留完整输出，避免把 Git 操作做成不可见的后台按钮。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(sidebarTextWidthClass.isCompact ? 1 : 2)
+                        .truncationMode(.tail)
                 }
+
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        Button("快速 Pull") {
+                            performDeferredSidebarAction {
+                                runRepositoryAction(title: "Git Pull", command: "git pull --rebase --autostash")
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(repositoryRoot == nil || isPerformingSidebarAction)
+
+                        Button("快速 Push") {
+                            performDeferredSidebarAction {
+                                runRepositoryAction(title: "Git Push", command: "git push")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(repositoryRoot == nil || isPerformingSidebarAction)
+
+                        Button("状态") {
+                            performDeferredSidebarAction {
+                                runRepositoryAction(title: "Git Status", command: "git status -sb")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(repositoryRoot == nil || isPerformingSidebarAction)
+                    }
+
+                    HStack(spacing: 6) {
+                        Button {
+                            performDeferredSidebarAction {
+                                runRepositoryAction(title: "Git Pull", command: "git pull --rebase --autostash")
+                            }
+                        } label: {
+                            Label("快速 Pull", systemImage: "arrow.down")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(repositoryRoot == nil || isPerformingSidebarAction)
+
+                        Button {
+                            performDeferredSidebarAction {
+                                runRepositoryAction(title: "Git Push", command: "git push")
+                            }
+                        } label: {
+                            Label("快速 Push", systemImage: "arrow.up")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(repositoryRoot == nil || isPerformingSidebarAction)
+
+                        Button {
+                            performDeferredSidebarAction {
+                                runRepositoryAction(title: "Git Status", command: "git status -sb")
+                            }
+                        } label: {
+                            Label("状态", systemImage: "list.bullet")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(repositoryRoot == nil || isPerformingSidebarAction)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -11323,45 +11740,100 @@ private struct SourceControlSidebarPaneView: View {
                     }
                 }
 
-                Text("参考 smux 的跨模型协作思路，但直接使用 icc 自己的 pane read/send/send-key 能力。你可以为当前工作区一键添加 Claude、Codex，或创建双模型协作布局。")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                HStack(spacing: 8) {
-                    Button("添加 Claude") {
-                        performDeferredSidebarAction {
-                            launchAgentWorkflow(.addPane(.claude))
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(isPerformingSidebarAction)
-
-                    Button("添加 Codex") {
-                        performDeferredSidebarAction {
-                            launchAgentWorkflow(.addPane(.codex))
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .disabled(isPerformingSidebarAction)
-
-                    Button("创建协作布局") {
-                        performDeferredSidebarAction {
-                            launchAgentWorkflow(.linkedMode)
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.small)
-                    .disabled(isPerformingSidebarAction)
+                if showsSupplementaryText {
+                    Text("参考 smux 的跨模型协作思路，但直接使用 icc 自己的 pane read/send/send-key 能力。你可以为当前工作区一键添加 Claude、Codex，或创建双模型协作布局。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(sidebarTextWidthClass.isCompact ? 1 : 2)
+                        .truncationMode(.tail)
                 }
 
-                Button("复制协作命令") {
-                    copyAgentBridgeCheatSheet()
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        Button("添加 Claude") {
+                            performDeferredSidebarAction {
+                                launchAgentWorkflow(.addPane(.claude))
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(isPerformingSidebarAction)
+
+                        Button("添加 Codex") {
+                            performDeferredSidebarAction {
+                                launchAgentWorkflow(.addPane(.codex))
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(isPerformingSidebarAction)
+
+                        Button("创建协作布局") {
+                            performDeferredSidebarAction {
+                                launchAgentWorkflow(.linkedMode)
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(isPerformingSidebarAction)
+                    }
+
+                    HStack(spacing: 6) {
+                        Button {
+                            performDeferredSidebarAction {
+                                launchAgentWorkflow(.addPane(.claude))
+                            }
+                        } label: {
+                            Label("添加 Claude", systemImage: "bubble.left")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(isPerformingSidebarAction)
+
+                        Button {
+                            performDeferredSidebarAction {
+                                launchAgentWorkflow(.addPane(.codex))
+                            }
+                        } label: {
+                            Label("添加 Codex", systemImage: "chevron.left.forwardslash.chevron.right")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(isPerformingSidebarAction)
+
+                        Button {
+                            performDeferredSidebarAction {
+                                launchAgentWorkflow(.linkedMode)
+                            }
+                        } label: {
+                            Label("创建协作布局", systemImage: "square.split.2x1")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(cardButtonControlSize)
+                        .disabled(isPerformingSidebarAction)
+                    }
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if sidebarTextWidthClass.hidesSupplementaryText {
+                    Button {
+                        copyAgentBridgeCheatSheet()
+                    } label: {
+                        Label("复制协作命令", systemImage: "doc.on.doc")
+                            .labelStyle(.iconOnly)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                } else {
+                    Button("复制协作命令") {
+                        copyAgentBridgeCheatSheet()
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                }
             }
         }
     }
@@ -11376,13 +11848,31 @@ private struct SourceControlSidebarPaneView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(snapshot.githubRepoSlugs, id: \.self) { slug in
                             HStack(spacing: 8) {
-                                WeChatSidebarStatusPill(text: slug, tint: .blue)
+                                Image(systemName: "link")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(.secondary)
+                                Text(slug)
+                                    .font(.system(size: 11.5, weight: .semibold))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .safeHelp(slug)
                                 Spacer(minLength: 0)
-                                Button("打开") {
-                                    guard let url = URL(string: "https://github.com/\(slug)") else { return }
-                                    NSWorkspace.shared.open(url)
+                                if sidebarTextWidthClass.hidesSupplementaryText {
+                                    Button {
+                                        guard let url = URL(string: "https://github.com/\(slug)") else { return }
+                                        NSWorkspace.shared.open(url)
+                                    } label: {
+                                        Label("打开", systemImage: "arrow.up.right.square")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(.borderless)
+                                } else {
+                                    Button("打开") {
+                                        guard let url = URL(string: "https://github.com/\(slug)") else { return }
+                                        NSWorkspace.shared.open(url)
+                                    }
+                                    .buttonStyle(.borderless)
                                 }
-                                .buttonStyle(.borderless)
                             }
                         }
                     }
@@ -11394,19 +11884,24 @@ private struct SourceControlSidebarPaneView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("远程")
                             .font(.system(size: 12.5, weight: .semibold))
+                            .lineLimit(1)
 
                         ForEach(snapshot.remotes) { remote in
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack(spacing: 8) {
                                     Text(remote.name)
                                         .font(.system(size: 11.5, weight: .semibold))
+                                        .lineLimit(1)
+                                        .truncationMode(.tail)
                                     WeChatSidebarStatusPill(text: remote.kind, tint: .secondary)
                                 }
                                 Text(remote.url)
                                     .font(.system(size: 11))
                                     .foregroundStyle(.secondary)
                                     .textSelection(.enabled)
-                                    .lineLimit(2)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .safeHelp(remote.url)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -11422,6 +11917,7 @@ private struct SourceControlSidebarPaneView: View {
                 HStack {
                     Text("工作区状态")
                         .font(.system(size: 13, weight: .semibold))
+                        .lineLimit(1)
                     Spacer(minLength: 0)
                     WeChatSidebarStatusPill(
                         text: snapshot.changes.isEmpty ? "干净" : "\(snapshot.changes.count) 处变更",
@@ -11434,6 +11930,7 @@ private struct SourceControlSidebarPaneView: View {
                     Text("当前工作区没有未提交变更。")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 } else {
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(snapshot.changes) { change in
@@ -11441,12 +11938,14 @@ private struct SourceControlSidebarPaneView: View {
                                 Text(change.status)
                                     .font(.system(size: 11, weight: .semibold, design: .monospaced))
                                     .foregroundStyle(change.statusColor)
-                                    .frame(width: 28, alignment: .leading)
+                                    .frame(width: usesCompactCardChrome ? 24 : 28, alignment: .leading)
                                 Text(change.path)
                                     .font(.system(size: 11.5))
                                     .foregroundStyle(.primary)
-                                    .lineLimit(2)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
                                     .textSelection(.enabled)
+                                    .safeHelp(change.path)
                                 Spacer(minLength: 0)
                             }
                         }
@@ -11461,17 +11960,25 @@ private struct SourceControlSidebarPaneView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("关联 PR")
                     .font(.system(size: 13, weight: .semibold))
+                    .lineLimit(1)
 
                 ForEach(pullRequests, id: \.url.absoluteString) { pullRequest in
                     HStack(alignment: .top, spacing: 8) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("\(pullRequest.label) #\(pullRequest.number)")
                                 .font(.system(size: 12.5, weight: .semibold))
-                            Text(pullRequest.branch ?? pullRequest.url.absoluteString)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                            if showsSupplementaryText {
+                                Text(pullRequest.branch ?? pullRequest.url.absoluteString)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .safeHelp(pullRequest.branch ?? pullRequest.url.absoluteString)
+                            }
                         }
+                        .layoutPriority(1)
 
                         Spacer(minLength: 0)
 
@@ -11480,10 +11987,20 @@ private struct SourceControlSidebarPaneView: View {
                             tint: pullRequestStatusColor(pullRequest)
                         )
 
-                        Button("打开") {
-                            NSWorkspace.shared.open(pullRequest.url)
+                        if sidebarTextWidthClass.hidesSupplementaryText {
+                            Button {
+                                NSWorkspace.shared.open(pullRequest.url)
+                            } label: {
+                                Label("打开", systemImage: "arrow.up.right.square")
+                                    .labelStyle(.iconOnly)
+                            }
+                            .buttonStyle(.borderless)
+                        } else {
+                            Button("打开") {
+                                NSWorkspace.shared.open(pullRequest.url)
+                            }
+                            .buttonStyle(.borderless)
                         }
-                        .buttonStyle(.borderless)
                     }
                 }
             }
@@ -11495,15 +12012,30 @@ private struct SourceControlSidebarPaneView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("当前目录不是 Git 仓库")
                     .font(.system(size: 13, weight: .semibold))
-                Text("切到一个包含 `.git` 的项目目录后，这里会展示分支、变更、远程仓库和 GitHub 绑定关系。")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Button("打开当前目录") {
-                    NSWorkspace.shared.open(URL(fileURLWithPath: currentDirectory))
+                    .lineLimit(1)
+                if showsSupplementaryText {
+                    Text("切到一个包含 `.git` 的项目目录后，这里会展示分支、变更、远程仓库和 GitHub 绑定关系。")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(sidebarTextWidthClass.isCompact ? 1 : 2)
+                        .truncationMode(.tail)
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
+                if sidebarTextWidthClass.hidesSupplementaryText {
+                    Button {
+                        NSWorkspace.shared.open(URL(fileURLWithPath: currentDirectory))
+                    } label: {
+                        Label("打开当前目录", systemImage: "folder")
+                            .labelStyle(.iconOnly)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                } else {
+                    Button("打开当前目录") {
+                        NSWorkspace.shared.open(URL(fileURLWithPath: currentDirectory))
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(cardButtonControlSize)
+                }
             }
         }
     }
@@ -13371,6 +13903,7 @@ private final class SidebarScrollViewResolverView: NSView {
 
 private struct SidebarEmptyArea: View {
     @EnvironmentObject var tabManager: TabManager
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
     let rowSpacing: CGFloat
     @Binding var selection: SidebarSelection
     @Binding var selectedTabIds: Set<UUID>
@@ -13416,29 +13949,61 @@ private struct SidebarEmptyArea: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("继续扩展")
                             .font(.system(size: 13, weight: .semibold))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
 
-                        Text("新建更多工作区，或直接打开一个项目文件夹，让左侧区域保持高效而不是空置。")
-                            .font(.system(size: 11.5, weight: .medium))
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-
-                        HStack(spacing: 8) {
-                            Button("新建工作区") {
-                                tabManager.addWorkspace(placementOverride: .end)
-                                if let selectedId = tabManager.selectedTabId {
-                                    selectedTabIds = [selectedId]
-                                    lastSidebarSelectionIndex = tabManager.tabs.firstIndex { $0.id == selectedId }
-                                }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
-
-                            Button("打开文件夹") {
-                                AppDelegate.shared?.openFolderFromTitlebar()
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
+                        if !sidebarTextWidthClass.hidesSupplementaryText {
+                            Text("新建更多工作区，或直接打开一个项目文件夹，让左侧区域保持高效而不是空置。")
+                                .font(.system(size: 11.5, weight: .medium))
+                                .foregroundStyle(.secondary)
+                                .lineLimit(sidebarTextWidthClass.isCompact ? 1 : 2)
+                                .truncationMode(.tail)
                         }
+
+                        ViewThatFits(in: .horizontal) {
+                            HStack(spacing: 8) {
+                                Button("新建工作区") {
+                                    tabManager.addWorkspace(placementOverride: .end)
+                                    if let selectedId = tabManager.selectedTabId {
+                                        selectedTabIds = [selectedId]
+                                        lastSidebarSelectionIndex = tabManager.tabs.firstIndex { $0.id == selectedId }
+                                    }
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.small)
+
+                                Button("打开文件夹") {
+                                    AppDelegate.shared?.openFolderFromTitlebar()
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+
+                            HStack(spacing: 8) {
+                                Button {
+                                    tabManager.addWorkspace(placementOverride: .end)
+                                    if let selectedId = tabManager.selectedTabId {
+                                        selectedTabIds = [selectedId]
+                                        lastSidebarSelectionIndex = tabManager.tabs.firstIndex { $0.id == selectedId }
+                                    }
+                                } label: {
+                                    Label("新建工作区", systemImage: "plus")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.small)
+
+                                Button {
+                                    AppDelegate.shared?.openFolderFromTitlebar()
+                                } label: {
+                                    Label("打开文件夹", systemImage: "folder.badge.plus")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
                 .padding(.horizontal, 10)
@@ -13604,6 +14169,7 @@ private struct TabItemView: View, Equatable {
     let allRemoteContextMenuTargetsDisconnected: Bool
     @State private var isHovering = false
     @State private var rowHeight: CGFloat = 1
+    @State private var rowWidth: CGFloat = 240
     @AppStorage(ShortcutHintDebugSettings.sidebarHintXKey) private var sidebarShortcutHintXOffset = ShortcutHintDebugSettings.defaultSidebarHintX
     @AppStorage(ShortcutHintDebugSettings.sidebarHintYKey) private var sidebarShortcutHintYOffset = ShortcutHintDebugSettings.defaultSidebarHintY
     @AppStorage(ShortcutHintDebugSettings.alwaysShowHintsKey) private var alwaysShowShortcutHints = ShortcutHintDebugSettings.defaultAlwaysShowHints
@@ -13634,6 +14200,10 @@ private struct TabItemView: View, Equatable {
 
     private var activeTabIndicatorStyle: SidebarActiveTabIndicatorStyle {
         SidebarActiveTabIndicatorSettings.resolvedStyle(rawValue: activeTabIndicatorStyleRaw)
+    }
+
+    private var sidebarTextWidthClass: SidebarTextWidthClass {
+        SidebarTextWidthClass.leadingSidebar(for: rowWidth)
     }
 
     private var titleFontWeight: Font.Weight {
@@ -13782,10 +14352,12 @@ private struct TabItemView: View, Equatable {
 
                     Spacer(minLength: 0)
 
-                    Text(remoteConnectionStatusText)
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(activeSecondaryColor(0.58))
-                        .lineLimit(1)
+                    if !sidebarTextWidthClass.hidesSupplementaryText {
+                        Text(remoteConnectionStatusText)
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundColor(activeSecondaryColor(0.58))
+                            .lineLimit(1)
+                    }
                 }
             }
             .padding(.top, latestNotificationText == nil ? 1 : 2)
@@ -13948,13 +14520,14 @@ private struct TabItemView: View, Equatable {
                 .frame(width: trailingAccessoryWidth, height: 16, alignment: .trailing)
             }
 
-            if let subtitle = effectiveSubtitle {
+            if let subtitle = effectiveSubtitle, !sidebarTextWidthClass.hidesSupplementaryText {
                 Text(subtitle)
                     .font(.system(size: 10))
                     .foregroundColor(activeSecondaryColor(0.8))
-                    .lineLimit(2)
+                    .lineLimit(1)
                     .truncationMode(.tail)
                     .multilineTextAlignment(.leading)
+                    .safeHelp(subtitle)
             }
 
             remoteWorkspaceSection
@@ -14089,8 +14662,10 @@ private struct TabItemView: View, Equatable {
                                     .underline()
                                     .lineLimit(1)
                                     .truncationMode(.tail)
-                                Text(pullRequestStatusLabel(pullRequest.status, checks: pullRequest.checks))
-                                    .lineLimit(1)
+                                if !sidebarTextWidthClass.hidesSupplementaryText {
+                                    Text(pullRequestStatusLabel(pullRequest.status, checks: pullRequest.checks))
+                                        .lineLimit(1)
+                                }
                                 Spacer(minLength: 0)
                             }
                             .font(.system(size: 10, weight: .semibold))
@@ -14114,6 +14689,7 @@ private struct TabItemView: View, Equatable {
         .animation(.easeInOut(duration: 0.2), value: tab.logEntries.count)
         .animation(.easeInOut(duration: 0.2), value: tab.progress != nil)
         .animation(.easeInOut(duration: 0.2), value: tab.metadataBlocks.count)
+        .environment(\.sidebarTextWidthClass, sidebarTextWidthClass)
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
         .background(
@@ -14140,9 +14716,11 @@ private struct TabItemView: View, Equatable {
                 Color.clear
                     .onAppear {
                         rowHeight = max(proxy.size.height, 1)
+                        rowWidth = max(proxy.size.width, 1)
                     }
-                    .onChange(of: proxy.size.height) { newHeight in
-                        rowHeight = max(newHeight, 1)
+                    .onChange(of: proxy.size) { newSize in
+                        rowHeight = max(newSize.height, 1)
+                        rowWidth = max(newSize.width, 1)
                     }
             }
         }
@@ -15181,10 +15759,16 @@ private struct SidebarMetadataEntryRow: View {
             Text(attributed)
                 .underline(underlined)
                 .foregroundColor(foregroundColor)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(display)
         } else {
             Text(display)
                 .underline(underlined)
                 .foregroundColor(foregroundColor)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(display)
         }
     }
 }
@@ -15251,7 +15835,10 @@ private struct SidebarMetadataMarkdownBlockRow: View {
         }
         .font(.system(size: 10))
         .multilineTextAlignment(.leading)
-        .fixedSize(horizontal: false, vertical: true)
+        .lineLimit(1)
+        .truncationMode(.tail)
+        .fixedSize(horizontal: false, vertical: false)
+        .safeHelp(block.markdown)
         .contentShape(Rectangle())
         .onTapGesture { onFocus() }
         .onAppear(perform: renderMarkdown)

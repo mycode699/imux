@@ -130,6 +130,22 @@ When adding a regression test for a bug fix, use a two-commit structure so CI pr
 
 This makes it visible in the GitHub PR UI (Commits tab, check statuses) that the test genuinely fails without the fix.
 
+## Agent workflow policy
+
+- If a task clearly matches an installed skill or a repo-specific packaged workflow, use that skill first instead of freehanding the process.
+- Treat skills as executable workflow packages, not as passive documentation. Do not just mention a matching skill in chat and then ignore it.
+- When delegating to subagents or parallel agents, do the synthesis work in the parent first. Give the child a concrete brief with the goal, relevant file paths, exact ownership, constraints, what has already been ruled out, and the expected output.
+- Do not offload task framing with vague prompts such as "look into this" or "investigate and fix." The delegating agent is responsible for narrowing the task enough that the child can execute it without guessing.
+- Prefer read-only exploration or planning for discovery tasks, and reserve write ownership for explicit implementation tasks to reduce context pollution and merge conflicts.
+
+## Verification quality policy
+
+- Do not treat code reading alone as a passing verification result.
+- A verification summary should name the concrete check and the observed result: command, workflow run, artifact inspection, UI observation, or other executable evidence.
+- Prefer runtime or artifact-level validation over source-shape checks whenever possible.
+- When local test policy prevents running a check on this machine, state that explicitly and use the next-best verification path such as GitHub Actions, built artifacts, notarization output, mounted DMG inspection, or other observable outputs.
+- For non-trivial changes, probe the failure edges, not just the happy path. Verification should try to break the change, not merely confirm that the main path looks plausible.
+
 ## Pitfalls
 
 - **Custom UTTypes** for drag-and-drop must be declared in `Resources/Info.plist` under `UTExportedTypeDeclarations` (e.g. `com.splittabbar.tabtransfer`, `com.icc.sidebar-tab-reorder`).

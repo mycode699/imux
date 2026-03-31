@@ -4358,6 +4358,7 @@ struct SettingsView: View {
     @State private var workspaceTabDefaultEntries = WorkspaceTabColorSettings.defaultPaletteWithOverrides()
     @State private var workspaceTabCustomColors = WorkspaceTabColorSettings.customColors()
     @State private var selectedSettingsSection: SettingsSidebarSection = .app
+    @State private var settingsSearchQuery = ""
     @State private var expandedWeChatAccountIds: Set<UUID> = []
     @State private var expandedWeChatBindingIds: Set<UUID> = []
     @State private var weChatBotTokenDrafts: [UUID: String] = [:]
@@ -5189,6 +5190,61 @@ struct SettingsView: View {
         }
     }
 
+    private var filteredSettingsSections: [SettingsSidebarSection] {
+        SettingsSidebarSection.matchingSections(for: settingsSearchQuery)
+    }
+
+    private var settingsSearchStatusText: String {
+        let trimmedQuery = settingsSearchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedQuery.isEmpty else {
+            return localizedSettingsText(
+                "settings.nav.search.hint",
+                english: "Search browser, SSH, notifications, sidebar, shortcuts, or reset.",
+                simplifiedChinese: "搜索浏览器、SSH、通知、侧边栏、快捷键或重置设置。",
+                traditionalChinese: "搜尋瀏覽器、SSH、通知、側邊欄、快捷鍵或重置設定。"
+            )
+        }
+
+        switch filteredSettingsSections.count {
+        case 0:
+            return localizedSettingsText(
+                "settings.nav.search.empty",
+                english: "No matching settings sections.",
+                simplifiedChinese: "没有匹配的设置分区。",
+                traditionalChinese: "沒有符合的設定區段。"
+            )
+        case 1:
+            return localizedSettingsText(
+                "settings.nav.search.result.one",
+                english: "1 matching settings section",
+                simplifiedChinese: "1 个匹配的设置分区",
+                traditionalChinese: "1 個符合的設定區段"
+            )
+        default:
+            return localizedSettingsText(
+                "settings.nav.search.result.many",
+                english: "\(filteredSettingsSections.count) matching settings sections",
+                simplifiedChinese: "\(filteredSettingsSections.count) 个匹配的设置分区",
+                traditionalChinese: "\(filteredSettingsSections.count) 個符合的設定區段"
+            )
+        }
+    }
+
+    private func handleSettingsSearchQueryChange(
+        from oldValue: String,
+        to newValue: String,
+        proxy: ScrollViewProxy
+    ) {
+        let oldQuery = oldValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let newQuery = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !newQuery.isEmpty else { return }
+        guard let firstMatch = filteredSettingsSections.first else { return }
+
+        if oldQuery.isEmpty || !filteredSettingsSections.contains(selectedSettingsSection) {
+            scrollToSettingsSection(firstMatch, proxy: proxy)
+        }
+    }
+
     private func settingsNavigationSidebar(proxy: ScrollViewProxy) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             ICCSidebarCard(emphasized: true) {
@@ -5241,17 +5297,41 @@ struct SettingsView: View {
             }
 
             ICCSidebarCard {
-                VStack(spacing: 8) {
-                    ForEach(SettingsSidebarSection.allCases) { section in
-                        SettingsSidebarNavButton(
-                            section: section,
-                            isSelected: selectedSettingsSection == section,
-                            action: {
-                                scrollToSettingsSection(section, proxy: proxy)
-                            }
+                VStack(alignment: .leading, spacing: 10) {
+                    SettingsSidebarSearchField(
+                        text: $settingsSearchQuery,
+                        placeholder: localizedSettingsText(
+                            "settings.nav.search.placeholder",
+                            english: "Search settings",
+                            simplifiedChinese: "搜索设置",
+                            traditionalChinese: "搜尋設定"
                         )
+                    )
+
+                    Text(settingsSearchStatusText)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    if filteredSettingsSections.isEmpty {
+                        SettingsSidebarSearchEmptyState {
+                            settingsSearchQuery = ""
+                        }
+                    } else {
+                        VStack(spacing: 8) {
+                            ForEach(filteredSettingsSections) { section in
+                                SettingsSidebarNavButton(
+                                    section: section,
+                                    isSelected: selectedSettingsSection == section,
+                                    action: {
+                                        scrollToSettingsSection(section, proxy: proxy)
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
+                .animation(.easeInOut(duration: 0.16), value: filteredSettingsSections.map(\.rawValue))
             }
 
             Spacer(minLength: 0)
@@ -7144,12 +7224,16 @@ struct SettingsView: View {
             reloadWorkspaceTabColorSettings()
             refreshNotificationCustomSoundStatus()
             selectedSettingsSection = .app
+            settingsSearchQuery = ""
         }
         .onChange(of: notificationSound) { _, _ in
             refreshNotificationCustomSoundStatus()
         }
         .onChange(of: notificationSoundCustomFilePath) { _, _ in
             refreshNotificationCustomSoundStatus()
+        }
+        .onChange(of: settingsSearchQuery) { oldValue, newValue in
+            handleSettingsSearchQueryChange(from: oldValue, to: newValue, proxy: proxy)
         }
         .onChange(of: browserInsecureHTTPAllowlist) { oldValue, newValue in
             // Keep draft in sync with external changes unless the user has local unsaved edits.
@@ -7165,6 +7249,7 @@ struct SettingsView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: SettingsNavigationRequest.notificationName)) { notification in
             guard let target = SettingsNavigationRequest.target(from: notification) else { return }
+            settingsSearchQuery = ""
             scrollToSettingsSection(SettingsSidebarSection.from(navigationTarget: target), proxy: proxy)
         }
         .confirmationDialog(
@@ -8068,6 +8153,69 @@ private enum SettingsSidebarSection: String, CaseIterable, Identifiable {
         }
     }
 
+    var searchKeywords: [String] {
+        switch self {
+        case .app:
+            return [
+                "appearance behavior language minimal mode pane first click quit telemetry rename command palette workspace remote ssh compatibility term defaults app icon",
+                "外观 行为 语言 极简 模式 首次 点击 聚焦 退出 遥测 重命名 命令面板 工作区 远程 ssh 兼容 term 默认 应用 图标",
+                "外觀 行為 語言 極簡 模式 首次 點擊 聚焦 退出 遙測 重新命名 命令面板 工作區 遠端 ssh 相容 term 預設 應用 圖示"
+            ]
+        case .notifications:
+            return [
+                "notifications alerts permissions sounds badges desktop command preview custom sound",
+                "通知 提醒 权限 声音 徽章 桌面 命令 预览 自定义 声音",
+                "通知 提醒 權限 聲音 徽章 桌面 指令 預覽 自訂 聲音"
+            ]
+        case .workspaceColors:
+            return [
+                "workspace colors tab color palette active indicator accent highlight",
+                "工作区 配色 标签 颜色 调色板 激活 标记 强调",
+                "工作區 配色 標籤 顏色 調色盤 啟用 標記 強調"
+            ]
+        case .sidebarAppearance:
+            return [
+                "sidebar density details branch git pull request ssh ports logs progress status tint appearance",
+                "侧边栏 密度 详情 分支 git 拉取 请求 ssh 端口 日志 进度 状态 着色 外观",
+                "側邊欄 密度 詳情 分支 git 拉取 請求 ssh 連接埠 日誌 進度 狀態 著色 外觀"
+            ]
+        case .automation:
+            return [
+                "automation supervisor sockets password open access hooks claude wechat local control typing progress",
+                "自动化 监督器 套接字 密码 开放 访问 hooks claude 微信 本地 控制 输入 进度",
+                "自動化 監督器 socket 密碼 開放 存取 hooks claude 微信 本地 控制 輸入 進度"
+            ]
+        case .browser:
+            return [
+                "browser import history theme search engine suggestions host whitelist allowlist external links http https embedded",
+                "浏览器 导入 历史 主题 搜索 引擎 建议 主机 白名单 外部 链接 http https 内置",
+                "瀏覽器 匯入 歷史 主題 搜尋 引擎 建議 主機 白名單 外部 連結 http https 內建"
+            ]
+        case .keyboardShortcuts:
+            return [
+                "keyboard shortcuts key bindings command hints copy mode browser dev tools split zoom",
+                "键盘 快捷键 按键 绑定 command 提示 复制 模式 浏览器 开发 工具 分屏 缩放",
+                "鍵盤 快捷鍵 按鍵 綁定 command 提示 複製 模式 瀏覽器 開發 工具 分割 縮放"
+            ]
+        case .reset:
+            return [
+                "reset restore defaults cleanup recovery factory settings",
+                "重置 恢复 默认 清理 恢复 出厂 设置",
+                "重置 恢復 預設 清理 復原 出廠 設定"
+            ]
+        }
+    }
+
+    func matchesSearchQuery(_ query: String) -> Bool {
+        let normalizedTerms = Self.normalizedSearchTerms(from: query)
+        guard !normalizedTerms.isEmpty else { return true }
+
+        let searchableText = Self.normalizeSearchText(
+            ([title, subtitle] + searchKeywords).joined(separator: " ")
+        )
+        return normalizedTerms.allSatisfy(searchableText.contains)
+    }
+
     static func from(navigationTarget: SettingsNavigationTarget) -> SettingsSidebarSection {
         switch navigationTarget {
         case .automation, .wechat:
@@ -8079,6 +8227,24 @@ private enum SettingsSidebarSection: String, CaseIterable, Identifiable {
         case .keyboardShortcuts:
             return .keyboardShortcuts
         }
+    }
+
+    static func matchingSections(for query: String) -> [SettingsSidebarSection] {
+        let normalizedTerms = normalizedSearchTerms(from: query)
+        guard !normalizedTerms.isEmpty else { return allCases }
+        return allCases.filter { $0.matchesSearchQuery(query) }
+    }
+
+    private static func normalizedSearchTerms(from query: String) -> [String] {
+        normalizeSearchText(query)
+            .split(whereSeparator: \.isWhitespace)
+            .map(String.init)
+    }
+
+    private static func normalizeSearchText(_ text: String) -> String {
+        text
+            .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+            .lowercased()
     }
 }
 
@@ -8151,6 +8317,111 @@ private struct SettingsSidebarNavButton: View {
             )
         }
         .buttonStyle(.plain)
+    }
+}
+
+private struct SettingsSidebarSearchField: View {
+    @Binding var text: String
+    let placeholder: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            TextField(placeholder, text: $text)
+                .textFieldStyle(.plain)
+                .font(.system(size: 12.5, weight: .medium))
+                .accessibilityIdentifier("SettingsSearchField")
+
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .buttonStyle(.plain)
+                .help(
+                    localizedSettingsText(
+                        "settings.nav.search.clear",
+                        english: "Clear search",
+                        simplifiedChinese: "清除搜索",
+                        traditionalChinese: "清除搜尋"
+                    )
+                )
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(nsColor: .textBackgroundColor).opacity(0.92))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color(nsColor: .separatorColor).opacity(0.55), lineWidth: 1)
+        )
+    }
+}
+
+private struct SettingsSidebarSearchEmptyState: View {
+    let clearAction: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "slider.horizontal.3")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                Text(
+                    localizedSettingsText(
+                        "settings.nav.search.empty.title",
+                        english: "No matching settings",
+                        simplifiedChinese: "没有匹配的设置",
+                        traditionalChinese: "沒有符合的設定"
+                    )
+                )
+                .font(.system(size: 12.5, weight: .semibold))
+            }
+
+            Text(
+                localizedSettingsText(
+                    "settings.nav.search.empty.hint",
+                    english: "Try browser, SSH, notifications, sidebar, shortcuts, or reset.",
+                    simplifiedChinese: "可以尝试浏览器、SSH、通知、侧边栏、快捷键或重置。",
+                    traditionalChinese: "可以嘗試瀏覽器、SSH、通知、側邊欄、快捷鍵或重置。"
+                )
+            )
+            .font(.system(size: 11.5, weight: .medium))
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+
+            Button(
+                localizedSettingsText(
+                    "settings.nav.search.empty.clear",
+                    english: "Clear Search",
+                    simplifiedChinese: "清除搜索",
+                    traditionalChinese: "清除搜尋"
+                ),
+                action: clearAction
+            )
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(nsColor: .controlBackgroundColor).opacity(0.7))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color(nsColor: .separatorColor).opacity(0.4), lineWidth: 1)
+        )
     }
 }
 

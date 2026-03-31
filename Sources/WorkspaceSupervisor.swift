@@ -834,6 +834,13 @@ struct SupervisorPaneView: View {
     @State private var skillStudioStatus: String?
     @State private var advancedControlsExpanded = false
     @State private var llmSettingsSavedAt = Date()
+    @State private var capabilitiesExpanded = false
+    @State private var contextExpanded = false
+    @State private var orchestrationExpanded = false
+    @State private var skillStudioExpanded = false
+    @State private var loopControlsExpanded = false
+    @State private var insightsExpanded = true
+    @State private var llmSettingsExpanded = false
 
     private var review: WorkspaceSupervisorReview? {
         workspace.supervisorLastReview
@@ -1043,6 +1050,158 @@ struct SupervisorPaneView: View {
         resolvedLLMConfiguration.apiKey.isEmpty ? "一键开工" : "一键开工（LLM 增强）"
     }
 
+    private var nextActionDigestValue: String {
+        if let executionTitle = workspace.supervisorExecutionBrief?.title.trimmingCharacters(in: .whitespacesAndNewlines),
+           !executionTitle.isEmpty {
+            return executionTitle
+        }
+        if let suggestedAction = review?.nextAction.trimmingCharacters(in: .whitespacesAndNewlines),
+           !suggestedAction.isEmpty {
+            return suggestedAction
+        }
+        return zeroConfigBootstrap.primaryActionTitle
+    }
+
+    private var nextActionDigestDetail: String {
+        if let executionObjective = workspace.supervisorExecutionBrief?.objective.trimmingCharacters(in: .whitespacesAndNewlines),
+           !executionObjective.isEmpty {
+            return executionObjective
+        }
+        if let summary = review?.summary.trimmingCharacters(in: .whitespacesAndNewlines),
+           !summary.isEmpty {
+            return summary
+        }
+        return quickStartStatusText
+    }
+
+    private var dispatchTargetDigestValue: String {
+        if let activeTarget = workspace.supervisorActiveLoopTarget {
+            return activeTarget.panelTitle
+        }
+        let focusedPanelTitle = automationReadiness.focusedPanelTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !focusedPanelTitle.isEmpty {
+            return focusedPanelTitle
+        }
+        return automationReadiness.terminalPanelCount > 0 ? "选择可派发终端" : "尚无终端目标"
+    }
+
+    private var dispatchTargetDigestDetail: String {
+        if let activeTarget = workspace.supervisorActiveLoopTarget {
+            return activeTarget.workingDirectory
+        }
+        let focusedDirectory = automationReadiness.focusedDirectory.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !focusedDirectory.isEmpty {
+            return focusedDirectory
+        }
+        return automationReadiness.statusText
+    }
+
+    private var readinessDigestValue: String {
+        if canSendToActiveWindow {
+            return "循环窗口可派发"
+        }
+        if canSendToCurrentWindow {
+            return "当前窗口可派发"
+        }
+        if automationReadiness.promptReadyCount > 0 {
+            return "\(automationReadiness.promptReadyCount) 个终端可派发"
+        }
+        if automationReadiness.terminalPanelCount > 0 {
+            return "等待终端空闲"
+        }
+        return "尚未发现终端"
+    }
+
+    private var readinessDigestDetail: String {
+        if let firstNote = automationReadiness.notes.first,
+           !firstNote.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return firstNote
+        }
+        let focusedShellState = automationReadiness.focusedShellState.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !focusedShellState.isEmpty {
+            return focusedShellState
+        }
+        return automationReadiness.headline
+    }
+
+    private var readinessDigestTint: Color {
+        if canSendToActiveWindow || canSendToCurrentWindow || automationReadiness.promptReadyCount > 0 {
+            return .green
+        }
+        if automationReadiness.terminalPanelCount > 0 {
+            return .orange
+        }
+        return .secondary
+    }
+
+    private var capabilityAvailabilitySummary: String {
+        let readyCount = operatorProfile.capabilityStates.filter { $0.availability == .ready }.count
+        let cautionCount = operatorProfile.capabilityStates.filter { $0.availability == .caution }.count
+        let unavailableCount = operatorProfile.capabilityStates.filter { $0.availability == .unavailable }.count
+        var parts: [String] = []
+        if readyCount > 0 {
+            parts.append("\(readyCount) 项可直接推进")
+        }
+        if cautionCount > 0 {
+            parts.append("\(cautionCount) 项需谨慎")
+        }
+        if unavailableCount > 0 {
+            parts.append("\(unavailableCount) 项不可用")
+        }
+        return parts.isEmpty ? "等待能力判断" : parts.joined(separator: " · ")
+    }
+
+    private var workspaceContextSummary: String {
+        let currentDirectory = workspace.supervisorSnapshot.currentDirectory.trimmingCharacters(in: .whitespacesAndNewlines)
+        return currentDirectory.isEmpty ? "等待工作区目录" : currentDirectory
+    }
+
+    private var orchestrationSummary: String {
+        if let activeTarget = workspace.supervisorActiveLoopTarget {
+            return activeTarget.panelTitle
+        }
+        if !workspace.supervisorPanelHandoffs.isEmpty {
+            return "\(workspace.supervisorPanelHandoffs.count) 个窗口已进入编排"
+        }
+        return "等待终端窗口进入编排"
+    }
+
+    private var skillStudioSummary: String {
+        let title = skillBlueprint.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        return title.isEmpty ? "等待技能蓝图" : title
+    }
+
+    private var loopControlsSummary: String {
+        if let summary = workspace.supervisorLoopStatusSummary?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !summary.isEmpty {
+            return summary
+        }
+        if workspace.supervisorLoopState == .running {
+            return "自动循环正在执行"
+        }
+        return "\(automationReadiness.promptReadyCount) 个终端可轮转"
+    }
+
+    private var insightsSummary: String {
+        if let summary = review?.summary.trimmingCharacters(in: .whitespacesAndNewlines),
+           !summary.isEmpty {
+            return summary
+        }
+        if let summary = recentRuns.first?.summary.trimmingCharacters(in: .whitespacesAndNewlines),
+           !summary.isEmpty {
+            return summary
+        }
+        return "等待首个监督判断"
+    }
+
+    private var llmSettingsSummary: String {
+        let modelName = resolvedLLMConfiguration.model.trimmingCharacters(in: .whitespacesAndNewlines)
+        if modelName.isEmpty {
+            return resolvedLLMConfiguration.sourceLabel
+        }
+        return "\(resolvedLLMConfiguration.sourceLabel) · \(modelName)"
+    }
+
     private var metricColumns: [GridItem] {
         [GridItem(.adaptive(minimum: 120, maximum: 180), spacing: 10, alignment: .top)]
     }
@@ -1052,15 +1211,17 @@ struct SupervisorPaneView: View {
     }
 
     var body: some View {
-        let readiness = automationReadiness
-        let snapshot = workspace.supervisorSnapshot
-        let llmConfig = resolvedLLMConfiguration
-        let bootstrap = zeroConfigBootstrap
-        let profile = operatorProfile
-        let blueprint = skillBlueprint
+        GeometryReader { proxy in
+            let widthClass = SidebarTextWidthClass.detailSidebar(for: proxy.size.width)
+            let readiness = automationReadiness
+            let snapshot = workspace.supervisorSnapshot
+            let llmConfig = resolvedLLMConfiguration
+            let bootstrap = zeroConfigBootstrap
+            let profile = operatorProfile
+            let blueprint = skillBlueprint
 
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
                 ICCSidebarCard(emphasized: true) {
                     VStack(alignment: .leading, spacing: 14) {
                         HStack(alignment: .top, spacing: 12) {
@@ -1074,25 +1235,33 @@ struct SupervisorPaneView: View {
                                 HStack(alignment: .center, spacing: 8) {
                                     Text("监督器 / Operator")
                                         .font(.title3.weight(.semibold))
+                                        .lineLimit(1)
                                     ICCStatusPill(text: reviewHealth.displayText, tint: reviewHealth.tint, emphasized: reviewHealth != .idle)
-                                    ICCStatusPill(text: profile.authority.displayText, tint: profile.authority.tint)
-                                    if workspace.supervisorLoopState == .running {
+                                    if !widthClass.hidesSupplementaryText {
+                                        ICCStatusPill(text: profile.authority.displayText, tint: profile.authority.tint)
+                                    }
+                                    if workspace.supervisorLoopState == .running && !widthClass.hidesSupplementaryText {
                                         ICCStatusPill(text: loopStateText, tint: ICCChrome.secondaryAccent(for: colorScheme))
                                     }
                                 }
 
                                 Text(profile.missionTitle)
                                     .font(.system(size: 14.5, weight: .semibold))
-                                    .fixedSize(horizontal: false, vertical: true)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .safeHelp(profile.missionTitle)
 
                                 Text(profile.missionSummary)
                                     .font(.system(size: 12.5, weight: .medium))
                                     .foregroundStyle(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .safeHelp(profile.missionSummary)
 
                                 Text("LLM: \(llmConfig.sourceLabel)")
                                     .font(.system(size: 11.5, weight: .medium))
                                     .foregroundStyle(.secondary)
+                                    .lineLimit(1)
                             }
 
                             Spacer(minLength: 0)
@@ -1112,6 +1281,28 @@ struct SupervisorPaneView: View {
                             )
                         }
 
+                        LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
+                            SupervisorDigestTile(
+                                title: "当前建议动作",
+                                value: nextActionDigestValue,
+                                detail: nextActionDigestDetail,
+                                tint: reviewHealth.tint
+                            )
+                            SupervisorDigestTile(
+                                title: "当前循环目标",
+                                value: dispatchTargetDigestValue,
+                                detail: dispatchTargetDigestDetail,
+                                tint: .blue,
+                                monospacedDetail: true
+                            )
+                            SupervisorDigestTile(
+                                title: "自动化建议",
+                                value: readinessDigestValue,
+                                detail: readinessDigestDetail,
+                                tint: readinessDigestTint
+                            )
+                        }
+
                         VStack(alignment: .leading, spacing: 10) {
                             SupervisorSectionHeader(title: "工作方式", subtitle: "默认使用零配置自动推断；需要时再切换到专家模式。")
 
@@ -1126,45 +1317,145 @@ struct SupervisorPaneView: View {
                             }
                         }
 
-                        HStack(alignment: .center, spacing: 10) {
-                            Toggle("启用监督", isOn: $workspace.supervisorEnabled)
-                                .toggleStyle(.switch)
-                                .controlSize(.small)
+                        ViewThatFits(in: .horizontal) {
+                            HStack(alignment: .center, spacing: 10) {
+                                Toggle("启用监督", isOn: $workspace.supervisorEnabled)
+                                    .toggleStyle(.switch)
+                                    .controlSize(.small)
 
-                            Spacer(minLength: 0)
+                                Spacer(minLength: 0)
 
-                            Button("刷新判断") {
-                                workspace.refreshSupervisorHeuristicReview()
-                            }
-                            .buttonStyle(SupervisorSecondaryButtonStyle())
-                            .disabled(!workspace.supervisorEnabled)
-
-                            if !isAutoExperience {
-                                Button(isRunningLLMReview ? "评估中..." : "运行 LLM 评估") {
-                                    Task {
-                                        isRunningLLMReview = true
-                                        await workspace.requestSupervisorLLMReview(
-                                            endpoint: llmConfig.endpoint,
-                                            apiKey: llmConfig.apiKey,
-                                            model: llmConfig.model
-                                        )
-                                        isRunningLLMReview = false
-                                    }
-                                }
-                                .buttonStyle(SupervisorPrimaryButtonStyle())
-                                .disabled(!workspace.supervisorEnabled || isRunningLLMReview)
-
-                                Button(isQuickStarting ? "开工中..." : quickStartButtonTitle) {
-                                    Task {
-                                        isQuickStarting = true
-                                        await runZeroConfigContinue(using: bootstrap, llmConfig: llmConfig)
-                                        isQuickStarting = false
-                                    }
+                                Button("刷新判断") {
+                                    workspace.refreshSupervisorHeuristicReview()
                                 }
                                 .buttonStyle(SupervisorSecondaryButtonStyle())
-                                .disabled(isQuickStarting)
+                                .disabled(!workspace.supervisorEnabled)
+
+                                if !isAutoExperience {
+                                    Button(isRunningLLMReview ? "评估中..." : "运行 LLM 评估") {
+                                        Task {
+                                            isRunningLLMReview = true
+                                            await workspace.requestSupervisorLLMReview(
+                                                endpoint: llmConfig.endpoint,
+                                                apiKey: llmConfig.apiKey,
+                                                model: llmConfig.model
+                                            )
+                                            isRunningLLMReview = false
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorPrimaryButtonStyle())
+                                    .disabled(!workspace.supervisorEnabled || isRunningLLMReview)
+
+                                    Button(isQuickStarting ? "开工中..." : quickStartButtonTitle) {
+                                        Task {
+                                            isQuickStarting = true
+                                            await runZeroConfigContinue(using: bootstrap, llmConfig: llmConfig)
+                                            isQuickStarting = false
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                    .disabled(isQuickStarting)
+                                }
+                            }
+
+                            HStack(alignment: .center, spacing: 8) {
+                                Toggle("", isOn: $workspace.supervisorEnabled)
+                                    .labelsHidden()
+                                    .toggleStyle(.switch)
+                                    .controlSize(.small)
+
+                                ICCStatusPill(
+                                    text: workspace.supervisorEnabled ? "监督开" : "监督关",
+                                    tint: workspace.supervisorEnabled ? .green : .secondary,
+                                    emphasized: workspace.supervisorEnabled
+                                )
+
+                                Spacer(minLength: 0)
+
+                                Button("刷新") {
+                                    workspace.refreshSupervisorHeuristicReview()
+                                }
+                                .buttonStyle(SupervisorSecondaryButtonStyle())
+                                .disabled(!workspace.supervisorEnabled)
+
+                                if !isAutoExperience {
+                                    Button(isRunningLLMReview ? "评估中..." : "LLM 评估") {
+                                        Task {
+                                            isRunningLLMReview = true
+                                            await workspace.requestSupervisorLLMReview(
+                                                endpoint: llmConfig.endpoint,
+                                                apiKey: llmConfig.apiKey,
+                                                model: llmConfig.model
+                                            )
+                                            isRunningLLMReview = false
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorPrimaryButtonStyle())
+                                    .disabled(!workspace.supervisorEnabled || isRunningLLMReview)
+
+                                    Button(isQuickStarting ? "开工中..." : "开工") {
+                                        Task {
+                                            isQuickStarting = true
+                                            await runZeroConfigContinue(using: bootstrap, llmConfig: llmConfig)
+                                            isQuickStarting = false
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                    .disabled(isQuickStarting)
+                                }
+                            }
+
+                            HStack(alignment: .center, spacing: 8) {
+                                Toggle("", isOn: $workspace.supervisorEnabled)
+                                    .labelsHidden()
+                                    .toggleStyle(.switch)
+                                    .controlSize(.small)
+
+                                Spacer(minLength: 0)
+
+                                Button {
+                                    workspace.refreshSupervisorHeuristicReview()
+                                } label: {
+                                    Label("刷新判断", systemImage: "arrow.clockwise")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .buttonStyle(SupervisorSecondaryButtonStyle())
+                                .disabled(!workspace.supervisorEnabled)
+
+                                if !isAutoExperience {
+                                    Button {
+                                        Task {
+                                            isRunningLLMReview = true
+                                            await workspace.requestSupervisorLLMReview(
+                                                endpoint: llmConfig.endpoint,
+                                                apiKey: llmConfig.apiKey,
+                                                model: llmConfig.model
+                                            )
+                                            isRunningLLMReview = false
+                                        }
+                                    } label: {
+                                        Label("运行 LLM 评估", systemImage: "sparkles")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(SupervisorPrimaryButtonStyle())
+                                    .disabled(!workspace.supervisorEnabled || isRunningLLMReview)
+
+                                    Button {
+                                        Task {
+                                            isQuickStarting = true
+                                            await runZeroConfigContinue(using: bootstrap, llmConfig: llmConfig)
+                                            isQuickStarting = false
+                                        }
+                                    } label: {
+                                        Label(quickStartButtonTitle, systemImage: "bolt.fill")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                    .disabled(isQuickStarting)
+                                }
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
                         if let modeRestrictionNote {
                             SupervisorInfoTile(title: "当前边界", content: modeRestrictionNote)
@@ -1181,7 +1472,9 @@ struct SupervisorPaneView: View {
                                 Text(bootstrap.headline)
                                     .font(.system(size: 12.5, weight: .medium))
                                     .foregroundStyle(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .safeHelp(bootstrap.headline)
                             }
                             Spacer(minLength: 0)
                             ICCStatusPill(text: bootstrap.projectLabel, tint: .blue)
@@ -1199,26 +1492,77 @@ struct SupervisorPaneView: View {
                             }
                         }
 
-                        HStack(spacing: 10) {
-                            Button(isQuickStarting ? "处理中..." : bootstrap.primaryActionTitle) {
-                                Task {
-                                    isQuickStarting = true
-                                    await runZeroConfigContinue(using: bootstrap, llmConfig: llmConfig)
-                                    isQuickStarting = false
-                                }
-                            }
-                            .buttonStyle(SupervisorPrimaryButtonStyle())
-                            .disabled(isQuickStarting)
-
-                            if isAutoExperience {
-                                Button(advancedControlsExpanded ? "收起高级控制" : "展开高级控制") {
-                                    withAnimation(.easeInOut(duration: 0.18)) {
-                                        advancedControlsExpanded.toggle()
+                        ViewThatFits(in: .horizontal) {
+                            HStack(spacing: 10) {
+                                Button(isQuickStarting ? "处理中..." : bootstrap.primaryActionTitle) {
+                                    Task {
+                                        isQuickStarting = true
+                                        await runZeroConfigContinue(using: bootstrap, llmConfig: llmConfig)
+                                        isQuickStarting = false
                                     }
                                 }
-                                .buttonStyle(SupervisorSecondaryButtonStyle())
+                                .buttonStyle(SupervisorPrimaryButtonStyle())
+                                .disabled(isQuickStarting)
+
+                                if isAutoExperience {
+                                    Button(advancedControlsExpanded ? "收起高级控制" : "展开高级控制") {
+                                        withAnimation(.easeInOut(duration: 0.18)) {
+                                            advancedControlsExpanded.toggle()
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                }
+                            }
+
+                            HStack(spacing: 8) {
+                                Button(isQuickStarting ? "处理中..." : "一键开工") {
+                                    Task {
+                                        isQuickStarting = true
+                                        await runZeroConfigContinue(using: bootstrap, llmConfig: llmConfig)
+                                        isQuickStarting = false
+                                    }
+                                }
+                                .buttonStyle(SupervisorPrimaryButtonStyle())
+                                .disabled(isQuickStarting)
+
+                                if isAutoExperience {
+                                    Button("高级控制") {
+                                        withAnimation(.easeInOut(duration: 0.18)) {
+                                            advancedControlsExpanded.toggle()
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                }
+                            }
+
+                            HStack(spacing: 8) {
+                                Button {
+                                    Task {
+                                        isQuickStarting = true
+                                        await runZeroConfigContinue(using: bootstrap, llmConfig: llmConfig)
+                                        isQuickStarting = false
+                                    }
+                                } label: {
+                                    Label(bootstrap.primaryActionTitle, systemImage: "bolt.fill")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .buttonStyle(SupervisorPrimaryButtonStyle())
+                                .disabled(isQuickStarting)
+
+                                if isAutoExperience {
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.18)) {
+                                            advancedControlsExpanded.toggle()
+                                        }
+                                    } label: {
+                                        Label("高级控制", systemImage: "slider.horizontal.3")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                }
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
 
@@ -1273,13 +1617,15 @@ struct SupervisorPaneView: View {
                     }
                     }
 
-                    ICCSidebarCard {
-                        VStack(alignment: .leading, spacing: 12) {
-                            SupervisorSectionHeader(title: "工具权限矩阵", subtitle: "让监督器明确知道自己到底能接管什么、哪里要保守、哪里可以直接推进。")
-                            LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
-                                ForEach(profile.capabilityStates) { capability in
-                                    SupervisorCapabilityTile(capability: capability)
-                                }
+                    SupervisorExpandableCard(
+                        title: "工具权限矩阵",
+                        subtitle: "让监督器明确知道自己到底能接管什么、哪里要保守、哪里可以直接推进。",
+                        isExpanded: $capabilitiesExpanded,
+                        collapsedSummary: capabilityAvailabilitySummary
+                    ) {
+                        LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
+                            ForEach(profile.capabilityStates) { capability in
+                                SupervisorCapabilityTile(capability: capability)
                             }
                         }
                     }
@@ -1291,30 +1637,89 @@ struct SupervisorPaneView: View {
                                 SupervisorLabeledEditor(title: "交流摘要", text: $workspace.supervisorInteractionNotes, minHeight: 144)
                                 SupervisorInfoTile(title: "最快开工路径", content: quickStartStatusText)
 
-                                HStack(spacing: 10) {
-                                    Button(isGeneratingStartupPlan ? "生成中..." : "生成开工建议") {
-                                        Task {
-                                            isGeneratingStartupPlan = true
-                                            await workspace.requestSupervisorStartupPlan(
-                                                endpoint: llmConfig.endpoint,
-                                                apiKey: llmConfig.apiKey,
-                                                model: llmConfig.model
-                                            )
-                                            isGeneratingStartupPlan = false
+                                ViewThatFits(in: .horizontal) {
+                                    HStack(spacing: 10) {
+                                        Button(isGeneratingStartupPlan ? "生成中..." : "生成开工建议") {
+                                            Task {
+                                                isGeneratingStartupPlan = true
+                                                await workspace.requestSupervisorStartupPlan(
+                                                    endpoint: llmConfig.endpoint,
+                                                    apiKey: llmConfig.apiKey,
+                                                    model: llmConfig.model
+                                                )
+                                                isGeneratingStartupPlan = false
+                                            }
+                                        }
+                                        .buttonStyle(SupervisorPrimaryButtonStyle())
+
+                                        if let startupPlan = workspace.supervisorStartupPlan, !startupPlan.goal.isEmpty {
+                                            Button("采用建议目标") {
+                                                workspace.supervisorTaskCharter.goal = startupPlan.goal
+                                                workspace.supervisorGoal = startupPlan.goal
+                                                workspace.supervisorEnabled = true
+                                                workspace.scheduleSupervisorHeuristicRefresh(delay: 0.1)
+                                            }
+                                            .buttonStyle(SupervisorSecondaryButtonStyle())
                                         }
                                     }
-                                    .buttonStyle(SupervisorPrimaryButtonStyle())
 
-                                    if let startupPlan = workspace.supervisorStartupPlan, !startupPlan.goal.isEmpty {
-                                        Button("采用建议目标") {
-                                            workspace.supervisorTaskCharter.goal = startupPlan.goal
-                                            workspace.supervisorGoal = startupPlan.goal
-                                            workspace.supervisorEnabled = true
-                                            workspace.scheduleSupervisorHeuristicRefresh(delay: 0.1)
+                                    HStack(spacing: 8) {
+                                        Button(isGeneratingStartupPlan ? "生成中..." : "生成建议") {
+                                            Task {
+                                                isGeneratingStartupPlan = true
+                                                await workspace.requestSupervisorStartupPlan(
+                                                    endpoint: llmConfig.endpoint,
+                                                    apiKey: llmConfig.apiKey,
+                                                    model: llmConfig.model
+                                                )
+                                                isGeneratingStartupPlan = false
+                                            }
                                         }
-                                        .buttonStyle(SupervisorSecondaryButtonStyle())
+                                        .buttonStyle(SupervisorPrimaryButtonStyle())
+
+                                        if let startupPlan = workspace.supervisorStartupPlan, !startupPlan.goal.isEmpty {
+                                            Button("采用目标") {
+                                                workspace.supervisorTaskCharter.goal = startupPlan.goal
+                                                workspace.supervisorGoal = startupPlan.goal
+                                                workspace.supervisorEnabled = true
+                                                workspace.scheduleSupervisorHeuristicRefresh(delay: 0.1)
+                                            }
+                                            .buttonStyle(SupervisorSecondaryButtonStyle())
+                                        }
+                                    }
+
+                                    HStack(spacing: 8) {
+                                        Button {
+                                            Task {
+                                                isGeneratingStartupPlan = true
+                                                await workspace.requestSupervisorStartupPlan(
+                                                    endpoint: llmConfig.endpoint,
+                                                    apiKey: llmConfig.apiKey,
+                                                    model: llmConfig.model
+                                                )
+                                                isGeneratingStartupPlan = false
+                                            }
+                                        } label: {
+                                            Label("生成开工建议", systemImage: "sparkles")
+                                                .labelStyle(.iconOnly)
+                                        }
+                                        .buttonStyle(SupervisorPrimaryButtonStyle())
+
+                                        if let startupPlan = workspace.supervisorStartupPlan, !startupPlan.goal.isEmpty {
+                                            Button {
+                                                workspace.supervisorTaskCharter.goal = startupPlan.goal
+                                                workspace.supervisorGoal = startupPlan.goal
+                                                workspace.supervisorEnabled = true
+                                                workspace.scheduleSupervisorHeuristicRefresh(delay: 0.1)
+                                            } label: {
+                                                Label("采用建议目标", systemImage: "checkmark")
+                                                    .labelStyle(.iconOnly)
+                                            }
+                                            .buttonStyle(SupervisorSecondaryButtonStyle())
+                                        }
                                     }
                                 }
+                                .frame(maxWidth: .infinity, alignment: .leading)
 
                                 if let startupPlan = workspace.supervisorStartupPlan {
                                     SupervisorInfoTile(title: "建议目标", content: startupPlan.goal)
@@ -1325,31 +1730,33 @@ struct SupervisorPaneView: View {
                             }
                         }
 
-                        ICCSidebarCard {
-                            VStack(alignment: .leading, spacing: 12) {
-                                SupervisorSectionHeader(title: "工作区上下文", subtitle: "把目录、Git、远程目标和已访问路径压缩成监督器可直接使用的上下文。")
-                                SupervisorInfoTile(title: "当前目录", content: snapshot.currentDirectory, monospaced: true)
+                        SupervisorExpandableCard(
+                            title: "工作区上下文",
+                            subtitle: "把目录、Git、远程目标和已访问路径压缩成监督器可直接使用的上下文。",
+                            isExpanded: $contextExpanded,
+                            collapsedSummary: workspaceContextSummary
+                        ) {
+                            SupervisorInfoTile(title: "当前目录", content: snapshot.currentDirectory, monospaced: true)
 
-                                if let gitBranch = snapshot.gitBranch, !gitBranch.isEmpty {
-                                    SupervisorInfoTile(
-                                        title: "Git 状态",
-                                        content: "\(gitBranch)\(snapshot.gitDirty ? " · 有未提交改动" : " · 工作区干净")",
-                                        monospaced: true
-                                    )
-                                }
+                            if let gitBranch = snapshot.gitBranch, !gitBranch.isEmpty {
+                                SupervisorInfoTile(
+                                    title: "Git 状态",
+                                    content: "\(gitBranch)\(snapshot.gitDirty ? " · 有未提交改动" : " · 工作区干净")",
+                                    monospaced: true
+                                )
+                            }
 
-                                if let remoteTarget = snapshot.remoteTarget, !remoteTarget.isEmpty {
-                                    let remoteCompatibility = snapshot.remoteCompatibility?.trimmingCharacters(in: .whitespacesAndNewlines)
-                                    SupervisorInfoTile(
-                                        title: "远程目标",
-                                        content: remoteCompatibility?.isEmpty == false ? "\(remoteTarget)\n\(remoteCompatibility!)" : remoteTarget,
-                                        monospaced: true
-                                    )
-                                }
+                            if let remoteTarget = snapshot.remoteTarget, !remoteTarget.isEmpty {
+                                let remoteCompatibility = snapshot.remoteCompatibility?.trimmingCharacters(in: .whitespacesAndNewlines)
+                                SupervisorInfoTile(
+                                    title: "远程目标",
+                                    content: remoteCompatibility?.isEmpty == false ? "\(remoteTarget)\n\(remoteCompatibility!)" : remoteTarget,
+                                    monospaced: true
+                                )
+                            }
 
-                                if !snapshot.observedDirectories.isEmpty {
-                                    SupervisorListTile(title: "已访问目录", items: snapshot.observedDirectories, monospaced: true)
-                                }
+                            if !snapshot.observedDirectories.isEmpty {
+                                SupervisorListTile(title: "已访问目录", items: snapshot.observedDirectories, monospaced: true)
                             }
                         }
                     }
@@ -1357,40 +1764,110 @@ struct SupervisorPaneView: View {
 
                 ICCSidebarCard {
                     VStack(alignment: .leading, spacing: 12) {
-                        HStack(alignment: .center, spacing: 10) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("执行任务包")
-                                    .font(.system(size: 15, weight: .semibold))
-                                Text("把当前目标、动作边界、成功信号与派发入口整理成一个可直接执行的包。")
-                                    .font(.system(size: 11.5, weight: .medium))
-                                    .foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack(alignment: .center, spacing: 10) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("执行任务包")
+                                        .font(.system(size: 15, weight: .semibold))
+                                    Text("把当前目标、动作边界、成功信号与派发入口整理成一个可直接执行的包。")
+                                        .font(.system(size: 11.5, weight: .medium))
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer(minLength: 0)
                             }
-                            Spacer(minLength: 0)
 
-                            Button(isGeneratingExecutionBrief ? "生成中..." : "生成任务包") {
-                                Task {
-                                    isGeneratingExecutionBrief = true
-                                    await workspace.requestSupervisorExecutionBrief(
-                                        endpoint: llmConfig.endpoint,
-                                        apiKey: llmConfig.apiKey,
-                                        model: llmConfig.model
-                                    )
-                                    isGeneratingExecutionBrief = false
+                            ViewThatFits(in: .horizontal) {
+                                HStack(spacing: 10) {
+                                    Button(isGeneratingExecutionBrief ? "生成中..." : "生成任务包") {
+                                        Task {
+                                            isGeneratingExecutionBrief = true
+                                            await workspace.requestSupervisorExecutionBrief(
+                                                endpoint: llmConfig.endpoint,
+                                                apiKey: llmConfig.apiKey,
+                                                model: llmConfig.model
+                                            )
+                                            isGeneratingExecutionBrief = false
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+
+                                    Button("发送到当前窗口") {
+                                        supervisorDispatchStatus = workspace.dispatchSupervisorPromptToCurrentPanel()
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                    .disabled(!canSendToCurrentWindow)
+
+                                    Button("发送到循环窗口") {
+                                        supervisorDispatchStatus = workspace.dispatchSupervisorPromptToActiveLoopPanel()
+                                    }
+                                    .buttonStyle(SupervisorPrimaryButtonStyle())
+                                    .disabled(!canSendToActiveWindow)
+                                }
+
+                                HStack(spacing: 8) {
+                                    Button(isGeneratingExecutionBrief ? "生成中..." : "生成") {
+                                        Task {
+                                            isGeneratingExecutionBrief = true
+                                            await workspace.requestSupervisorExecutionBrief(
+                                                endpoint: llmConfig.endpoint,
+                                                apiKey: llmConfig.apiKey,
+                                                model: llmConfig.model
+                                            )
+                                            isGeneratingExecutionBrief = false
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+
+                                    Button("发当前") {
+                                        supervisorDispatchStatus = workspace.dispatchSupervisorPromptToCurrentPanel()
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                    .disabled(!canSendToCurrentWindow)
+
+                                    Button("发循环") {
+                                        supervisorDispatchStatus = workspace.dispatchSupervisorPromptToActiveLoopPanel()
+                                    }
+                                    .buttonStyle(SupervisorPrimaryButtonStyle())
+                                    .disabled(!canSendToActiveWindow)
+                                }
+
+                                HStack(spacing: 8) {
+                                    Button {
+                                        Task {
+                                            isGeneratingExecutionBrief = true
+                                            await workspace.requestSupervisorExecutionBrief(
+                                                endpoint: llmConfig.endpoint,
+                                                apiKey: llmConfig.apiKey,
+                                                model: llmConfig.model
+                                            )
+                                            isGeneratingExecutionBrief = false
+                                        }
+                                    } label: {
+                                        Label("生成任务包", systemImage: "doc.text.magnifyingglass")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+
+                                    Button {
+                                        supervisorDispatchStatus = workspace.dispatchSupervisorPromptToCurrentPanel()
+                                    } label: {
+                                        Label("发送到当前窗口", systemImage: "macwindow")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                    .disabled(!canSendToCurrentWindow)
+
+                                    Button {
+                                        supervisorDispatchStatus = workspace.dispatchSupervisorPromptToActiveLoopPanel()
+                                    } label: {
+                                        Label("发送到循环窗口", systemImage: "repeat")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(SupervisorPrimaryButtonStyle())
+                                    .disabled(!canSendToActiveWindow)
                                 }
                             }
-                            .buttonStyle(SupervisorSecondaryButtonStyle())
-
-                            Button("发送到当前窗口") {
-                                supervisorDispatchStatus = workspace.dispatchSupervisorPromptToCurrentPanel()
-                            }
-                            .buttonStyle(SupervisorSecondaryButtonStyle())
-                            .disabled(!canSendToCurrentWindow)
-
-                            Button("发送到循环窗口") {
-                                supervisorDispatchStatus = workspace.dispatchSupervisorPromptToActiveLoopPanel()
-                            }
-                            .buttonStyle(SupervisorPrimaryButtonStyle())
-                            .disabled(!canSendToActiveWindow)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
                         if let supervisorDispatchStatus,
@@ -1428,97 +1905,89 @@ struct SupervisorPaneView: View {
                 }
 
                 if !isAutoExperience || advancedControlsExpanded {
-                    ICCSidebarCard {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack(alignment: .center, spacing: 10) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("执行编排")
-                                        .font(.system(size: 15, weight: .semibold))
-                                    Text("借鉴多会话网关与自动循环的方式，把当前窗口、支援窗口和轮转队列整理成可跟踪编排。")
-                                        .font(.system(size: 11.5, weight: .medium))
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer(minLength: 0)
-                                Button("刷新编排") {
-                                    workspace.refreshSupervisorPanelHandoffs()
-                                }
-                                .buttonStyle(SupervisorSecondaryButtonStyle())
+                    SupervisorExpandableCard(
+                        title: "执行编排",
+                        subtitle: "借鉴多会话网关与自动循环的方式，把当前窗口、支援窗口和轮转队列整理成可跟踪编排。",
+                        isExpanded: $orchestrationExpanded,
+                        collapsedSummary: orchestrationSummary
+                    ) {
+                        HStack {
+                            Spacer(minLength: 0)
+                            Button("刷新编排") {
+                                workspace.refreshSupervisorPanelHandoffs()
                             }
+                            .buttonStyle(SupervisorSecondaryButtonStyle())
+                        }
 
-                            if let activeTarget = workspace.supervisorActiveLoopTarget {
-                                SupervisorInfoTile(
-                                    title: "当前循环目标",
-                                    content: """
-                                    窗口: \(activeTarget.panelTitle)
-                                    目录: \(activeTarget.workingDirectory)
-                                    选定时间: \(Date(timeIntervalSince1970: activeTarget.selectedAt).formatted(date: .omitted, time: .shortened))
-                                    """,
-                                    monospaced: true
-                                )
-                            }
+                        if let activeTarget = workspace.supervisorActiveLoopTarget {
+                            SupervisorInfoTile(
+                                title: "当前循环目标",
+                                content: """
+                                窗口: \(activeTarget.panelTitle)
+                                目录: \(activeTarget.workingDirectory)
+                                选定时间: \(Date(timeIntervalSince1970: activeTarget.selectedAt).formatted(date: .omitted, time: .shortened))
+                                """,
+                                monospaced: true
+                            )
+                        }
 
-                            if !profile.laneSummaries.isEmpty {
-                                SupervisorListTile(title: "编排摘要", items: profile.laneSummaries)
-                            }
+                        if !profile.laneSummaries.isEmpty {
+                            SupervisorListTile(title: "编排摘要", items: profile.laneSummaries)
+                        }
 
-                            if workspace.supervisorPanelHandoffs.isEmpty {
-                                SupervisorInfoTile(
-                                    title: "尚无交接窗口",
-                                    content: "交接合同会按当前活跃窗口生成。每个窗口都会有自己的角色、下一步动作和执行提示词。"
-                                )
-                            } else {
-                                LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
-                                    ForEach(workspace.supervisorPanelHandoffs.prefix(4)) { handoff in
-                                        SupervisorLaneTile(
-                                            title: handoff.panelTitle,
-                                            status: WorkspaceSupervisorHeuristics.handoffDisplayStatus(handoff.status),
-                                            subtitle: handoff.nextAction,
-                                            directory: handoff.workingDirectory
-                                        )
-                                    }
+                        if workspace.supervisorPanelHandoffs.isEmpty {
+                            SupervisorInfoTile(
+                                title: "尚无交接窗口",
+                                content: "交接合同会按当前活跃窗口生成。每个窗口都会有自己的角色、下一步动作和执行提示词。"
+                            )
+                        } else {
+                            LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
+                                ForEach(workspace.supervisorPanelHandoffs.prefix(4)) { handoff in
+                                    SupervisorLaneTile(
+                                        title: handoff.panelTitle,
+                                        status: WorkspaceSupervisorHeuristics.handoffDisplayStatus(handoff.status),
+                                        subtitle: handoff.nextAction,
+                                        directory: handoff.workingDirectory
+                                    )
                                 }
                             }
+                        }
 
-                            if !queueItems.isEmpty {
-                                LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
-                                    ForEach(queueItems) { item in
-                                        SupervisorLaneTile(
-                                            title: "#\(item.priority) \(item.panelTitle)",
-                                            status: item.readiness,
-                                            subtitle: item.nextMilestone,
-                                            directory: item.rotationRule
-                                        )
-                                    }
+                        if !queueItems.isEmpty {
+                            LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
+                                ForEach(queueItems) { item in
+                                    SupervisorLaneTile(
+                                        title: "#\(item.priority) \(item.panelTitle)",
+                                        status: item.readiness,
+                                        subtitle: item.nextMilestone,
+                                        directory: item.rotationRule
+                                    )
                                 }
                             }
+                        }
 
-                            if !recentPanelStates.isEmpty {
-                                LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
-                                    ForEach(recentPanelStates) { state in
-                                        SupervisorLaneTile(
-                                            title: state.panelTitle,
-                                            status: WorkspaceSupervisorHeuristics.handoffDisplayStatus(state.status),
-                                            subtitle: state.nextAction,
-                                            directory: state.workingDirectory
-                                        )
-                                    }
+                        if !recentPanelStates.isEmpty {
+                            LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
+                                ForEach(recentPanelStates) { state in
+                                    SupervisorLaneTile(
+                                        title: state.panelTitle,
+                                        status: WorkspaceSupervisorHeuristics.handoffDisplayStatus(state.status),
+                                        subtitle: state.nextAction,
+                                        directory: state.workingDirectory
+                                    )
                                 }
                             }
                         }
                     }
 
-                    ICCSidebarCard {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack(alignment: .center, spacing: 10) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("技能工坊")
-                                        .font(.system(size: 15, weight: .semibold))
-                                    Text("把当前工作区的最佳执行方法、目录边界和工具权限沉淀成可复用技能蓝图。")
-                                        .font(.system(size: 11.5, weight: .medium))
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer(minLength: 0)
-
+                    SupervisorExpandableCard(
+                        title: "技能工坊",
+                        subtitle: "把当前工作区的最佳执行方法、目录边界和工具权限沉淀成可复用技能蓝图。",
+                        isExpanded: $skillStudioExpanded,
+                        collapsedSummary: skillStudioSummary
+                    ) {
+                        ViewThatFits(in: .horizontal) {
+                            HStack(spacing: 10) {
                                 Button("复制蓝图提示词") {
                                     copyToPasteboard(blueprint.seedPrompt)
                                     skillStudioStatus = "技能蓝图提示词已复制到剪贴板。"
@@ -1531,50 +2000,87 @@ struct SupervisorPaneView: View {
                                 .buttonStyle(SupervisorPrimaryButtonStyle())
                             }
 
-                            if let skillStudioStatus,
-                               !skillStudioStatus.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                SupervisorInfoTile(title: "导出结果", content: skillStudioStatus)
+                            HStack(spacing: 8) {
+                                Button("复制提示词") {
+                                    copyToPasteboard(blueprint.seedPrompt)
+                                    skillStudioStatus = "技能蓝图提示词已复制到剪贴板。"
+                                }
+                                .buttonStyle(SupervisorSecondaryButtonStyle())
+
+                                Button("导出蓝图") {
+                                    exportSkillBlueprint(blueprint)
+                                }
+                                .buttonStyle(SupervisorPrimaryButtonStyle())
                             }
 
-                            LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
-                                SupervisorInfoTile(title: "蓝图标题", content: blueprint.title)
-                                SupervisorInfoTile(title: "推荐目录", content: blueprint.recommendedDirectory, monospaced: true)
-                                SupervisorInfoTile(title: "触发条件", content: blueprint.trigger)
-                                SupervisorInfoTile(title: "技能摘要", content: blueprint.summary)
-                                SupervisorListTile(title: "工具集合", items: blueprint.toolset)
-                                SupervisorListTile(title: "执行步骤", items: blueprint.steps)
-                                SupervisorListTile(title: "守护规则", items: blueprint.guardrails)
-                            }
+                            HStack(spacing: 8) {
+                                Button {
+                                    copyToPasteboard(blueprint.seedPrompt)
+                                    skillStudioStatus = "技能蓝图提示词已复制到剪贴板。"
+                                } label: {
+                                    Label("复制蓝图提示词", systemImage: "doc.on.doc")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .buttonStyle(SupervisorSecondaryButtonStyle())
 
-                            SupervisorPromptDisclosure(title: "技能种子提示词", prompt: blueprint.seedPrompt)
+                                Button {
+                                    exportSkillBlueprint(blueprint)
+                                } label: {
+                                    Label("导出蓝图文件", systemImage: "square.and.arrow.up")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .buttonStyle(SupervisorPrimaryButtonStyle())
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        if let skillStudioStatus,
+                           !skillStudioStatus.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            SupervisorInfoTile(title: "导出结果", content: skillStudioStatus)
+                        }
+
+                        LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
+                            SupervisorInfoTile(title: "蓝图标题", content: blueprint.title)
+                            SupervisorInfoTile(title: "推荐目录", content: blueprint.recommendedDirectory, monospaced: true)
+                            SupervisorInfoTile(title: "触发条件", content: blueprint.trigger)
+                            SupervisorInfoTile(title: "技能摘要", content: blueprint.summary)
+                            SupervisorListTile(title: "工具集合", items: blueprint.toolset)
+                            SupervisorListTile(title: "执行步骤", items: blueprint.steps)
+                            SupervisorListTile(title: "守护规则", items: blueprint.guardrails)
+                        }
+
+                        SupervisorPromptDisclosure(title: "技能种子提示词", prompt: blueprint.seedPrompt)
                     }
 
                     LazyVGrid(columns: compactInfoColumns, alignment: .leading, spacing: 12) {
-                        ICCSidebarCard {
-                            VStack(alignment: .leading, spacing: 12) {
-                                SupervisorSectionHeader(title: "自动循环", subtitle: "适用于多窗口并行推进。自治模式下，监督器会轮转窗口、持续评估和复盘。")
-                                LazyVGrid(columns: metricColumns, alignment: .leading, spacing: 10) {
-                                    ICCMetricCard(title: "Shell 集成", value: readiness.shellIntegrationMode, subtitle: readiness.shellIntegrationInjected ? "已注入" : "未注入")
-                                    ICCMetricCard(title: "终端窗口", value: "\(readiness.terminalPanelCount)", subtitle: "当前工作区内的终端")
-                                    ICCMetricCard(title: "运行中", value: "\(readiness.runningCount)", subtitle: "仍在执行命令")
-                                    ICCMetricCard(title: "待确认", value: "\(readiness.unknownCount)", subtitle: "尚未回报 shell 状态")
-                                }
+                        SupervisorExpandableCard(
+                            title: "自动循环",
+                            subtitle: "适用于多窗口并行推进。自治模式下，监督器会轮转窗口、持续评估和复盘。",
+                            isExpanded: $loopControlsExpanded,
+                            collapsedSummary: loopControlsSummary
+                        ) {
+                            LazyVGrid(columns: metricColumns, alignment: .leading, spacing: 10) {
+                                ICCMetricCard(title: "Shell 集成", value: readiness.shellIntegrationMode, subtitle: readiness.shellIntegrationInjected ? "已注入" : "未注入")
+                                ICCMetricCard(title: "终端窗口", value: "\(readiness.terminalPanelCount)", subtitle: "当前工作区内的终端")
+                                ICCMetricCard(title: "运行中", value: "\(readiness.runningCount)", subtitle: "仍在执行命令")
+                                ICCMetricCard(title: "待确认", value: "\(readiness.unknownCount)", subtitle: "尚未回报 shell 状态")
+                            }
 
-                                VStack(alignment: .leading, spacing: 10) {
-                                    Stepper("最大轮次 \(workspace.supervisorLoopSettings.maxIterations)", value: $workspace.supervisorLoopSettings.maxIterations, in: 1...12)
-                                    Stepper(
-                                        "间隔 \(Int(workspace.supervisorLoopSettings.intervalSeconds)) 秒",
-                                        value: $workspace.supervisorLoopSettings.intervalSeconds,
-                                        in: 1...30,
-                                        step: 1
-                                    )
-                                }
+                            VStack(alignment: .leading, spacing: 10) {
+                                Stepper("最大轮次 \(workspace.supervisorLoopSettings.maxIterations)", value: $workspace.supervisorLoopSettings.maxIterations, in: 1...12)
+                                Stepper(
+                                    "间隔 \(Int(workspace.supervisorLoopSettings.intervalSeconds)) 秒",
+                                    value: $workspace.supervisorLoopSettings.intervalSeconds,
+                                    in: 1...30,
+                                    step: 1
+                                )
+                            }
 
-                                Toggle("循环时使用 LLM 评估", isOn: $workspace.supervisorLoopSettings.useLLMReview)
-                                Toggle("遇到阻塞时停止", isOn: $workspace.supervisorLoopSettings.stopOnBlocked)
-                                Toggle("识别完成时停止", isOn: $workspace.supervisorLoopSettings.stopOnCompleted)
+                            Toggle("循环时使用 LLM 评估", isOn: $workspace.supervisorLoopSettings.useLLMReview)
+                            Toggle("遇到阻塞时停止", isOn: $workspace.supervisorLoopSettings.stopOnBlocked)
+                            Toggle("识别完成时停止", isOn: $workspace.supervisorLoopSettings.stopOnCompleted)
 
+                            ViewThatFits(in: .horizontal) {
                                 HStack(spacing: 10) {
                                     Button(workspace.supervisorLoopState == .running ? "循环执行中..." : "启动自动循环") {
                                         Task {
@@ -1595,81 +2101,140 @@ struct SupervisorPaneView: View {
                                     .disabled(workspace.supervisorLoopState != .running)
                                 }
 
-                                if let summary = workspace.supervisorLoopStatusSummary, !summary.isEmpty {
-                                    SupervisorInfoTile(title: "循环状态", content: summary)
+                                HStack(spacing: 8) {
+                                    Button(workspace.supervisorLoopState == .running ? "运行中..." : "启动循环") {
+                                        Task {
+                                            await workspace.runSupervisorAutonomyLoop(
+                                                endpoint: llmConfig.endpoint,
+                                                apiKey: llmConfig.apiKey,
+                                                model: llmConfig.model
+                                            )
+                                        }
+                                    }
+                                    .buttonStyle(SupervisorPrimaryButtonStyle())
+                                    .disabled(!workspace.supervisorEnabled || workspace.supervisorLoopState == .running || !modeAllowsAutonomyLoop)
+
+                                    Button("停止") {
+                                        workspace.stopSupervisorAutonomyLoop(reason: "manual")
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                    .disabled(workspace.supervisorLoopState != .running)
                                 }
 
-                                if !readiness.notes.isEmpty {
-                                    SupervisorListTile(title: "自动化建议", items: readiness.notes)
-                                }
+                                HStack(spacing: 8) {
+                                    Button {
+                                        Task {
+                                            await workspace.runSupervisorAutonomyLoop(
+                                                endpoint: llmConfig.endpoint,
+                                                apiKey: llmConfig.apiKey,
+                                                model: llmConfig.model
+                                            )
+                                        }
+                                    } label: {
+                                        Label("启动自动循环", systemImage: "play.fill")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(SupervisorPrimaryButtonStyle())
+                                    .disabled(!workspace.supervisorEnabled || workspace.supervisorLoopState == .running || !modeAllowsAutonomyLoop)
 
-                                if !modeAllowsAutonomyLoop {
-                                    SupervisorInfoTile(title: "自治边界", content: "只有切换到“自治”模式后，监督器才会自动轮转多个窗口。")
+                                    Button {
+                                        workspace.stopSupervisorAutonomyLoop(reason: "manual")
+                                    } label: {
+                                        Label("停止循环", systemImage: "stop.fill")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .buttonStyle(SupervisorSecondaryButtonStyle())
+                                    .disabled(workspace.supervisorLoopState != .running)
                                 }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            if let summary = workspace.supervisorLoopStatusSummary, !summary.isEmpty {
+                                SupervisorInfoTile(title: "循环状态", content: summary)
+                            }
+
+                            if !readiness.notes.isEmpty {
+                                SupervisorListTile(title: "自动化建议", items: readiness.notes)
+                            }
+
+                            if !modeAllowsAutonomyLoop {
+                                SupervisorInfoTile(title: "自治边界", content: "只有切换到“自治”模式后，监督器才会自动轮转多个窗口。")
                             }
                         }
                     }
                 }
 
-                ICCSidebarCard {
-                    VStack(alignment: .leading, spacing: 12) {
-                        SupervisorSectionHeader(title: "监督洞察", subtitle: "保留当前判断、阻塞原因和最近运行记录，方便快速复盘。")
+                SupervisorExpandableCard(
+                    title: "监督洞察",
+                    subtitle: "保留当前判断、阻塞原因和最近运行记录，方便快速复盘。",
+                    isExpanded: $insightsExpanded,
+                    collapsedSummary: insightsSummary
+                ) {
+                    if let review {
+                        SupervisorInfoTile(title: "进度摘要", content: review.summary)
+                        SupervisorInfoTile(title: "判断依据", content: review.reason)
+                        SupervisorInfoTile(title: "当前建议动作", content: review.nextAction)
+                        SupervisorPromptDisclosure(title: "监督提示词", prompt: review.suggestedPrompt)
+                    } else {
+                        SupervisorInfoTile(title: "进度摘要", content: "正在整理当前工作区状态，稍后会生成监督判断。")
+                    }
 
-                        if let review {
-                            SupervisorInfoTile(title: "进度摘要", content: review.summary)
-                            SupervisorInfoTile(title: "判断依据", content: review.reason)
-                            SupervisorInfoTile(title: "当前建议动作", content: review.nextAction)
-                            SupervisorPromptDisclosure(title: "监督提示词", prompt: review.suggestedPrompt)
-                        } else {
-                            SupervisorInfoTile(title: "进度摘要", content: "正在整理当前工作区状态，稍后会生成监督判断。")
-                        }
+                    Button("记录当前判断") {
+                        workspace.recordSupervisorCheckpoint(source: "manual")
+                    }
+                    .buttonStyle(SupervisorSecondaryButtonStyle())
 
-                        Button("记录当前判断") {
-                            workspace.recordSupervisorCheckpoint(source: "manual")
-                        }
-                        .buttonStyle(SupervisorSecondaryButtonStyle())
-
-                        if recentRuns.isEmpty {
-                            SupervisorInfoTile(
-                                title: "暂无运行记录",
-                                content: "生成开工建议、刷新判断或运行 LLM 评估后，这里会保留最近的监督记录。"
-                            )
-                        } else {
-                            ForEach(recentRuns) { entry in
-                                SupervisorRunEntryCard(entry: entry)
-                            }
+                    if recentRuns.isEmpty {
+                        SupervisorInfoTile(
+                            title: "暂无运行记录",
+                            content: "生成开工建议、刷新判断或运行 LLM 评估后，这里会保留最近的监督记录。"
+                        )
+                    } else {
+                        ForEach(recentRuns) { entry in
+                            SupervisorRunEntryCard(entry: entry)
                         }
                     }
                 }
 
                 if !isAutoExperience || advancedControlsExpanded || resolvedLLMConfiguration.apiKey.isEmpty {
-                    ICCSidebarCard {
-                        VStack(alignment: .leading, spacing: 12) {
-                            SupervisorSectionHeader(title: "LLM 设置", subtitle: "监督器会优先使用本机保存的配置，其次尝试兼容的环境变量。")
-                            TextField("接口地址", text: $endpoint)
-                                .textFieldStyle(.roundedBorder)
-                            TextField("模型名称", text: $model)
-                                .textFieldStyle(.roundedBorder)
-                            SecureField("API Key", text: $apiKey)
-                                .textFieldStyle(.roundedBorder)
-                            Text("当前来源：\(llmConfig.sourceLabel)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text(llmSavedText)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                    SupervisorExpandableCard(
+                        title: "LLM 设置",
+                        subtitle: "监督器会优先使用本机保存的配置，其次尝试兼容的环境变量。",
+                        isExpanded: $llmSettingsExpanded,
+                        collapsedSummary: llmSettingsSummary
+                    ) {
+                        TextField("接口地址", text: $endpoint)
+                            .textFieldStyle(.roundedBorder)
+                        TextField("模型名称", text: $model)
+                            .textFieldStyle(.roundedBorder)
+                        SecureField("API Key", text: $apiKey)
+                            .textFieldStyle(.roundedBorder)
+                        Text("当前来源：\(llmConfig.sourceLabel)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .safeHelp("当前来源：\(llmConfig.sourceLabel)")
+                        Text(llmSavedText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .safeHelp(llmSavedText)
                     }
                 }
 
                 Text("最近更新时间：\(updatedText)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
             .padding(16)
+            .environment(\.sidebarTextWidthClass, widthClass)
         }
         .background(Color.clear)
         .onAppear {
+            applyExperiencePreset(for: experienceMode)
             if experienceMode == .expert {
                 advancedControlsExpanded = true
             }
@@ -1685,6 +2250,7 @@ struct SupervisorPaneView: View {
         .onChange(of: apiKey) { llmSettingsSavedAt = Date() }
         .onChange(of: experienceModeRaw) {
             advancedControlsExpanded = experienceMode == .expert
+            applyExperiencePreset(for: experienceMode)
         }
         .onChange(of: workspace.supervisorEnabled) {
             if workspace.supervisorEnabled {
@@ -1724,6 +2290,7 @@ struct SupervisorPaneView: View {
             if workspace.supervisorEnabled {
                 workspace.scheduleSupervisorHeuristicRefresh(delay: 0.45)
             }
+        }
         }
     }
 
@@ -1770,6 +2337,27 @@ struct SupervisorPaneView: View {
             skillStudioStatus = "技能蓝图已导出到 \(targetURL.path)"
         } catch {
             skillStudioStatus = "技能蓝图导出失败：\(error.localizedDescription)"
+        }
+    }
+
+    private func applyExperiencePreset(for mode: WorkspaceSupervisorExperienceMode) {
+        switch mode {
+        case .auto:
+            capabilitiesExpanded = false
+            contextExpanded = false
+            orchestrationExpanded = false
+            skillStudioExpanded = false
+            loopControlsExpanded = false
+            insightsExpanded = true
+            llmSettingsExpanded = resolvedLLMConfiguration.apiKey.isEmpty
+        case .expert:
+            capabilitiesExpanded = true
+            contextExpanded = true
+            orchestrationExpanded = true
+            skillStudioExpanded = false
+            loopControlsExpanded = operatorMode == .autonomy
+            insightsExpanded = true
+            llmSettingsExpanded = true
         }
     }
 }
@@ -1824,16 +2412,20 @@ private struct SupervisorSectionHeader: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.system(size: 15, weight: .semibold))
+                .lineLimit(1)
             Text(subtitle)
                 .font(.system(size: 11.5, weight: .medium))
                 .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(subtitle)
         }
     }
 }
 
 private struct SupervisorExperienceButton: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
     let mode: WorkspaceSupervisorExperienceMode
     let isSelected: Bool
     let action: () -> Void
@@ -1844,13 +2436,18 @@ private struct SupervisorExperienceButton: View {
                 HStack(spacing: 8) {
                     Text(mode.displayText)
                         .font(.system(size: 12.5, weight: .semibold))
+                        .lineLimit(1)
                     Spacer(minLength: 0)
-                    ICCStatusPill(text: isSelected ? "默认" : "可切换", tint: mode.tint, emphasized: isSelected)
+                    if !sidebarTextWidthClass.hidesSupplementaryText {
+                        ICCStatusPill(text: isSelected ? "默认" : "可切换", tint: mode.tint, emphasized: isSelected)
+                    }
                 }
                 Text(mode.subtitle)
                     .font(.system(size: 11.5, weight: .medium))
                     .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .safeHelp(mode.subtitle)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
@@ -1869,6 +2466,7 @@ private struct SupervisorExperienceButton: View {
 
 private struct SupervisorModeButton: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
     let mode: WorkspaceSupervisorOperatorMode
     let isSelected: Bool
     let action: () -> Void
@@ -1879,13 +2477,18 @@ private struct SupervisorModeButton: View {
                 HStack(spacing: 8) {
                     Text(mode.displayText)
                         .font(.system(size: 12.5, weight: .semibold))
+                        .lineLimit(1)
                     Spacer(minLength: 0)
-                    ICCStatusPill(text: isSelected ? "已选中" : "可切换", tint: mode.tint, emphasized: isSelected)
+                    if !sidebarTextWidthClass.hidesSupplementaryText {
+                        ICCStatusPill(text: isSelected ? "已选中" : "可切换", tint: mode.tint, emphasized: isSelected)
+                    }
                 }
                 Text(mode.subtitle)
                     .font(.system(size: 11.5, weight: .medium))
                     .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .safeHelp(mode.subtitle)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
@@ -1902,6 +2505,103 @@ private struct SupervisorModeButton: View {
     }
 }
 
+private struct SupervisorExpandableCard<Content: View>: View {
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
+    let title: String
+    let subtitle: String
+    @Binding var isExpanded: Bool
+    var collapsedSummary: String? = nil
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        ICCSidebarCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.18)) {
+                        isExpanded.toggle()
+                    }
+                } label: {
+                    HStack(alignment: .top, spacing: 10) {
+                        SupervisorSectionHeader(title: title, subtitle: subtitle)
+                        Spacer(minLength: 0)
+                        if !isExpanded,
+                           let collapsedSummary,
+                           !collapsedSummary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                           !sidebarTextWidthClass.hidesSupplementaryText {
+                            Text(collapsedSummary)
+                                .font(.system(size: 11.5, weight: .medium))
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .safeHelp(collapsedSummary)
+                        }
+                        Image(systemName: isExpanded ? "chevron.up.circle.fill" : "chevron.down.circle.fill")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if isExpanded {
+                    content()
+                }
+            }
+        }
+    }
+}
+
+private struct SupervisorDigestTile: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
+    let title: String
+    let value: String
+    let detail: String
+    var tint: Color = .accentColor
+    var monospacedDetail: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            HStack(spacing: 8) {
+                Text(title)
+                    .font(.system(size: 11.5, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Spacer(minLength: 0)
+                Capsule(style: .continuous)
+                    .fill(tint.opacity(sidebarTextWidthClass.hidesSupplementaryText ? 0.5 : 0.9))
+                    .frame(width: sidebarTextWidthClass.hidesSupplementaryText ? 10 : 18, height: 6)
+            }
+
+            Text(value.isEmpty ? "暂无内容" : value)
+                .font(.system(size: 13.5, weight: .semibold))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(value.isEmpty ? "暂无内容" : value)
+
+            if !sidebarTextWidthClass.hidesSupplementaryText {
+                Text(detail.isEmpty ? "暂无内容" : detail)
+                    .font(monospacedDetail ? .system(size: 11.5, design: .monospaced) : .system(size: 11.5, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(monospacedDetail ? .middle : .tail)
+                    .safeHelp(detail.isEmpty ? "暂无内容" : detail)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(ICCChrome.cardGradient(for: colorScheme))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(tint.opacity(0.16), lineWidth: 1)
+                )
+        )
+    }
+}
+
 private struct SupervisorInfoTile: View {
     @Environment(\.colorScheme) private var colorScheme
     let title: String
@@ -1913,11 +2613,14 @@ private struct SupervisorInfoTile: View {
             Text(title)
                 .font(.system(size: 11.5, weight: .semibold))
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
             Text(content.isEmpty ? "暂无内容" : content)
                 .font(monospaced ? .system(size: 12, design: .monospaced) : .system(size: 12))
                 .foregroundStyle(.primary)
                 .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .truncationMode(monospaced ? .middle : .tail)
+                .safeHelp(content.isEmpty ? "暂无内容" : content)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(12)
@@ -1944,6 +2647,7 @@ private struct SupervisorListTile: View {
             Text(title)
                 .font(.system(size: 11.5, weight: .semibold))
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
 
             if items.isEmpty {
                 Text("暂无内容")
@@ -1959,7 +2663,9 @@ private struct SupervisorListTile: View {
                             Text(item)
                                 .font(monospaced ? .system(size: 12, design: .monospaced) : .system(size: 12))
                                 .foregroundStyle(.primary)
-                                .fixedSize(horizontal: false, vertical: true)
+                                .lineLimit(1)
+                                .truncationMode(monospaced ? .middle : .tail)
+                                .safeHelp(item)
                         }
                     }
                 }
@@ -1981,6 +2687,7 @@ private struct SupervisorListTile: View {
 
 private struct SupervisorCapabilityTile: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
     let capability: WorkspaceSupervisorCapabilityState
 
     var body: some View {
@@ -1994,24 +2701,34 @@ private struct SupervisorCapabilityTile: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(capability.kind.title)
                         .font(.system(size: 12.5, weight: .semibold))
+                        .lineLimit(1)
                     Text(capability.kind.subtitle)
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .safeHelp(capability.kind.subtitle)
                 }
 
                 Spacer(minLength: 0)
 
-                ICCStatusPill(text: capability.availability.displayText, tint: capability.availability.tint, emphasized: capability.availability == .ready)
+                if !sidebarTextWidthClass.hidesSupplementaryText {
+                    ICCStatusPill(text: capability.availability.displayText, tint: capability.availability.tint, emphasized: capability.availability == .ready)
+                }
             }
 
             Text(capability.summary)
                 .font(.system(size: 12.5, weight: .semibold))
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(capability.summary)
 
             Text(capability.detail)
                 .font(.system(size: 11.5, weight: .medium))
                 .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(capability.detail)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
@@ -2028,6 +2745,7 @@ private struct SupervisorCapabilityTile: View {
 
 private struct SupervisorLaneTile: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
     let title: String
     let status: String
     let subtitle: String
@@ -2038,20 +2756,28 @@ private struct SupervisorLaneTile: View {
             HStack(alignment: .center, spacing: 8) {
                 Text(title)
                     .font(.system(size: 12.5, weight: .semibold))
-                    .lineLimit(2)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .safeHelp(title)
                 Spacer(minLength: 0)
-                ICCStatusPill(text: status, tint: .blue)
+                if !sidebarTextWidthClass.hidesSupplementaryText {
+                    ICCStatusPill(text: status, tint: .blue)
+                }
             }
 
             Text(subtitle)
                 .font(.system(size: 12))
                 .foregroundStyle(.primary)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(subtitle)
 
             Text(directory)
                 .font(.system(size: 11.5, design: .monospaced))
                 .foregroundStyle(.secondary)
-                .lineLimit(2)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .safeHelp(directory)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -2153,6 +2879,7 @@ private struct SupervisorPrimaryButtonStyle: ButtonStyle {
 
 private struct SupervisorRunEntryCard: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
     let entry: WorkspaceSupervisorRunEntry
 
     var body: some View {
@@ -2160,26 +2887,35 @@ private struct SupervisorRunEntryCard: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(entry.title)
                     .font(.system(size: 12.5, weight: .semibold))
+                    .lineLimit(1)
                 Spacer(minLength: 0)
-                Text(Date(timeIntervalSince1970: entry.timestamp).formatted(date: .omitted, time: .shortened))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if !sidebarTextWidthClass.hidesSupplementaryText {
+                    Text(Date(timeIntervalSince1970: entry.timestamp).formatted(date: .omitted, time: .shortened))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Text(entry.summary)
                 .font(.system(size: 12))
                 .foregroundStyle(.primary)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(entry.summary)
 
             Text("结果：\(entry.outcome)")
                 .font(.system(size: 11.5))
                 .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(entry.outcome)
 
             Text("下一步：\(entry.nextAction)")
                 .font(.system(size: 11.5, weight: .medium))
                 .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(entry.nextAction)
         }
         .padding(12)
         .background(
@@ -2241,6 +2977,12 @@ enum WorkspaceSupervisorLLMClient {
         Health must be one of: idle, running, attention, blocked, completed.
         Ground your answer in the workspace charter, observed directories, remote state, and recent supervisor run history.
         Prefer concrete next actions over generic advice.
+        Requirements:
+        - summary must describe the current state in one sentence, not a general status label.
+        - reason must cite the strongest concrete evidence from the snapshot or run history, and name any important alternative you ruled out when relevant.
+        - nextAction must be one safe, immediately executable step.
+        - suggestedPrompt must be directly usable by an execution model and include the goal, the main constraints, the most relevant local or remote context, and a verification step.
+        - Do not mark the workspace completed or blocked without explicit evidence.
 
         Workspace snapshot:
         \(serializedSnapshot(snapshot))
@@ -2401,6 +3143,7 @@ enum WorkspaceSupervisorLLMClient {
         - executionSteps, successSignals, and risks must be JSON arrays of strings.
         - Keep the plan bounded to one concrete execution slice.
         - operatorPrompt must be directly usable as an executor model prompt.
+        - operatorPrompt must include the goal, the main constraints, the most relevant local or remote context, what has already been ruled out if known, and how to verify the result.
 
         Workspace snapshot:
         \(serializedSnapshot(snapshot))
@@ -3284,7 +4027,7 @@ extension Workspace {
 
         switch panelType {
         case .terminal:
-            return "Prepare a verification command, compare recent terminal output with the workspace goal, and surface the next safe terminal action."
+            return "Prepare one verification command tied to the workspace objective, compare the observed output with expected success and failure signals, and surface the next safe terminal action."
         case .browser:
             return "Gather a minimal supporting reference or remote confirmation for the active step; avoid drifting into broad exploration."
         case .markdown:
@@ -3306,15 +4049,15 @@ extension Workspace {
             switch panelType {
             case .terminal:
                 return """
-                Use this panel to execute or verify concrete commands. Keep scope tight. When you act, report the exact command, the key output, and whether the result changes the task state.
+                Use this panel to execute or verify concrete commands. Keep scope tight. If you are verifying, state the expected success and failure signals before you run anything. When you act, report the exact command, the key output, what you ruled out, and whether the result changes the task state.
                 """
             case .browser:
                 return """
-                Use this panel to inspect references, docs, web UI state, or remote evidence. Extract facts, do not brainstorm. Summarize only the details that change the next action.
+                Use this panel to inspect references, docs, web UI state, or remote evidence. Extract facts, do not brainstorm. Summarize only the details that change the next action, and call out which possible explanations you eliminated when relevant.
                 """
             case .markdown:
                 return """
-                Use this panel to maintain structured notes, specs, or checklists. Convert ambiguity into a concrete acceptance checklist or decision record for the active task.
+                Use this panel to maintain structured notes, specs, or checklists. Convert ambiguity into a concrete acceptance checklist or decision record for the active task, including the current constraints and verification target when they are missing.
                 """
             }
         }()
