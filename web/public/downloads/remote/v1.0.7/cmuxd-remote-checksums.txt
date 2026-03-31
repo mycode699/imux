@@ -1,0 +1,4 @@
+8fed5efa826cb02bc0ecbaaf71cbf410e1b6247f4df28453a835559cc43011e9  cmuxd-remote-darwin-arm64
+3c8550ea118a5646d2ce072fddaa1669b02a09e92a6b20770f6a091f83366952  cmuxd-remote-darwin-amd64
+e1640429e065cd2a02dcc251f7a2604d22fd7d583c1c7ad760a53b7613f8b738  cmuxd-remote-linux-arm64
+d62c6fc42c40babe3476a9c4975ce882cbfb939e5afa2e688c707f9fd97ea79a  cmuxd-remote-linux-amd64
