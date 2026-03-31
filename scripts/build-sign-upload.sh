@@ -4,26 +4,32 @@ set -euo pipefail
 source "$(cd "$(dirname "$0")" && pwd)/release-config.sh"
 
 # Build, sign, notarize, create DMG, generate appcast, and upload to GitHub release.
-# Usage: ./scripts/build-sign-upload.sh <tag> [--allow-overwrite]
-# Requires: source ~/.secrets/cmuxterm.env && export SPARKLE_PRIVATE_KEY
+# Usage: ./scripts/build-sign-upload.sh <tag> [--allow-overwrite] [--env-file <path>]
+# Requires a local env file with signing/notarization credentials.
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/build-sign-upload.sh <tag> [--allow-overwrite]
+Usage: ./scripts/build-sign-upload.sh <tag> [--allow-overwrite] [--env-file <path>]
 
 Options:
   --allow-overwrite   Permit replacing existing release assets for the same tag.
                       Use only for emergency rerolls.
+  --env-file <path>   Read release credentials from a specific env file.
 EOF
 }
 
 ALLOW_OVERWRITE="false"
+ENV_FILE="${ICC_RELEASE_ENV_FILE:-$HOME/.secrets/cmuxterm.env}"
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --allow-overwrite)
       ALLOW_OVERWRITE="true"
       shift
+      ;;
+    --env-file)
+      ENV_FILE="${2:-}"
+      shift 2
       ;;
     -h|--help)
       usage
@@ -55,7 +61,11 @@ ENTITLEMENTS="cmux.entitlements"
 APP_PATH="build/Build/Products/Release/${ICC_APP_BUNDLE_NAME}"
 
 # --- Pre-flight ---
-source ~/.secrets/cmuxterm.env
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "Missing release env file: $ENV_FILE" >&2
+  exit 1
+fi
+source "$ENV_FILE"
 export SPARKLE_PRIVATE_KEY
 for tool in zig xcodebuild create-dmg xcrun codesign ditto gh; do
   command -v "$tool" >/dev/null || { echo "MISSING: $tool" >&2; exit 1; }
@@ -107,11 +117,31 @@ fi
 /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP_PATH"
 echo "Codesign verified"
 
+notary_args=()
+notary_key_file=""
+cleanup_notary_key() {
+  if [[ -n "$notary_key_file" && -f "$notary_key_file" ]]; then
+    rm -f "$notary_key_file"
+  fi
+}
+trap cleanup_notary_key EXIT
+
+if [[ -n "${APP_STORE_CONNECT_API_KEY:-}" && -n "${APP_STORE_CONNECT_KEY_ID:-}" && -n "${APP_STORE_CONNECT_ISSUER_ID:-}" ]]; then
+  notary_key_file="$(mktemp)"
+  printf '%s' "$APP_STORE_CONNECT_API_KEY" > "$notary_key_file"
+  notary_args=(--key "$notary_key_file" --key-id "$APP_STORE_CONNECT_KEY_ID" --issuer "$APP_STORE_CONNECT_ISSUER_ID")
+elif [[ -n "${APPLE_ID:-}" && -n "${APPLE_TEAM_ID:-}" && -n "${APPLE_APP_SPECIFIC_PASSWORD:-}" ]]; then
+  notary_args=(--apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD")
+else
+  echo "Missing notarization credentials. Provide either APP_STORE_CONNECT_API_KEY/APP_STORE_CONNECT_KEY_ID/APP_STORE_CONNECT_ISSUER_ID or APPLE_ID/APPLE_TEAM_ID/APPLE_APP_SPECIFIC_PASSWORD in $ENV_FILE." >&2
+  exit 1
+fi
+
 # --- Notarize app ---
 echo "Notarizing app..."
 ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "${ICC_APP_NAME}-notary.zip"
 xcrun notarytool submit "${ICC_APP_NAME}-notary.zip" \
-  --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD" --wait
+  "${notary_args[@]}" --wait
 xcrun stapler staple "$APP_PATH"
 xcrun stapler validate "$APP_PATH"
 rm -f "${ICC_APP_NAME}-notary.zip"
@@ -123,7 +153,7 @@ rm -f "$ICC_RELEASE_DMG_NAME"
 create-dmg --codesign "$SIGN_HASH" "$ICC_RELEASE_DMG_NAME" "$APP_PATH"
 echo "Notarizing DMG..."
 xcrun notarytool submit "$ICC_RELEASE_DMG_NAME" \
-  --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD" --wait
+  "${notary_args[@]}" --wait
 xcrun stapler staple "$ICC_RELEASE_DMG_NAME"
 xcrun stapler validate "$ICC_RELEASE_DMG_NAME"
 echo "DMG notarized"

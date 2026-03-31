@@ -10827,6 +10827,7 @@ private struct SourceControlSidebarPaneView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var snapshot: SourceControlSidebarSnapshot?
     @State private var isRefreshing = false
+    @State private var isPerformingSidebarAction = false
     @State private var actionStatusMessage: String?
     @State private var actionStatusIsError = false
 
@@ -10992,6 +10993,14 @@ private struct SourceControlSidebarPaneView: View {
                 Text("仓库操作")
                     .font(.system(size: 13, weight: .semibold))
 
+                if isPerformingSidebarAction {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Spacer(minLength: 0)
+                    }
+                }
+
                 Text("直接为当前项目打开一个新的终端分屏执行 Pull / Push / Status，保留完整输出，避免把 Git 操作做成不可见的后台按钮。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -10999,25 +11008,31 @@ private struct SourceControlSidebarPaneView: View {
 
                 HStack(spacing: 8) {
                     Button("快速 Pull") {
-                        runRepositoryAction(title: "Git Pull", command: "git pull --rebase --autostash")
+                        performDeferredSidebarAction {
+                            runRepositoryAction(title: "Git Pull", command: "git pull --rebase --autostash")
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
-                    .disabled(repositoryRoot == nil)
+                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
 
                     Button("快速 Push") {
-                        runRepositoryAction(title: "Git Push", command: "git push")
+                        performDeferredSidebarAction {
+                            runRepositoryAction(title: "Git Push", command: "git push")
+                        }
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .disabled(repositoryRoot == nil)
+                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
 
                     Button("状态") {
-                        runRepositoryAction(title: "Git Status", command: "git status -sb")
+                        performDeferredSidebarAction {
+                            runRepositoryAction(title: "Git Status", command: "git status -sb")
+                        }
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .disabled(repositoryRoot == nil)
+                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
                 }
             }
         }
@@ -11029,6 +11044,14 @@ private struct SourceControlSidebarPaneView: View {
                 Text("AI Command Center")
                     .font(.system(size: 13, weight: .semibold))
 
+                if isPerformingSidebarAction {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Spacer(minLength: 0)
+                    }
+                }
+
                 Text("参考 smux 的跨模型协作思路，但直接使用 icc 自己的 pane read/send/send-key 能力。你可以为当前工作区一键添加 Claude、Codex，或创建双模型协作布局。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -11036,25 +11059,31 @@ private struct SourceControlSidebarPaneView: View {
 
                 HStack(spacing: 8) {
                     Button("添加 Claude") {
-                        addAgentPane(tool: .claude)
+                        performDeferredSidebarAction {
+                            addAgentPane(tool: .claude)
+                        }
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .disabled(repositoryRoot == nil)
+                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
 
                     Button("添加 Codex") {
-                        addAgentPane(tool: .codex)
+                        performDeferredSidebarAction {
+                            addAgentPane(tool: .codex)
+                        }
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
-                    .disabled(repositoryRoot == nil)
+                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
 
                     Button("创建协作布局") {
-                        createAgentPairLayout()
+                        performDeferredSidebarAction {
+                            createAgentPairLayout()
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
-                    .disabled(repositoryRoot == nil)
+                    .disabled(repositoryRoot == nil || isPerformingSidebarAction)
                 }
 
                 Button("复制协作命令") {
@@ -11358,6 +11387,15 @@ private struct SourceControlSidebarPaneView: View {
         pasteboard.setString(lines.joined(separator: "\n"), forType: .string)
         actionStatusIsError = false
         actionStatusMessage = "icc bridge commands copied."
+    }
+
+    private func performDeferredSidebarAction(_ operation: @escaping () -> Void) {
+        guard !isPerformingSidebarAction else { return }
+        isPerformingSidebarAction = true
+        DispatchQueue.main.async {
+            operation()
+            isPerformingSidebarAction = false
+        }
     }
 
     private func createExecutionPane() -> TerminalPanel? {
