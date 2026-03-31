@@ -3,13 +3,13 @@
     <channel>
         <title>icc</title>
         <item>
-            <title>1.0.7</title>
-            <pubDate>Tue, 31 Mar 2026 02:50:55 +0000</pubDate>
-            <sparkle:fullReleaseNotesLink>https://www.iccjk.com/changelog/v1.0.7</sparkle:fullReleaseNotesLink>
-            <sparkle:version>84</sparkle:version>
-            <sparkle:shortVersionString>1.0.7</sparkle:shortVersionString>
+            <title>1.0.8</title>
+            <pubDate>Tue, 31 Mar 2026 03:43:56 +0000</pubDate>
+            <sparkle:fullReleaseNotesLink>https://www.iccjk.com/changelog/v1.0.8</sparkle:fullReleaseNotesLink>
+            <sparkle:version>85</sparkle:version>
+            <sparkle:shortVersionString>1.0.8</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://www.iccjk.com/downloads/archive/v1.0.7/icc-v1.0.7-macos.dmg" length="45720963" type="application/octet-stream" sparkle:edSignature="CBgTofIEqywvnUnEkHfMxfEMMq5htZO0MXRd6xtyuV89fq6ZIbWonHL7Jf9aMP/fYenDqwcxRhbkzXsC5yaEAQ=="/>
+            <enclosure url="https://www.iccjk.com/downloads/archive/v1.0.8/icc-v1.0.8-macos.dmg" length="45721799" type="application/octet-stream" sparkle:edSignature="vXUp33R/fpCfifaeAjLafqgQyT9+906LE2Mex4mAKKLfSb+AZVqiaNWAZcdRPtIJiAQipe0mh2nfow2Cy9JiBA=="/>
         </item>
     </channel>
 </rss>
