@@ -536,7 +536,7 @@ jobs:
             - feed `appcast.xml`
             - compatibility feed `appcast-universal.xml` for older universal nightlies
 
-            [Download icc-nightly-macos.dmg](https://github.com/miounet11/icc/releases/download/nightly/icc-nightly-macos.dmg)
+            [Download icc-nightly-macos.dmg](https://github.com/mycode699/imux/releases/download/nightly/icc-nightly-macos.dmg)
           files: |
             icc-nightly-macos-${{ github.run_id }}*.dmg
             icc-nightly-macos.dmg
