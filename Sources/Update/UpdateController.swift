@@ -261,7 +261,10 @@ class UpdateController {
                 retry: { [weak self] in self?.requestCheckForUpdates(presentation: presentation) },
                 dismiss: { [weak self] in self?.viewModel.state = .idle },
                 technicalDetails: Bundle.main.bundleURL.standardizedFileURL.path,
-                feedURLString: userDriver.recordedFeedURLString
+                feedURLString: userDriver.recordedFeedURLString,
+                recoveryAction: { [weak self] in
+                    self?.repairInstalledCopyAndRelaunch(presentation: presentation)
+                }
             ))
             return
         }
@@ -269,28 +272,24 @@ class UpdateController {
     }
 
     private func currentUpdateCompatibilityIssue(bundleURL: URL = Bundle.main.bundleURL) -> UpdateCompatibilityError? {
-        let normalizedURL = bundleURL.standardizedFileURL
-        let path = normalizedURL.path
-        let homeDirectory = FileManager.default.homeDirectoryForCurrentUser.path
-        let allowedPrefixes = [
-            "/Applications/",
-            "\(homeDirectory)/Applications/",
-        ]
+        IccAppBundleInstaller.currentUpdateCompatibilityIssue(bundleURL: bundleURL)
+    }
 
-        if path.contains("/AppTranslocation/") {
-            return .runningTranslocated(path: path)
+    private func repairInstalledCopyAndRelaunch(presentation: UpdateUserInitiatedCheckPresentation) {
+        do {
+            try IccAppBundleInstaller().installAndRelaunch()
+        } catch {
+            viewModel.state = .error(.init(
+                error: error,
+                retry: { [weak self] in self?.requestCheckForUpdates(presentation: presentation) },
+                dismiss: { [weak self] in self?.viewModel.state = .idle },
+                technicalDetails: Bundle.main.bundleURL.standardizedFileURL.path,
+                feedURLString: userDriver.recordedFeedURLString,
+                recoveryAction: { [weak self] in
+                    self?.repairInstalledCopyAndRelaunch(presentation: presentation)
+                }
+            ))
         }
-
-        if path.hasPrefix("/Volumes/") {
-            return .runningFromDiskImage(path: path)
-        }
-
-        let isInsideAllowedApplications = allowedPrefixes.contains { path.hasPrefix($0) }
-        if !isInsideAllowedApplications {
-            return .unsupportedInstallLocation(path: path)
-        }
-
-        return nil
     }
 
     private func performCheckForUpdates(presentation: UpdateUserInitiatedCheckPresentation) {

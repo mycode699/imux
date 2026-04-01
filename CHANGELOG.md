@@ -7,6 +7,15 @@ Historical note:
 - This codebase originated from `icc`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
+## [1.2.0] - 2026-04-01
+
+### Added
+- Added an install-and-relaunch recovery flow when `icc` is launched from a DMG, App Translocation, or another unsupported path, so the running copy can move itself into an Applications folder without making the user restart the process manually.
+
+### Fixed
+- Replacing an older installed `icc.app` now overwrites the existing app bundle in `/Applications` or `~/Applications` instead of treating that installed copy as a blocking directory.
+- Updater compatibility errors now offer a direct recovery action that repairs the installed copy and relaunches the app from the supported location.
+
 ## [1.1.0] - 2026-04-01
 
 ### Changed

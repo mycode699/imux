@@ -320,7 +320,7 @@ const englishCopy: ProductPageCopy = {
       "This log is the public release record for ICC. It tracks the current product line, the official website rollout, documentation changes, and the operating notes you should check before replacing your current build.",
     currentReleaseLabel: "Current release line",
     currentReleaseBody:
-      "ICC is currently published as v1.1.0. The desktop product, official website, multilingual marketing layer, and release assets now align to the current stable line.",
+      "ICC is currently published as v1.2.0. This stable line tightens the install path so replacing an older ICC build is a direct overwrite flow instead of a user-facing blocker.",
     releaseModelTitle: "How to read ICC releases",
     releaseModelIntro:
       "Use the changelog as an operating document, not just a marketing page. A good release note helps you decide whether to adopt immediately, validate first, or hold until an active workflow is done.",
@@ -358,6 +358,18 @@ const englishCopy: ProductPageCopy = {
     ],
     entriesTitle: "Release history",
     entries: [
+      {
+        date: "April 1, 2026",
+        version: "v1.2.0",
+        title: "Install-repair release for direct in-place upgrades",
+        body:
+          "This stable release focuses on the last friction point in the desktop upgrade path: moving a running copy out of the DMG or translocated location, replacing the existing app bundle cleanly, and relaunching from a supported install path.",
+        bullets: [
+          "Added an install-and-relaunch recovery path when ICC is opened from a disk image, App Translocation, or another unsupported launch location.",
+          "Updated the recovery installer so an existing ICC app bundle in Applications is treated as the intended replacement target instead of a blocking directory.",
+          "Extended updater error handling so incompatible launch locations now expose the same direct repair action instead of ending on a dead-end retry loop.",
+        ],
+      },
       {
         date: "April 1, 2026",
         version: "v1.1.0",
@@ -727,7 +739,7 @@ const zhCnCopy: ProductPageCopy = {
       "这份页面是 ICC 的公开发布记录。它追踪当前产品线、官网上线、多语言站点扩展，以及替换当前构建前应该检查的操作说明。",
     currentReleaseLabel: "当前发布线",
     currentReleaseBody:
-      "ICC 当前对外发布版本为 v1.1.0。桌面产品、官方网站、多语言营销层以及发布资产现在都已经对齐到当前稳定版本线上。",
+      "ICC 当前对外发布版本为 v1.2.0。这条稳定线重点收紧安装路径，让用户替换旧版 ICC 时可以直接覆盖，而不会再遇到安装阻断。",
     releaseModelTitle: "应该怎么读 ICC 的版本发布",
     releaseModelIntro:
       "把升级日志当成操作文档，而不仅仅是宣传页。好的发布记录应该帮助你判断是马上采用、先验证，还是等当前任务结束后再更新。",
@@ -765,6 +777,18 @@ const zhCnCopy: ProductPageCopy = {
     ],
     entriesTitle: "发布历史",
     entries: [
+      {
+        date: "2026年4月1日",
+        version: "v1.2.0",
+        title: "面向直接覆盖升级的安装修复版本",
+        body:
+          "这个稳定版本专门处理桌面升级链路里最后一段阻塞点: 把从 DMG 或转移路径启动的运行中副本移入 Applications，平滑替换现有应用包，并从受支持路径重新拉起。",
+        bullets: [
+          "当 ICC 从磁盘镜像、App Translocation 或其他不受支持位置启动时，新增一条“安装并重新启动”的修复路径。",
+          "调整修复安装器逻辑，把 Applications 中已有的 ICC 应用包视为预期替换目标，而不是把它当作阻断目录。",
+          "扩展更新错误处理，让不兼容启动位置也能直接触发修复动作，而不是只停留在无效重试上。",
+        ],
+      },
       {
         date: "2026年4月1日",
         version: "v1.1.0",

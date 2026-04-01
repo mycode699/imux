@@ -1344,12 +1344,19 @@ struct IccCLIPathInstaller {
     private func ensureDestinationIsNotDirectory() throws {
         guard let values = try resourceValuesIfFileExists(
             at: destinationURL,
-            keys: [.isDirectoryKey, .isSymbolicLinkKey]
+            keys: [.isDirectoryKey, .isPackageKey, .isSymbolicLinkKey]
         ) else {
             return
         }
 
-        if values.isDirectory == true, values.isSymbolicLink != true {
+        let isAppBundleDirectory =
+            values.isDirectory == true &&
+            values.isPackage == true &&
+            destinationURL.pathExtension.caseInsensitiveCompare("app") == .orderedSame
+
+        if values.isDirectory == true,
+           values.isSymbolicLink != true,
+           !isAppBundleDirectory {
             throw InstallerError.destinationIsDirectory(path: destinationURL.path)
         }
     }
@@ -1395,6 +1402,372 @@ struct IccCLIPathInstaller {
     private static func uninstallWithAdministratorPrivileges(destinationURL: URL) throws {
         let command = "/bin/rm -f \(shellQuoted(destinationURL.path))"
         try runPrivilegedShellCommand(command)
+    }
+
+    private static func runPrivilegedShellCommand(_ command: String) throws {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        process.arguments = [
+            "-e", "on run argv",
+            "-e", "do shell script (item 1 of argv) with administrator privileges",
+            "-e", "end run",
+            command
+        ]
+        let stdout = Pipe()
+        let stderr = Pipe()
+        process.standardOutput = stdout
+        process.standardError = stderr
+        try process.run()
+        process.waitUntilExit()
+
+        guard process.terminationStatus == 0 else {
+            let stderrText = String(
+                data: stderr.fileHandleForReading.readDataToEndOfFile(),
+                encoding: .utf8
+            )?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let stdoutText = String(
+                data: stdout.fileHandleForReading.readDataToEndOfFile(),
+                encoding: .utf8
+            )?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let details = stderrText.isEmpty ? stdoutText : stderrText
+            let message = details.isEmpty
+                ? "osascript exited with status \(process.terminationStatus)."
+                : details
+            throw InstallerError.privilegedCommandFailed(message: message)
+        }
+    }
+
+    private static func shellQuoted(_ value: String) -> String {
+        "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'"
+    }
+
+    private static func isPermissionDenied(_ error: Error) -> Bool {
+        isPermissionDenied(error as NSError)
+    }
+
+    private static func isPermissionDenied(_ error: NSError) -> Bool {
+        if error.domain == NSPOSIXErrorDomain,
+           let code = POSIXErrorCode(rawValue: Int32(error.code)),
+           code == .EACCES || code == .EPERM || code == .EROFS {
+            return true
+        }
+
+        if error.domain == NSCocoaErrorDomain {
+            switch error.code {
+            case NSFileWriteNoPermissionError, NSFileReadNoPermissionError, NSFileWriteVolumeReadOnlyError:
+                return true
+            default:
+                break
+            }
+        }
+
+        if let underlying = error.userInfo[NSUnderlyingErrorKey] as? NSError {
+            return isPermissionDenied(underlying)
+        }
+
+        return false
+    }
+}
+
+struct IccAppBundleInstaller {
+    struct InstallOutcome {
+        let usedAdministratorPrivileges: Bool
+        let destinationURL: URL
+        let sourceURL: URL
+    }
+
+    enum InstallerError: LocalizedError {
+        case bundledAppMissing(path: String)
+        case destinationParentNotDirectory(path: String)
+        case destinationIsDirectory(path: String)
+        case installVerificationFailed(path: String)
+        case copyCommandFailed(message: String)
+        case relaunchPreparationFailed(path: String)
+        case privilegedCommandFailed(message: String)
+
+        var errorDescription: String? {
+            switch self {
+            case .bundledAppMissing(let path):
+                return "icc.app was not found at \(path)."
+            case .destinationParentNotDirectory(let path):
+                return "Expected \(path) to be a directory."
+            case .destinationIsDirectory(let path):
+                return "\(path) is a directory. Remove or rename it and try again."
+            case .installVerificationFailed(let path):
+                return "Failed to verify the installed app at \(path)."
+            case .copyCommandFailed(let message):
+                return "App installation failed: \(message)"
+            case .relaunchPreparationFailed(let path):
+                return "Prepared the installed app at \(path), but failed to schedule relaunch."
+            case .privilegedCommandFailed(let message):
+                return "Administrator action failed: \(message)"
+            }
+        }
+    }
+
+    typealias PrivilegedInstallHandler = (_ sourceURL: URL, _ destinationURL: URL) throws -> Void
+
+    let fileManager: FileManager
+    let destinationURL: URL
+    private let sourceBundleURLProvider: () -> URL
+    private let bundleIdentifier: String?
+    private let privilegedInstaller: PrivilegedInstallHandler
+
+    init(
+        fileManager: FileManager = .default,
+        sourceBundleURLProvider: @escaping () -> URL = {
+            Bundle.main.bundleURL.standardizedFileURL.resolvingSymlinksInPath()
+        },
+        bundleIdentifier: String? = Bundle.main.bundleIdentifier,
+        destinationURL: URL? = nil,
+        privilegedInstaller: PrivilegedInstallHandler? = nil
+    ) {
+        let normalizedSourceProvider = {
+            sourceBundleURLProvider()
+                .standardizedFileURL
+                .resolvingSymlinksInPath()
+        }
+        let resolvedSourceURL = normalizedSourceProvider()
+        self.fileManager = fileManager
+        self.sourceBundleURLProvider = normalizedSourceProvider
+        self.bundleIdentifier = bundleIdentifier
+        self.destinationURL = destinationURL ?? Self.defaultDestinationURL(
+            for: resolvedSourceURL,
+            bundleIdentifier: bundleIdentifier,
+            fileManager: fileManager
+        )
+        self.privilegedInstaller = privilegedInstaller ?? Self.installWithAdministratorPrivileges(sourceURL:destinationURL:)
+    }
+
+    static func currentUpdateCompatibilityIssue(
+        bundleURL: URL = Bundle.main.bundleURL,
+        fileManager: FileManager = .default
+    ) -> UpdateCompatibilityError? {
+        let normalizedURL = bundleURL.standardizedFileURL
+        let path = normalizedURL.path
+        let homeDirectory = fileManager.homeDirectoryForCurrentUser.path
+        let allowedPrefixes = [
+            "/Applications/",
+            "\(homeDirectory)/Applications/",
+        ]
+
+        if path.contains("/AppTranslocation/") {
+            return .runningTranslocated(path: path)
+        }
+
+        if path.hasPrefix("/Volumes/") {
+            return .runningFromDiskImage(path: path)
+        }
+
+        let isInsideAllowedApplications = allowedPrefixes.contains { path.hasPrefix($0) }
+        if !isInsideAllowedApplications {
+            return .unsupportedInstallLocation(path: path)
+        }
+
+        return nil
+    }
+
+    @discardableResult
+    func installAndRelaunch() throws -> InstallOutcome {
+        let outcome = try install()
+        try Self.scheduleRelaunch(destinationURL: outcome.destinationURL)
+        NSApp.terminate(nil)
+        return outcome
+    }
+
+    func install() throws -> InstallOutcome {
+        let sourceURL = try resolveSourceBundleURL()
+        do {
+            try installWithoutAdministratorPrivileges(sourceURL: sourceURL)
+            return InstallOutcome(
+                usedAdministratorPrivileges: false,
+                destinationURL: destinationURL,
+                sourceURL: sourceURL
+            )
+        } catch {
+            guard Self.isPermissionDenied(error) else { throw error }
+            try ensureDestinationIsNotDirectory()
+            try privilegedInstaller(sourceURL, destinationURL)
+            try verifyInstalledBundle(sourceURL: sourceURL)
+            return InstallOutcome(
+                usedAdministratorPrivileges: true,
+                destinationURL: destinationURL,
+                sourceURL: sourceURL
+            )
+        }
+    }
+
+    private func resolveSourceBundleURL() throws -> URL {
+        let sourceURL = sourceBundleURLProvider()
+        var isDirectory: ObjCBool = false
+        guard fileManager.fileExists(atPath: sourceURL.path, isDirectory: &isDirectory), isDirectory.boolValue else {
+            throw InstallerError.bundledAppMissing(path: sourceURL.path)
+        }
+        return sourceURL
+    }
+
+    private func installWithoutAdministratorPrivileges(sourceURL: URL) throws {
+        try ensureDestinationParentDirectoryExists()
+        try ensureDestinationIsNotDirectory()
+        if destinationEntryExists() {
+            try fileManager.removeItem(at: destinationURL)
+        }
+        try Self.runCopyCommand(sourceURL: sourceURL, destinationURL: destinationURL)
+        try verifyInstalledBundle(sourceURL: sourceURL)
+    }
+
+    private func verifyInstalledBundle(sourceURL: URL) throws {
+        guard let installedBundle = Bundle(url: destinationURL) else {
+            throw InstallerError.installVerificationFailed(path: destinationURL.path)
+        }
+        if let bundleIdentifier,
+           installedBundle.bundleIdentifier != bundleIdentifier {
+            throw InstallerError.installVerificationFailed(path: destinationURL.path)
+        }
+
+        let sourceVersion = Bundle(url: sourceURL)?.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        let destinationVersion = installedBundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        if let sourceVersion,
+           let destinationVersion,
+           sourceVersion != destinationVersion {
+            throw InstallerError.installVerificationFailed(path: destinationURL.path)
+        }
+    }
+
+    private func ensureDestinationParentDirectoryExists() throws {
+        let parentURL = destinationURL.deletingLastPathComponent()
+        var isDirectory: ObjCBool = false
+        if fileManager.fileExists(atPath: parentURL.path, isDirectory: &isDirectory) {
+            guard isDirectory.boolValue else {
+                throw InstallerError.destinationParentNotDirectory(path: parentURL.path)
+            }
+            return
+        }
+        try fileManager.createDirectory(at: parentURL, withIntermediateDirectories: true)
+    }
+
+    private func ensureDestinationIsNotDirectory() throws {
+        guard let values = try resourceValuesIfFileExists(
+            at: destinationURL,
+            keys: [.isDirectoryKey, .isSymbolicLinkKey]
+        ) else {
+            return
+        }
+
+        if values.isDirectory == true, values.isSymbolicLink != true {
+            throw InstallerError.destinationIsDirectory(path: destinationURL.path)
+        }
+    }
+
+    private func resourceValuesIfFileExists(
+        at url: URL,
+        keys: Set<URLResourceKey>
+    ) throws -> URLResourceValues? {
+        do {
+            return try url.resourceValues(forKeys: keys)
+        } catch {
+            let nsError = error as NSError
+            if nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileReadNoSuchFileError {
+                return nil
+            }
+            if nsError.domain == NSPOSIXErrorDomain,
+               POSIXErrorCode(rawValue: Int32(nsError.code)) == .ENOENT {
+                return nil
+            }
+            throw error
+        }
+    }
+
+    private func destinationEntryExists() -> Bool {
+        (try? fileManager.attributesOfItem(atPath: destinationURL.path)) != nil
+    }
+
+    private static func defaultDestinationURL(
+        for sourceURL: URL,
+        bundleIdentifier: String?,
+        fileManager: FileManager
+    ) -> URL {
+        let appName = sourceURL.lastPathComponent
+        let systemDestinationURL = URL(fileURLWithPath: "/Applications", isDirectory: true)
+            .appendingPathComponent(appName, isDirectory: true)
+        let userDestinationURL = fileManager.homeDirectoryForCurrentUser
+            .appendingPathComponent("Applications", isDirectory: true)
+            .appendingPathComponent(appName, isDirectory: true)
+
+        let existingCandidates = [systemDestinationURL, userDestinationURL]
+        for candidate in existingCandidates where installedBundleExists(at: candidate, bundleIdentifier: bundleIdentifier, fileManager: fileManager) {
+            return candidate
+        }
+
+        return systemDestinationURL
+    }
+
+    private static func installedBundleExists(
+        at url: URL,
+        bundleIdentifier: String?,
+        fileManager: FileManager
+    ) -> Bool {
+        guard (try? fileManager.attributesOfItem(atPath: url.path)) != nil else {
+            return false
+        }
+        guard let bundleIdentifier else {
+            return true
+        }
+        return Bundle(url: url)?.bundleIdentifier == bundleIdentifier
+    }
+
+    private static func runCopyCommand(sourceURL: URL, destinationURL: URL) throws {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
+        process.arguments = ["--noqtn", sourceURL.path, destinationURL.path]
+        let stdout = Pipe()
+        let stderr = Pipe()
+        process.standardOutput = stdout
+        process.standardError = stderr
+        try process.run()
+        process.waitUntilExit()
+
+        guard process.terminationStatus == 0 else {
+            let stderrText = String(
+                data: stderr.fileHandleForReading.readDataToEndOfFile(),
+                encoding: .utf8
+            )?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let stdoutText = String(
+                data: stdout.fileHandleForReading.readDataToEndOfFile(),
+                encoding: .utf8
+            )?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let details = stderrText.isEmpty ? stdoutText : stderrText
+            let message = details.isEmpty
+                ? "ditto exited with status \(process.terminationStatus)."
+                : details
+            throw InstallerError.copyCommandFailed(message: message)
+        }
+    }
+
+    private static func installWithAdministratorPrivileges(sourceURL: URL, destinationURL: URL) throws {
+        let destinationPath = destinationURL.path
+        let parentPath = destinationURL.deletingLastPathComponent().path
+        let temporaryPath = destinationURL.deletingLastPathComponent()
+            .appendingPathComponent(".icc-install-\(UUID().uuidString).app", isDirectory: true)
+            .path
+        let command = "/bin/mkdir -p \(shellQuoted(parentPath)) && " +
+            "/bin/rm -rf \(shellQuoted(temporaryPath)) && " +
+            "/usr/bin/ditto --noqtn \(shellQuoted(sourceURL.path)) \(shellQuoted(temporaryPath)) && " +
+            "/bin/rm -rf \(shellQuoted(destinationPath)) && " +
+            "/bin/mv \(shellQuoted(temporaryPath)) \(shellQuoted(destinationPath))"
+        try runPrivilegedShellCommand(command)
+    }
+
+    private static func scheduleRelaunch(destinationURL: URL) throws {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/sh")
+        task.arguments = ["-c", "sleep 1 && open -n -- \"$ICC_RELAUNCH_PATH\""]
+        task.environment = ["ICC_RELAUNCH_PATH": destinationURL.path]
+        do {
+            try task.run()
+        } catch {
+            throw InstallerError.relaunchPreparationFailed(path: destinationURL.path)
+        }
     }
 
     private static func runPrivilegedShellCommand(_ command: String) throws {
@@ -2028,6 +2401,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private var browserAddressBarFocusObserver: NSObjectProtocol?
     private var browserAddressBarBlurObserver: NSObjectProtocol?
     private let updateController = UpdateController()
+    private var didOfferAppBundleInstallRepair = false
     private lazy var titlebarAccessoryController = UpdateTitlebarAccessoryController(viewModel: updateViewModel)
     private let windowDecorationsController = WindowDecorationsController()
     private var menuBarExtraController: MenuBarExtraController?
@@ -2337,6 +2711,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             installMenuBarVisibilityObserver()
             syncMenuBarExtraVisibility()
             updateController.startUpdaterIfNeeded()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { [weak self] in
+                Task { @MainActor in
+                    self?.promptToInstallAppBundleIfNeeded()
+                }
+            }
         }
         titlebarAccessoryController.start()
         windowDecorationsController.start()
@@ -5912,6 +6291,47 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     @objc func attemptUpdate(_ sender: Any?) {
         updateViewModel.overrideState = nil
         updateController.attemptUpdate()
+    }
+
+    @MainActor
+    func repairInstalledAppBundleAndRelaunch() {
+        do {
+            try IccAppBundleInstaller().installAndRelaunch()
+        } catch {
+            presentCLIPathAlert(
+                title: UpdateViewModel.userFacingErrorTitle(for: error),
+                informativeText: error.localizedDescription,
+                style: .warning
+            )
+        }
+    }
+
+    private func promptToInstallAppBundleIfNeeded() {
+        guard !didOfferAppBundleInstallRepair else { return }
+        guard let compatibilityIssue = IccAppBundleInstaller.currentUpdateCompatibilityIssue() else { return }
+        didOfferAppBundleInstallRepair = true
+
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = UpdateViewModel.userFacingErrorTitle(for: compatibilityIssue)
+        alert.informativeText =
+            UpdateViewModel.userFacingErrorMessage(for: compatibilityIssue) +
+            "\n\nCurrent app path: \(Bundle.main.bundleURL.standardizedFileURL.path)"
+        alert.addButton(withTitle: String(localized: "common.installAndRelaunch", defaultValue: "Install and Relaunch"))
+        alert.addButton(withTitle: String(localized: "common.notNow", defaultValue: "Not Now"))
+
+        let handleResponse: (NSApplication.ModalResponse) -> Void = { [weak self] response in
+            guard response == .alertFirstButtonReturn else { return }
+            Task { @MainActor in
+                self?.repairInstalledAppBundleAndRelaunch()
+            }
+        }
+
+        if let window = NSApp.keyWindow ?? NSApp.mainWindow {
+            alert.beginSheetModal(for: window, completionHandler: handleResponse)
+        } else {
+            handleResponse(alert.runModal())
+        }
     }
 
     func isIccCLIInstalledInPATH() -> Bool {

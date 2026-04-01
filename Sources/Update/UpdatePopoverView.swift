@@ -389,12 +389,22 @@ fileprivate struct UpdateErrorView: View {
 
                 Spacer()
 
-                Button(String(localized: "common.retry", defaultValue: "Retry")) {
-                    error.retry()
-                    dismiss()
+                if let recoveryAction = error.recoveryAction {
+                    Button(String(localized: "common.installAndRelaunch", defaultValue: "Install and Relaunch")) {
+                        recoveryAction()
+                        dismiss()
+                    }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+                } else {
+                    Button(String(localized: "common.retry", defaultValue: "Retry")) {
+                        error.retry()
+                        dismiss()
+                    }
+                    .keyboardShortcut(.defaultAction)
+                    .controlSize(.small)
                 }
-                .keyboardShortcut(.defaultAction)
-                .controlSize(.small)
             }
         }
         .padding(16)

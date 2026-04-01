@@ -558,17 +558,20 @@ enum UpdateState: Equatable {
         let dismiss: () -> Void
         let technicalDetails: String?
         let feedURLString: String?
+        let recoveryAction: (() -> Void)?
 
         init(error: any Swift.Error,
              retry: @escaping () -> Void,
              dismiss: @escaping () -> Void,
              technicalDetails: String? = nil,
-             feedURLString: String? = nil) {
+             feedURLString: String? = nil,
+             recoveryAction: (() -> Void)? = nil) {
             self.error = error
             self.retry = retry
             self.dismiss = dismiss
             self.technicalDetails = technicalDetails
             self.feedURLString = feedURLString
+            self.recoveryAction = recoveryAction
         }
     }
 
