@@ -23,7 +23,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
-          submodules: recursive
+          submodules: false
+
+      - name: Init required submodules
+        run: |
+          git submodule sync -- ghostty vendor/bonsplit
+          git submodule update --init --force --recursive ghostty vendor/bonsplit
 
       - name: Load release config
         run: |
