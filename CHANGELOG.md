@@ -7,6 +7,17 @@ Historical note:
 - This codebase originated from `icc`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
+## [1.1.0] - 2026-04-01
+
+### Changed
+- Removed inherited public-brand shadows across the app, website, legal pages, support links, and localized release-facing copy so the active ICC product line now presents one consistent identity.
+- Repointed active docs, issue tracking, feedback handling, and release-facing GitHub links to the current ICC-owned repository and website surfaces.
+- Refreshed the community and changelog web surfaces so the current stable installer, support entry points, and website messaging all describe the same release line.
+
+### Fixed
+- About/help/update surfaces no longer send users through stale repository paths when opening docs, issue tracking, commit links, or release notes.
+- Website feedback delivery now uses ICC-branded sender metadata and a configurable recipient path instead of exposing the previous company recipient in active runtime code.
+
 ## [1.0.10] - 2026-03-31
 
 ### Added

@@ -320,7 +320,7 @@ const englishCopy: ProductPageCopy = {
       "This log is the public release record for ICC. It tracks the current product line, the official website rollout, documentation changes, and the operating notes you should check before replacing your current build.",
     currentReleaseLabel: "Current release line",
     currentReleaseBody:
-      "ICC is currently published as v1.0.10. The desktop product, official website, multilingual marketing layer, and release assets now align to the current stable line.",
+      "ICC is currently published as v1.1.0. The desktop product, official website, multilingual marketing layer, and release assets now align to the current stable line.",
     releaseModelTitle: "How to read ICC releases",
     releaseModelIntro:
       "Use the changelog as an operating document, not just a marketing page. A good release note helps you decide whether to adopt immediately, validate first, or hold until an active workflow is done.",
@@ -358,6 +358,18 @@ const englishCopy: ProductPageCopy = {
     ],
     entriesTitle: "Release history",
     entries: [
+      {
+        date: "April 1, 2026",
+        version: "v1.1.0",
+        title: "Identity hardening pass and release-surface cleanup",
+        body:
+          "This stable release removes the remaining inherited brand shadows from the active ICC experience and tightens the release-facing path from website to installer to support.",
+        bullets: [
+          "Replaced inherited repository, company, and support references across the app, website, docs, and localized public strings with the current ICC-owned surfaces.",
+          "Rebuilt the community, legal, and feedback paths so visible contact and support entry points now read as one deliberate ICC product presence instead of a carried-over fork layer.",
+          "Aligned the packaged app, website changelog copy, and download endpoints so the latest stable installer and its public guidance point to the same release line.",
+        ],
+      },
       {
         date: "March 31, 2026",
         version: "v1.0.10",
@@ -715,7 +727,7 @@ const zhCnCopy: ProductPageCopy = {
       "这份页面是 ICC 的公开发布记录。它追踪当前产品线、官网上线、多语言站点扩展，以及替换当前构建前应该检查的操作说明。",
     currentReleaseLabel: "当前发布线",
     currentReleaseBody:
-      "ICC 当前对外发布版本为 v1.0.10。桌面产品、官方网站、多语言营销层以及发布资产现在都已经对齐到当前稳定版本线上。",
+      "ICC 当前对外发布版本为 v1.1.0。桌面产品、官方网站、多语言营销层以及发布资产现在都已经对齐到当前稳定版本线上。",
     releaseModelTitle: "应该怎么读 ICC 的版本发布",
     releaseModelIntro:
       "把升级日志当成操作文档，而不仅仅是宣传页。好的发布记录应该帮助你判断是马上采用、先验证，还是等当前任务结束后再更新。",
@@ -753,6 +765,18 @@ const zhCnCopy: ProductPageCopy = {
     ],
     entriesTitle: "发布历史",
     entries: [
+      {
+        date: "2026年4月1日",
+        version: "v1.1.0",
+        title: "产品身份加固与发布入口清理",
+        body:
+          "这个稳定版本继续清除活跃 ICC 体验中残留的继承品牌影子，并把从官网到安装包再到支持入口的发布链路收紧成一条统一路径。",
+        bullets: [
+          "把应用、网站、文档以及多语言公开字符串中的旧仓库、旧公司和旧支持入口统一替换为当前 ICC 自有发布面。",
+          "重构社区、法务与反馈路径，让用户可见的联系与支持入口都表现为一套明确的 ICC 产品存在，而不是带有二开痕迹的继承层。",
+          "继续对齐打包后的桌面应用、官网升级日志文案和下载端点，让最新稳定安装包与公开说明始终指向同一条发布线。",
+        ],
+      },
       {
         date: "2026年3月31日",
         version: "v1.0.10",

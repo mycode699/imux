@@ -83,12 +83,12 @@ Nightly release assets:
 
 ## Current baseline
 
-- Current public stable line: `v1.0.10`
+- Current public stable line: `v1.1.0`
 - Repository: `https://github.com/mycode699/imux`
 
 ## Release workflow rules
 
-1. Update `MARKETING_VERSION` to the target release, currently `1.0.10`.
+1. Update `MARKETING_VERSION` to the target release, currently `1.1.0`.
 2. Keep `CURRENT_PROJECT_VERSION` increasing even if the marketing version resets for branding reasons.
 3. Build the signed and notarized macOS app, then generate `appcast.xml` with the matching Sparkle private key.
 4. Stage the DMG, appcast, release manifest, and remote helper assets into `web/public/downloads` or the production site's `public/downloads` directory.
