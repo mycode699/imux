@@ -6306,7 +6306,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         }
     }
 
+    private static func shouldPromptForInstalledAppBundleRepair(bundle: Bundle = .main) -> Bool {
+        guard let bundleIdentifier = bundle.bundleIdentifier else { return true }
+        // Tagged dev/staging variants intentionally run from DerivedData or other
+        // non-Applications paths, so only the stable production bundle should
+        // auto-prompt for install-location repair on launch.
+        return bundleIdentifier == "com.icc.app"
+    }
+
     private func promptToInstallAppBundleIfNeeded() {
+        guard Self.shouldPromptForInstalledAppBundleRepair() else { return }
         guard !didOfferAppBundleInstallRepair else { return }
         guard let compatibilityIssue = IccAppBundleInstaller.currentUpdateCompatibilityIssue() else { return }
         didOfferAppBundleInstallRepair = true
