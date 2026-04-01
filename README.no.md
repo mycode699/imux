@@ -2,7 +2,7 @@
 
 `icc` er et innebygd kommandosenter for AI-arbeid pa macOS. Det samler terminalrendering i Ghostty-klassen, lokale og eksterne explorers, filvisning og redigering i appen, samt et supervisor-lag for planlegging og oppfolging.
 
-Repository: <https://github.com/miounet11/icc>
+Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
@@ -21,5 +21,5 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 
 ## Hurtiglenker
 
-- Releases: <https://github.com/miounet11/icc/releases>
+- Releases: <https://github.com/mycode699/imux/releases>
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)

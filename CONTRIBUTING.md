@@ -1,8 +1,8 @@
 # Contributing to icc
 
-`icc` is currently released from the `miounet11/icc` repository:
+`icc` is currently published from the official ICC repository:
 
-<https://github.com/miounet11/icc>
+<https://github.com/mycode699/imux>
 
 Historical note:
 
@@ -22,8 +22,8 @@ Historical note:
 Clone with submodules:
 
 ```bash
-git clone --recursive https://github.com/miounet11/icc.git
-cd icc
+git clone --recursive https://github.com/mycode699/imux.git
+cd imux
 ```
 
 Run setup once:

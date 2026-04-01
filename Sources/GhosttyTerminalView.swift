@@ -1466,7 +1466,7 @@ class GhosttyApp {
     /// is installed. This injects a sensible default based on the system's
     /// preferred languages.
     ///
-    /// See: https://github.com/manaflow-ai/icc/pull/1017
+    /// See ICC pull request #1017 for the original fallback discussion.
     private func loadCJKFontFallbackIfNeeded(_ config: ghostty_config_t) {
         if Self.userConfigContainsCJKCodepointMap() { return }
 

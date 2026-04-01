@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "../../../i18n/navigation";
 import posthog from "posthog-js";
+import { siteConfig } from "../../site-config";
 
 export function NavLinks() {
   const t = useTranslations("nav");
@@ -33,7 +34,7 @@ export function NavLinks() {
         {t("community")}
       </Link>
       <a
-        href="https://github.com/miounet11/icc"
+        href={siteConfig.repoUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => posthog.capture("icc_github_clicked", { location: "navbar" })}

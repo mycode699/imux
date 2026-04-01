@@ -2,7 +2,7 @@
 
 `icc` គឺជា​មជ្ឈមណ្ឌល​បញ្ជា AI សម្រាប់ macOS ដែលដំណើរការ​ដោយផ្ទាល់។ វារួមបញ្ចូល​ការ​បង្ហាញ terminal កម្រិត Ghostty, local និង remote explorer, ការ​មើល និង​កែសម្រួល​ឯកសារ​ក្នុង app និង supervisor layer សម្រាប់​ការ​គ្រោងការ និង​តាមដាន​ការងារ។
 
-Repository: <https://github.com/miounet11/icc>
+Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
@@ -21,5 +21,5 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 
 ## តំណ​រហ័ស
 
-- Releases: <https://github.com/miounet11/icc/releases>
+- Releases: <https://github.com/mycode699/imux/releases>
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)

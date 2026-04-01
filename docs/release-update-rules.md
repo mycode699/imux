@@ -25,7 +25,7 @@ Stable Sparkle feed:
 
 Nightly Sparkle feed:
 
-- `https://github.com/miounet11/icc/releases/download/nightly/appcast.xml`
+- served from the active GitHub nightly release asset for the release repo
 
 ## Control files
 
@@ -84,7 +84,7 @@ Nightly release assets:
 ## Current baseline
 
 - Current public stable line: `v1.0.10`
-- Repository: `https://github.com/miounet11/icc`
+- Repository: `https://github.com/mycode699/imux`
 
 ## Release workflow rules
 
@@ -94,7 +94,7 @@ Nightly release assets:
 4. Stage the DMG, appcast, release manifest, and remote helper assets into `web/public/downloads` or the production site's `public/downloads` directory.
 5. Push the staged `web/public/downloads` update onto `main` so the website deployment picks up the same release state as the tag build.
 6. Deploy the website so `iccjk.com` serves the new DMG, `appcast.xml`, `latest.json`, and remote helper manifest.
-7. Push the branch to `miounet11/icc`.
+7. Push the branch to `mycode699/imux`.
 8. Create and push a tag such as `v1.0.6` after the website-hosted artifacts have been verified.
 
 ## Important migration note

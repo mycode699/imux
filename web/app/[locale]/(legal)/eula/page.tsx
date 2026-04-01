@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+const supportEmail = "support@iccjk.com";
+
 export const metadata: Metadata = {
   title: "EULA — icc",
   description: "End-User License Agreement for icc",
@@ -32,7 +34,7 @@ export default function EulaPage() {
         <li>
           <strong>&ldquo;Company&rdquo;</strong> (referred to as &ldquo;the
           Company&rdquo;, &ldquo;We&rdquo;, &ldquo;Us&rdquo; or
-          &ldquo;Our&rdquo;) refers to Manaflow.
+          &ldquo;Our&rdquo;) refers to ICC.
         </li>
         <li>
           <strong>&ldquo;Content&rdquo;</strong> refers to content such as text,
@@ -199,7 +201,7 @@ export default function EulaPage() {
       <ul>
         <li>
           Email us at{" "}
-          <a href="mailto:founders@manaflow.com">founders@manaflow.com</a>
+          <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
         </li>
       </ul>
     </>

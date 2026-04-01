@@ -551,109 +551,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A Ghostty-based terminal with vertical tabs\nand a notification panel for macOS."
+            "value": "A native macOS command center for terminal-first AI work."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ghosttyベースの縦タブ付きターミナルと\nmacOS用通知パネル。"
+            "value": "ターミナル中心のAIワーク向けネイティブmacOSコマンドセンター。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "基于 Ghostty 的 macOS 终端，\n支持垂直标签页和通知面板。"
+            "value": "面向终端优先 AI 工作流的原生 macOS 指挥中心。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "基於 Ghostty 的 macOS 終端機，\n具備垂直標籤頁與通知面板。"
+            "value": "面向終端優先 AI 工作流的原生 macOS 指揮中心。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "세로 탭과 알림 패널을 갖춘\nGhostty 기반 macOS 터미널."
+            "value": "터미널 중심 AI 작업을 위한 네이티브 macOS 커맨드 센터."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ein Ghostty-basiertes Terminal mit vertikalen Tabs\nund einem Benachrichtigungsfeld für macOS."
+            "value": "Eine native macOS-Kommandozentrale für terminalorientierte KI-Arbeit."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un terminal basado en Ghostty con pestañas verticales\ny un panel de notificaciones para macOS."
+            "value": "Un centro de mando nativo para macOS para trabajo con IA orientado al terminal."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un terminal basé sur Ghostty avec des onglets verticaux\net un panneau de notifications pour macOS."
+            "value": "Un centre de commande natif pour macOS dédié au travail IA axé terminal."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un terminale basato su Ghostty con schede verticali\ne un pannello notifiche per macOS."
+            "value": "Un centro di comando nativo per macOS per il lavoro con IA incentrato sul terminale."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "En Ghostty-baseret terminal med lodrette faner\nog et notifikationspanel til macOS."
+            "value": "Et indbygget macOS-kommandocenter til terminalfokuseret AI-arbejde."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Terminal oparty na Ghostty z pionowymi kartami\ni panelem powiadomień dla macOS."
+            "value": "Natywne centrum dowodzenia dla macOS do pracy z AI w modelu terminal-first."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Терминал на базе Ghostty с вертикальными вкладками\nи панелью уведомлений для macOS."
+            "value": "Нативный командный центр macOS для работы с ИИ в terminal-first стиле."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Terminal zasnovan na Ghostty sa vertikalnim tabovima\ni panelom za obavještenja za macOS."
+            "value": "Izvorni macOS komandni centar za AI rad usmjeren na terminal."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "طرفية مبنية على Ghostty مع ألسنة عمودية\nولوحة إشعارات لنظام macOS."
+            "value": "مركز أوامر أصلي لنظام macOS لعمل الذكاء الاصطناعي المعتمد على الطرفية."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "En Ghostty-basert terminal med vertikale faner\nog et varselpanel for macOS."
+            "value": "Et innebygd kommandosenter for macOS for terminal-først AI-arbeid."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Um terminal baseado no Ghostty com abas verticais\ne um painel de notificações para macOS."
+            "value": "Um centro de comando nativo para macOS para trabalho com IA orientado ao terminal."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เทอร์มินัลบน Ghostty พร้อมแท็บแนวตั้ง\nและแผงการแจ้งเตือนสำหรับ macOS"
+            "value": "ศูนย์บัญชาการ macOS แบบเนทีฟสำหรับงาน AI ที่ยึดเทอร์มินัลเป็นหลัก"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "macOS için dikey sekmeli ve bildirim panelli\nGhostty tabanlı terminal."
+            "value": "Terminal öncelikli YZ çalışmaları için yerel bir macOS komuta merkezi."
           }
         }
       }
@@ -1335,13 +1335,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Feedback is unavailable right now. Email github.com/miounet11/icc/issues instead."
+            "value": "Feedback is unavailable right now. Open github.com/mycode699/imux/issues instead."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "現在フィードバックを送信できません。代わりに github.com/miounet11/icc/issues までメールしてください。"
+            "value": "現在フィードバックを送信できません。代わりに github.com/mycode699/imux/issues を開いてください。"
           }
         }
       }
@@ -1471,13 +1471,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You can also reach us at github.com/miounet11/icc/issues."
+            "value": "You can also reach us at github.com/mycode699/imux/issues."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "github.com/miounet11/icc/issues 宛てに直接ご連絡いただくこともできます。"
+            "value": "github.com/mycode699/imux/issues から直接ご連絡いただくこともできます。"
           }
         }
       }
@@ -1539,13 +1539,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You can also reach us at github.com/miounet11/icc/issues."
+            "value": "You can also reach us at github.com/mycode699/imux/issues."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "github.com/miounet11/icc/issues 宛てに直接ご連絡いただくこともできます。"
+            "value": "github.com/mycode699/imux/issues から直接ご連絡いただくこともできます。"
           }
         }
       }

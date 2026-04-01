@@ -44,6 +44,7 @@ export function SiteFooter({
   }>;
 }) {
   const year = new Date().getFullYear();
+  const copyright = labels.copyright.replace("{year}", String(year));
   const resolvedExploreLinks = exploreLinks ?? [
     { href: "#capabilities", label: labels.capabilities },
     { href: "#workflow", label: labels.workflow },
@@ -127,7 +128,7 @@ export function SiteFooter({
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-border/70 pt-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>{labels.copyright.replace("{year}", String(year))}</p>
+          <p>{copyright}</p>
           <div className="flex items-center gap-4">
             <p>{siteConfig.domain}</p>
             <div className="rounded-full border border-border/70 px-2.5 py-1">

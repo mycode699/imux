@@ -4,7 +4,7 @@
 
 `icc` is a native macOS command center for serious AI work. It brings Ghostty-grade terminal rendering, local and remote explorers, in-app file editing, browser-assisted execution, and a supervisor layer into one focused workspace so you can move from idea to execution without losing context.
 
-Repository: <https://github.com/miounet11/icc>
+Repository: <https://github.com/mycode699/imux>
 
 Language docs: English | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [Dansk](README.da.md) | [Polski](README.pl.md) | [Русский](README.ru.md) | [Bosanski](README.bs.md) | [العربية](README.ar.md) | [Norsk](README.no.md) | [Português (Brasil)](README.pt-BR.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md) | [ភាសាខ្មែរ](README.km.md) | [Tiếng Việt](README.vi.md)
 
@@ -45,9 +45,9 @@ Brand guide: [docs/brand-guidelines.md](docs/brand-guidelines.md)
 
 ### Release builds
 
-Release artifacts should be published on the GitHub Releases page:
+Release artifacts are distributed through the official ICC release surface:
 
-<https://github.com/miounet11/icc/releases>
+<https://www.iccjk.com/changelog>
 
 If you are validating the app before the first public release, build from source instead.
 
@@ -62,8 +62,8 @@ Prerequisites:
 Clone with submodules and run setup:
 
 ```bash
-git clone --recursive https://github.com/miounet11/icc.git
-cd icc
+git clone --recursive https://github.com/mycode699/imux.git
+cd imux
 ./scripts/setup.sh
 ```
 

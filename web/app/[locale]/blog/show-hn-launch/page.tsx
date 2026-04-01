@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Link } from "../../../../i18n/navigation";
 import { Tweet } from "react-tweet";
+import { siteConfig } from "../../../site-config";
 import starHistory from "./star-history.png";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -133,7 +134,7 @@ export default function ShowHNLaunchPage() {
       <p>
         {t.rich("cta", {
           link: (chunks) => (
-            <a href="https://github.com/manaflow-ai/icc">{chunks}</a>
+            <a href={siteConfig.repoUrl}>{chunks}</a>
           ),
         })}
       </p>

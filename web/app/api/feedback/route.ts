@@ -8,7 +8,6 @@ import { env } from "@/app/env";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const feedbackRecipient = "feedback@manaflow.com";
 const maxAttachmentCount = 10;
 const maxAttachmentBytes = 4 * 1024 * 1024;
 // Keep multipart requests below Vercel Functions' 4.5 MB request-body limit.
@@ -115,8 +114,8 @@ export async function POST(request: Request) {
   const resend = new Resend(feedbackConfig.resendApiKey);
 
   const { error } = await resend.emails.send({
-    from: `Manaflow <${feedbackConfig.fromEmail}>`,
-    to: [feedbackRecipient],
+    from: `ICC <${feedbackConfig.fromEmail}>`,
+    to: [feedbackConfig.toEmail],
     replyTo: email,
     subject,
     text: buildTextBody({
@@ -176,6 +175,7 @@ export async function POST(request: Request) {
 function resolveFeedbackConfig() {
   const resendApiKey = env.RESEND_API_KEY;
   const fromEmail = env.ICC_FEEDBACK_FROM_EMAIL;
+  const toEmail = env.ICC_FEEDBACK_TO_EMAIL?.trim() || fromEmail;
   const rateLimitId = env.ICC_FEEDBACK_RATE_LIMIT_ID;
 
   if (!resendApiKey || !fromEmail || !rateLimitId) {
@@ -185,6 +185,7 @@ function resolveFeedbackConfig() {
   return {
     resendApiKey,
     fromEmail,
+    toEmail,
     rateLimitId,
   };
 }

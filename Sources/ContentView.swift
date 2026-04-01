@@ -9626,7 +9626,7 @@ private enum FeedbackComposerSettings {
     static let storedEmailKey = "sidebarHelpFeedbackEmail"
     static let endpointEnvironmentKey = "ICC_FEEDBACK_API_URL"
     static let defaultEndpoint = ""
-    static let supportURL = "https://github.com/miounet11/icc/issues"
+    static let supportURL = "https://github.com/mycode699/imux/issues"
     static let maxMessageLength = 4_000
     static let maxAttachmentCount = 10
     // Keep the multipart body below Vercel's 4.5 MB request limit.
@@ -13194,7 +13194,7 @@ private struct SidebarFeedbackComposerSheet: View {
         case .invalidEndpoint:
             return String(
                 localized: "sidebar.help.feedback.endpointError",
-                defaultValue: "Feedback is unavailable right now. Open an issue in the icc repository instead."
+                defaultValue: "Feedback is unavailable right now. Open a ticket on the ICC issue tracker instead."
             )
         case .invalidResponse:
             return String(
@@ -13237,7 +13237,7 @@ private struct SidebarFeedbackComposerSheet: View {
             case 500...599:
                 return String(
                     localized: "sidebar.help.feedback.endpointError",
-                    defaultValue: "Feedback is unavailable right now. Open an issue in the icc repository instead."
+                    defaultValue: "Feedback is unavailable right now. Open a ticket on the ICC issue tracker instead."
                 )
             default:
                 return String(
@@ -13338,7 +13338,7 @@ enum FeedbackComposerBridge {
 
         switch submissionError {
         case .invalidEndpoint:
-            return "Feedback is unavailable right now. Open an issue in the icc repository instead."
+            return "Feedback is unavailable right now. Open a ticket on the ICC issue tracker instead."
         case .invalidResponse:
             return "Couldn't send feedback. Please try again."
         case .attachmentReadFailed:
@@ -13357,7 +13357,7 @@ enum FeedbackComposerBridge {
             case 429:
                 return "Too many feedback attempts. Please try again later."
             case 500...599:
-                return "Feedback is unavailable right now. Open an issue in the icc repository instead."
+                return "Feedback is unavailable right now. Open a ticket on the ICC issue tracker instead."
             default:
                 return "Couldn't send feedback. Please try again."
             }
@@ -13366,10 +13366,10 @@ enum FeedbackComposerBridge {
 }
 
 private struct SidebarHelpMenuButton: View {
-    private let docsURL = URL(string: "https://github.com/miounet11/icc#readme")
-    private let changelogURL = URL(string: "https://github.com/miounet11/icc/releases")
-    private let githubURL = URL(string: "https://github.com/miounet11/icc")
-    private let githubIssuesURL = URL(string: "https://github.com/miounet11/icc/issues")
+    private let docsURL = URL(string: "https://www.iccjk.com/docs/getting-started")
+    private let changelogURL = URL(string: "https://www.iccjk.com/changelog")
+    private let githubURL = URL(string: "https://github.com/mycode699/imux")
+    private let githubIssuesURL = URL(string: "https://github.com/mycode699/imux/issues")
     private let discordURL: URL? = nil
     private let helpTitle = String(localized: "sidebar.help.button", defaultValue: "Help")
     private let buttonSize: CGFloat = 22

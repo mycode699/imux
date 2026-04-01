@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { siteConfig } from "../../site-config";
 import { SiteHeader } from "../components/site-header";
 
 export async function generateMetadata({
@@ -52,7 +53,7 @@ export default function NightlyPage() {
 
         {/* Download button */}
         <a
-          href="https://github.com/miounet11/icc/releases/download/nightly/icc-nightly-macos.dmg"
+          href={siteConfig.downloadUrl}
           className="inline-flex items-center gap-2.5 rounded-full font-medium bg-foreground hover:opacity-85 transition-opacity px-5 py-2.5 text-[15px]"
           style={{ color: "var(--background)", textDecoration: "none" }}
         >
@@ -74,7 +75,7 @@ export default function NightlyPage() {
           {t.rich("warning", {
             githubLink: (chunks) => (
               <a
-                href="https://github.com/miounet11/icc/issues"
+                href={siteConfig.issuesUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={linkClass}

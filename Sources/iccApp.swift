@@ -2795,8 +2795,8 @@ private final class SidebarDebugWindowController: NSWindowController, NSWindowDe
 private struct AboutPanelView: View {
     @Environment(\.openURL) private var openURL
 
-    private let githubURL = URL(string: "https://github.com/miounet11/icc")
-    private let docsURL = URL(string: "https://github.com/miounet11/icc#readme")
+    private let githubURL = URL(string: "https://github.com/mycode699/imux")
+    private let docsURL = URL(string: "https://www.iccjk.com/docs/getting-started")
 
     private var version: String? { Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String }
     private var build: String? { Bundle.main.infoDictionary?["CFBundleVersion"] as? String }
@@ -2822,7 +2822,7 @@ private struct AboutPanelView: View {
                     Text(String(localized: "about.appName", defaultValue: "icc"))
                         .bold()
                         .font(.title)
-                    Text(String(localized: "about.description", defaultValue: "A Ghostty-based terminal with vertical tabs\nand a notification panel for macOS."))
+                    Text(String(localized: "about.description", defaultValue: "A native macOS command center for terminal-first AI work."))
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .font(.caption)
@@ -2840,7 +2840,7 @@ private struct AboutPanelView: View {
                     }
                     let commitText = commit ?? "—"
                     let commitURL = commit.flatMap { hash in
-                        URL(string: "https://github.com/miounet11/icc/commit/\(hash)")
+                        URL(string: "https://github.com/mycode699/imux/commit/\(hash)")
                     }
                     AboutPropertyRow(label: String(localized: "about.commit", defaultValue: "Commit"), text: commitText, url: commitURL)
                 }

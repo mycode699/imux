@@ -5,7 +5,7 @@ This file defines the user-facing identity for `icc`.
 ## Canonical identity
 
 - Product name: `icc`
-- Repository: `miounet11/icc`
+- Repository: `mycode699/imux`
 - App label: `icc`
 - CLI name: `icc`
 - Short descriptor: `AI Command Center for macOS`
@@ -90,6 +90,6 @@ The product can sound strong without sounding fake.
 Before shipping a public release:
 
 - update [README.md](../README.md) and the localized README landing pages
-- keep install and upgrade URLs pointed at `miounet11/icc`
+- keep install and upgrade URLs pointed at `https://www.iccjk.com` or the official ICC repository
 - verify that screenshots, issue templates, and support links use `icc`
 - document any legacy `icc` references as compatibility notes rather than product naming

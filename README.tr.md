@@ -2,7 +2,7 @@
 
 `icc`, macOS icin yerel bir yapay zeka komuta merkezidir. Ghostty seviyesinde terminal goruntuleme, yerel ve uzak explorer, uygulama icinden dosya goruntuleme ve duzenleme, ayrıca planlama ve takip icin bir supervisor katmanini tek yerde toplar.
 
-Repository: <https://github.com/miounet11/icc>
+Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
@@ -21,5 +21,5 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 
 ## Hizli baglantilar
 
-- Releases: <https://github.com/miounet11/icc/releases>
+- Releases: <https://github.com/mycode699/imux/releases>
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)

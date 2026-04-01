@@ -2,7 +2,7 @@
 
 `icc` - это нативный центр управления для macOS, созданный для работы с ИИ. Он объединяет терминальный рендеринг уровня Ghostty, локальный и удаленный explorer, просмотр и редактирование файлов внутри приложения, а также supervisory-слой для планирования и контроля выполнения.
 
-Repository: <https://github.com/miounet11/icc>
+Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
@@ -21,5 +21,5 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 
 ## Быстрые ссылки
 
-- Releases: <https://github.com/miounet11/icc/releases>
+- Releases: <https://github.com/mycode699/imux/releases>
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)

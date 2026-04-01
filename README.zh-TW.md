@@ -4,7 +4,7 @@
 
 `icc` 是面向高強度 AI 工作流的原生 macOS 指揮台。它把 Ghostty 等級的終端渲染、本機與遠端資源管理器、檔案檢視與編輯、瀏覽器執行面板，以及可由 LLM 驅動的監督器整合到同一個工作介面中，讓使用者從意圖到執行幾乎不失去上下文。
 
-儲存庫位址：<https://github.com/miounet11/icc>
+儲存庫位址：<https://github.com/mycode699/imux>
 
 語言文件：[English](README.md) | [简体中文](README.zh-CN.md) | 繁體中文
 
@@ -46,7 +46,7 @@
 
 正式發布包會放在 GitHub Releases 頁面：
 
-<https://github.com/miounet11/icc/releases>
+<https://github.com/mycode699/imux/releases>
 
 如果目前仍在發布前驗證階段，建議直接從原始碼建構。
 
@@ -61,8 +61,8 @@
 複製並初始化：
 
 ```bash
-git clone --recursive https://github.com/miounet11/icc.git
-cd icc
+git clone --recursive https://github.com/mycode699/imux.git
+cd imux
 ./scripts/setup.sh
 ```
 

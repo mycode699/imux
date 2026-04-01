@@ -2,7 +2,7 @@
 
 `icc` la trung tam dieu phoi AI goc cho macOS. No ket hop kha nang render terminal cap Ghostty, explorer cuc bo va tu xa, xem va chinh sua tep ngay trong ung dung, cung voi lop supervisor de lap ke hoach va theo doi tien do.
 
-Repository: <https://github.com/miounet11/icc>
+Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
@@ -21,5 +21,5 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 
 ## Lien ket nhanh
 
-- Releases: <https://github.com/miounet11/icc/releases>
+- Releases: <https://github.com/mycode699/imux/releases>
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)

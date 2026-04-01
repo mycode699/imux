@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 
+const supportEmail = "support@iccjk.com";
+const siteUrl = "https://www.iccjk.com";
+
 export const metadata: Metadata = {
   title: "Terms of Service — icc",
   description: "Terms of service for icc",
@@ -14,9 +17,9 @@ export default function TermsOfServicePage() {
 
       <p>
         The website located at{" "}
-        <a href="https://icc.com">icc.com</a> (the
+        <a href={siteUrl}>{siteUrl}</a> (the
         &ldquo;Site&rdquo;) and the icc desktop application (the
-        &ldquo;Application&rdquo;) are copyrighted works belonging to Manaflow
+        &ldquo;Application&rdquo;) are copyrighted works belonging to ICC
         (&ldquo;Company&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;, and
         &ldquo;we&rdquo;). These Terms of Use (these &ldquo;Terms&rdquo;) set
         forth the legally binding terms and conditions that govern your use of
@@ -161,7 +164,7 @@ export default function TermsOfServicePage() {
       <p>
         You have the right to opt out of this arbitration agreement by sending
         written notice to{" "}
-        <a href="mailto:founders@manaflow.com">founders@manaflow.com</a> within 30
+        <a href={`mailto:${supportEmail}`}>{supportEmail}</a> within 30
         days of first becoming subject to it.
       </p>
 
@@ -177,11 +180,11 @@ export default function TermsOfServicePage() {
       <h2>10. Contact</h2>
       <p>
         Questions about these Terms should be sent to{" "}
-        <a href="mailto:founders@manaflow.com">founders@manaflow.com</a>.
+        <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
 
       <p>
-        Copyright &copy; {new Date().getFullYear()} Manaflow. All rights reserved.
+        Copyright &copy; {new Date().getFullYear()} ICC. All rights reserved.
       </p>
     </>
   );

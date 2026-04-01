@@ -5,11 +5,13 @@ export const env = createEnv({
   server: {
     RESEND_API_KEY: z.string().min(1),
     ICC_FEEDBACK_FROM_EMAIL: z.string().email(),
+    ICC_FEEDBACK_TO_EMAIL: z.string().email().optional(),
     ICC_FEEDBACK_RATE_LIMIT_ID: z.string().min(1),
   },
   runtimeEnv: {
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     ICC_FEEDBACK_FROM_EMAIL: process.env.ICC_FEEDBACK_FROM_EMAIL,
+    ICC_FEEDBACK_TO_EMAIL: process.env.ICC_FEEDBACK_TO_EMAIL,
     ICC_FEEDBACK_RATE_LIMIT_ID: process.env.ICC_FEEDBACK_RATE_LIMIT_ID,
   },
   skipValidation:

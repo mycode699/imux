@@ -2,7 +2,7 @@
 
 `icc` هو مركز أوامر أصلي لنظام macOS مخصص للعمل المعتمد على الذكاء الاصطناعي. يجمع بين عرض طرفية بمستوى Ghostty ومستكشف ملفات محلي وبعيد وتحرير ملفات داخل التطبيق وطبقة إشراف للتخطيط والمتابعة.
 
-Repository: <https://github.com/miounet11/icc>
+Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
@@ -21,5 +21,5 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 
 ## روابط سريعة
 
-- Releases: <https://github.com/miounet11/icc/releases>
+- Releases: <https://github.com/mycode699/imux/releases>
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)

@@ -503,9 +503,8 @@ enum UpdateState: Equatable {
         init?(displayVersionString: String) {
             let version = displayVersionString
 
-            if let semver = Self.extractSemanticVersion(from: version) {
-                let tag = semver.hasPrefix("v") ? semver : "v\(semver)"
-                if let url = URL(string: "https://github.com/miounet11/icc/releases/tag/\(tag)") {
+            if Self.extractSemanticVersion(from: version) != nil {
+                if let url = URL(string: "https://www.iccjk.com/changelog") {
                     self = .tagged(url)
                     return
                 }
@@ -515,7 +514,7 @@ enum UpdateState: Equatable {
                 return nil
             }
 
-            if let url = URL(string: "https://github.com/miounet11/icc/commit/\(newHash)") {
+            if let url = URL(string: "https://github.com/mycode699/imux/commit/\(newHash)") {
                 self = .commit(url)
             } else {
                 return nil
