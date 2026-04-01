@@ -3,12 +3,12 @@
   "downloads": {
     "macos": {
       "appcastUrl": "https://www.iccjk.com/downloads/appcast.xml",
-      "archiveUrl": "https://www.iccjk.com/downloads/archive/v1.0.10/icc-v1.0.10-macos.dmg",
+      "archiveUrl": "https://www.iccjk.com/downloads/archive/v1.1.0/icc-v1.1.0-macos.dmg",
       "artifactType": "dmg",
       "bundleId": "com.icc.app",
-      "sha256": "69fd313853a1eb0cd30e287d78a32f93911a347ada5424fab3507768bc966079",
-      "size": 45605993,
-      "url": "https://www.iccjk.com/downloads/icc-v1.0.10-macos.dmg"
+      "sha256": "d078a4c87b007a78af5b9fa90f84ad017c3f5aeefb5e132d743b6e7a489d740c",
+      "size": 46056511,
+      "url": "https://www.iccjk.com/downloads/icc-v1.1.0-macos.dmg"
     },
     "windows": {
       "available": false,
@@ -17,17 +17,17 @@
   },
   "notesUrl": "https://www.iccjk.com/changelog",
   "product": "icc",
-  "publishedAt": "2026-03-31T09:37:40Z",
+  "publishedAt": "2026-04-01T04:43:56Z",
   "remoteDaemon": {
-    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v1.0.10",
+    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v1.1.0",
     "available": true,
     "manifestUrl": "https://www.iccjk.com/downloads/remote/iccd-remote-manifest.json"
   },
   "schemaVersion": 1,
-  "tag": "v1.0.10",
+  "tag": "v1.1.0",
   "update": {
     "feedUrl": "https://www.iccjk.com/downloads/appcast.xml",
     "manifestUrl": "https://www.iccjk.com/downloads/latest.json"
   },
-  "version": "1.0.10"
+  "version": "1.1.0"
 }
