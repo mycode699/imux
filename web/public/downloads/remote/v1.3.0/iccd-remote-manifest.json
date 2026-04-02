@@ -1,0 +1,38 @@
+{
+  "appVersion": "1.3.0",
+  "checksumsAssetName": "iccd-remote-checksums.txt",
+  "checksumsURL": "https://github.com/mycode699/imux/releases/download/v1.3.0/iccd-remote-checksums.txt",
+  "entries": [
+    {
+      "assetName": "iccd-remote-darwin-arm64",
+      "downloadURL": "https://github.com/mycode699/imux/releases/download/v1.3.0/iccd-remote-darwin-arm64",
+      "goArch": "arm64",
+      "goOS": "darwin",
+      "sha256": "6257a9a8421aca17352470f74a063dd1949bd2a770aaccb7c6f1c5c2ddf8ae57"
+    },
+    {
+      "assetName": "iccd-remote-darwin-amd64",
+      "downloadURL": "https://github.com/mycode699/imux/releases/download/v1.3.0/iccd-remote-darwin-amd64",
+      "goArch": "amd64",
+      "goOS": "darwin",
+      "sha256": "ab9dba234e9291b86da120f46a2e37c0408b6a5e3c93c4f51d9d69fa634b1697"
+    },
+    {
+      "assetName": "iccd-remote-linux-arm64",
+      "downloadURL": "https://github.com/mycode699/imux/releases/download/v1.3.0/iccd-remote-linux-arm64",
+      "goArch": "arm64",
+      "goOS": "linux",
+      "sha256": "76b743765450a1294e081b73bbcfee1589fff44962566a15a00f1ac93a255786"
+    },
+    {
+      "assetName": "iccd-remote-linux-amd64",
+      "downloadURL": "https://github.com/mycode699/imux/releases/download/v1.3.0/iccd-remote-linux-amd64",
+      "goArch": "amd64",
+      "goOS": "linux",
+      "sha256": "d68ccc2d3ddf0f3260598b3e772b09f607ce61162897571d10a4eabc5945dccb"
+    }
+  ],
+  "releaseTag": "v1.3.0",
+  "releaseURL": "https://github.com/mycode699/imux/releases/download/v1.3.0",
+  "schemaVersion": 1
+}
