@@ -3358,11 +3358,14 @@ struct ContentView: View {
     private var contentAndSidebarLayout: AnyView {
         let layout: AnyView
         if sidebarBlendMode == SidebarBlendModeOption.withinWindow.rawValue {
-            // Overlay mode: keep the terminal full-width under translucent sidebars
-            // so within-window blur samples live content instead of an inset lane.
+            // Keep interactive terminal/browser content aligned with the visible panes.
+            // Drawing live content under the sidebar makes first-launch and narrow-window
+            // layouts look broken because prompts and web content appear underneath the rail.
             layout = AnyView(
                 ZStack {
                     terminalContentWithSidebarDropOverlay
+                        .padding(.leading, sidebarState.isVisible ? effectiveSidebarWidth : 0)
+                        .padding(.trailing, explorerPaneVisible ? explorerPaneWidth : 0)
                     if sidebarState.isVisible {
                         HStack(spacing: 0) {
                             sidebarView
