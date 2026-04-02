@@ -320,7 +320,7 @@ const englishCopy: ProductPageCopy = {
       "This log is the public release record for ICC. It tracks the current product line, the official website rollout, documentation changes, and the operating notes you should check before replacing your current build.",
     currentReleaseLabel: "Current release line",
     currentReleaseBody:
-      "ICC is currently published as v1.2.0. This stable line tightens the install path so replacing an older ICC build is a direct overwrite flow instead of a user-facing blocker.",
+      "ICC is currently published as v1.5.0. This stable line moves the release target forward again, keeps the website metadata aligned with the active GitHub line, and preserves the recent install and sidebar fixes in one current package.",
     releaseModelTitle: "How to read ICC releases",
     releaseModelIntro:
       "Use the changelog as an operating document, not just a marketing page. A good release note helps you decide whether to adopt immediately, validate first, or hold until an active workflow is done.",
@@ -358,6 +358,18 @@ const englishCopy: ProductPageCopy = {
     ],
     entriesTitle: "Release history",
     entries: [
+      {
+        date: "April 2, 2026",
+        version: "v1.5.0",
+        title: "Stable line refresh with website deployment hardening",
+        body:
+          "This stable release advances ICC to a fresh public version line and keeps the release-facing web path ready to publish the same installer, manifest, and changelog state.",
+        bullets: [
+          "Promoted the active ICC stable line to v1.5.0 so operators can publish a clearly newer package instead of continuing to reuse the earlier v1.4.0 tag.",
+          "Made the website production build tolerate missing feedback-delivery secrets, which prevents the marketing site from failing at build time when feedback sending is not configured.",
+          "Added a dedicated production website deployment workflow so the public site can be republished explicitly once the hosting credentials are available.",
+        ],
+      },
       {
         date: "April 1, 2026",
         version: "v1.2.0",
@@ -739,7 +751,7 @@ const zhCnCopy: ProductPageCopy = {
       "这份页面是 ICC 的公开发布记录。它追踪当前产品线、官网上线、多语言站点扩展，以及替换当前构建前应该检查的操作说明。",
     currentReleaseLabel: "当前发布线",
     currentReleaseBody:
-      "ICC 当前对外发布版本为 v1.2.0。这条稳定线重点收紧安装路径，让用户替换旧版 ICC 时可以直接覆盖，而不会再遇到安装阻断。",
+      "ICC 当前对外发布版本为 v1.5.0。这条稳定线把发布目标继续前推，同时让网站元数据和当前 GitHub 发布线保持一致，并保留最近的安装修复与侧边栏改进。",
     releaseModelTitle: "应该怎么读 ICC 的版本发布",
     releaseModelIntro:
       "把升级日志当成操作文档，而不仅仅是宣传页。好的发布记录应该帮助你判断是马上采用、先验证，还是等当前任务结束后再更新。",
@@ -777,6 +789,18 @@ const zhCnCopy: ProductPageCopy = {
     ],
     entriesTitle: "发布历史",
     entries: [
+      {
+        date: "2026年4月2日",
+        version: "v1.5.0",
+        title: "网站发布链路加固的稳定线刷新",
+        body:
+          "这个稳定版把 ICC 推进到新的公开版本线，并让发布侧网站路径继续围绕同一套安装包、manifest 和升级记录来组织。",
+        bullets: [
+          "将当前 ICC 稳定线提升到 v1.5.0，避免继续复用较早的 v1.4.0 标签作为新的公开安装包目标。",
+          "让网站生产构建在缺少反馈投递密钥时也能完成，从而避免未配置反馈发送时营销站点直接构建失败。",
+          "新增独立的生产网站部署工作流，这样一旦补齐托管凭据，就可以明确地重新发布公开站点。",
+        ],
+      },
       {
         date: "2026年4月1日",
         version: "v1.2.0",

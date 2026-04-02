@@ -7,6 +7,15 @@ Historical note:
 - This codebase originated from `icc`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
+## [1.5.0] - 2026-04-02
+
+### Changed
+- Promoted the active stable line to `v1.5.0` so the desktop app, GitHub release path, and website metadata can converge on a fresh release target instead of reusing the earlier `v1.4.0` line.
+
+### Fixed
+- Website production builds no longer require feedback-delivery secrets at build time, so the public site can compile even when feedback sending is intentionally disabled.
+- Added an explicit production website deployment workflow for the ICC site so the web release path has a dedicated publish job instead of relying on indirect release-only updates.
+
 ## [1.4.0] - 2026-04-02
 
 ### Changed
