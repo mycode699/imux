@@ -11,7 +11,7 @@ Historical note:
 
 ### Changed
 - Added release-asset resync support so an existing signed release can republish the website download surface without rebuilding new binaries.
-- Updated active release and homepage GitHub links to the current `miounet11/icc` repository so the site, manifests, and automation all point at the same project.
+- Updated the active GitHub release and homepage metadata so the website links, manifests, and automation all publish the same `v1.3.0` release line.
 
 ### Fixed
 - Browser slash commands in embedded web chat inputs now keep their leading slash on submit even when WebKit routes text entry through its native field editor path.
