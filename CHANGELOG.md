@@ -7,6 +7,17 @@ Historical note:
 - This codebase originated from `icc`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
+## [1.3.0] - 2026-04-02
+
+### Changed
+- Added release-asset resync support so an existing signed release can republish the website download surface without rebuilding new binaries.
+- Updated active release and homepage GitHub links to the current `miounet11/icc` repository so the site, manifests, and automation all point at the same project.
+
+### Fixed
+- Browser slash commands in embedded web chat inputs now keep their leading slash on submit even when WebKit routes text entry through its native field editor path.
+- Within-window sidebar overlay mode keeps terminal content under the sidebar again instead of shifting the workspace aside and creating the detached offset lane shown in the broken layout.
+- Dev-tagged builds no longer show the install-repair recovery prompt when they are launched from an isolated development path.
+
 ## [1.2.0] - 2026-04-01
 
 ### Added

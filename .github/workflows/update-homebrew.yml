@@ -17,7 +17,7 @@ permissions:
 
 env:
   ICC_HOMEBREW_TAP_REPOSITORY: ""
-  ICC_REPO_URL: https://github.com/mycode699/imux
+  ICC_REPO_URL: https://github.com/miounet11/icc
 
 jobs:
   update-cask:
@@ -100,10 +100,10 @@ jobs:
             version "${VERSION}"
             sha256 "${SHA256}"
 
-            url "https://github.com/mycode699/imux/releases/download/v#{version}/icc-v#{version}-macos.dmg"
+            url "https://github.com/miounet11/icc/releases/download/v#{version}/icc-v#{version}-macos.dmg"
             name "icc"
             desc "Native macOS terminal workspace app for AI execution"
-            homepage "https://github.com/mycode699/imux"
+            homepage "https://github.com/miounet11/icc"
 
             livecheck do
               url :url

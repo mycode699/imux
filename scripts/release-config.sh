@@ -3,8 +3,8 @@
 # Canonical release/update configuration for icc.
 # Source this file from release scripts and GitHub Actions shell steps.
 
-export ICC_REPO_OWNER="mycode699"
-export ICC_REPO_NAME="imux"
+export ICC_REPO_OWNER="miounet11"
+export ICC_REPO_NAME="icc"
 export ICC_REPO_SLUG="${ICC_REPO_OWNER}/${ICC_REPO_NAME}"
 export ICC_REPO_URL="https://github.com/${ICC_REPO_SLUG}"
 export ICC_SITE_URL="https://www.iccjk.com"

@@ -231,22 +231,15 @@ final class IccWebView: WKWebView {
             )
         }
 #endif
-        let normalizedFlags = event.modifierFlags
-            .intersection(.deviceIndependentFlagsMask)
-            .subtracting([.numericPad, .function, .capsLock])
-
-        if event.keyCode == 36 || event.keyCode == 76 {
-            // Always bypass app/menu key-equivalent routing for Return/Enter so WebKit
-            // receives the keyDown path used by form submission handlers.
-            return false
-        }
-
-        if event.charactersIgnoringModifiers == "/",
-           normalizedFlags.isEmpty || normalizedFlags == [.shift] {
-            // Slash commands in web chat inputs must also reach keyDown directly.
-            // Letting plain "/" stay on the key-equivalent path can cause WebKit/AppKit
-            // to consume the slash before the page input sees it, which makes `/init`
-            // submit as `init`.
+        if shouldBypassBrowserTextInputKeyEquivalent(
+            keyCode: event.keyCode,
+            charactersIgnoringModifiers: event.charactersIgnoringModifiers,
+            firstResponderIsBrowser: true,
+            flags: event.modifierFlags
+        ) {
+            // Always bypass app/menu key-equivalent routing for browser text-entry keys
+            // that must arrive on WebKit's keyDown path, including submit and slash
+            // command input.
             return false
         }
 

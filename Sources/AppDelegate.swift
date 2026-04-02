@@ -1883,17 +1883,30 @@ func browserOmnibarShouldSubmitOnReturn(flags: NSEvent.ModifierFlags) -> Bool {
     return normalizedFlags == [] || normalizedFlags == [.shift]
 }
 
-func shouldDispatchBrowserReturnViaFirstResponderKeyDown(
+func shouldBypassBrowserTextInputKeyEquivalent(
     keyCode: UInt16,
+    charactersIgnoringModifiers: String?,
     firstResponderIsBrowser: Bool,
     flags: NSEvent.ModifierFlags
 ) -> Bool {
     guard firstResponderIsBrowser else { return false }
-    guard keyCode == 36 || keyCode == 76 else { return false }
-    // Keep browser Return forwarding narrow: only plain/Shift Return should be
-    // treated as submit-intent. Command-modified Return is reserved for app shortcuts
-    // like Toggle Pane Zoom (Cmd+Shift+Enter).
-    return browserOmnibarShouldSubmitOnReturn(flags: flags)
+    if keyCode == 36 || keyCode == 76 {
+        // Keep browser Return forwarding narrow: only plain/Shift Return should be
+        // treated as submit-intent. Command-modified Return is reserved for app shortcuts
+        // like Toggle Pane Zoom (Cmd+Shift+Enter).
+        return browserOmnibarShouldSubmitOnReturn(flags: flags)
+    }
+
+    let normalizedFlags = browserOmnibarNormalizedModifierFlags(flags)
+    if charactersIgnoringModifiers == "/",
+       normalizedFlags == [] || normalizedFlags == [.shift] {
+        // Slash commands in browser chat inputs must bypass AppKit key-equivalent
+        // handling; otherwise the leading slash can be stripped before page input
+        // handlers see the event, which turns `/fast` into `fast`.
+        return true
+    }
+
+    return false
 }
 
 func shouldToggleMainWindowFullScreenForCommandControlFShortcut(
@@ -12614,7 +12627,7 @@ private var iccFirstResponderGuardHitViewOverride: NSView?
 private var iccFirstResponderGuardCurrentEventContext: NSEvent?
 private var iccFirstResponderGuardHitViewContext: NSView?
 private var iccFirstResponderGuardContextWindowNumber: Int?
-private var iccBrowserReturnForwardingDepth = 0
+private var iccBrowserDirectKeyDownForwardingDepth = 0
 private var iccWindowFirstResponderBypassDepth = 0
 private var iccFieldEditorOwningWebViewAssociationKey: UInt8 = 0
 
@@ -12963,27 +12976,31 @@ private extension NSWindow {
             }
         }
 
-        // Web forms rely on Return/Enter flowing through keyDown. If the original
-        // NSWindow.performKeyEquivalent consumes Enter first, submission never reaches
-        // WebKit. Route Return/Enter directly to the current first responder and
-        // mark handled to avoid the AppKit alert sound path.
-        if shouldDispatchBrowserReturnViaFirstResponderKeyDown(
+        // Browser text-entry keys must bypass key-equivalent routing. When the
+        // current responder is WebKit's native field editor rather than the
+        // WKWebView itself, falling back to the original NSWindow implementation
+        // can still consume the event before WebKit's keyDown path runs. Forward
+        // the event directly to the current first responder instead.
+        if shouldBypassBrowserTextInputKeyEquivalent(
             keyCode: event.keyCode,
+            charactersIgnoringModifiers: event.charactersIgnoringModifiers,
             firstResponderIsBrowser: firstResponderWebView != nil,
             flags: event.modifierFlags
         ) {
             // Forwarding keyDown can re-enter performKeyEquivalent in WebKit/AppKit internals.
             // On re-entry, fall back to normal dispatch to avoid an infinite loop.
-            if iccBrowserReturnForwardingDepth > 0 {
+            if iccBrowserDirectKeyDownForwardingDepth > 0 {
 #if DEBUG
-                dlog("  → browser Return/Enter reentry; using normal dispatch")
+                dlog("  → browser keyDown forward reentry; using normal dispatch")
 #endif
                 return false
             }
-            iccBrowserReturnForwardingDepth += 1
-            defer { iccBrowserReturnForwardingDepth = max(0, iccBrowserReturnForwardingDepth - 1) }
+            iccBrowserDirectKeyDownForwardingDepth += 1
+            defer {
+                iccBrowserDirectKeyDownForwardingDepth = max(0, iccBrowserDirectKeyDownForwardingDepth - 1)
+            }
 #if DEBUG
-            dlog("  → browser Return/Enter routed to firstResponder.keyDown")
+            dlog("  → browser text key routed to firstResponder.keyDown")
 #endif
             self.firstResponder?.keyDown(with: event)
             return true

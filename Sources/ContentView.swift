@@ -3358,13 +3358,11 @@ struct ContentView: View {
     private var contentAndSidebarLayout: AnyView {
         let layout: AnyView
         if sidebarBlendMode == SidebarBlendModeOption.withinWindow.rawValue {
-            // Overlay mode: terminal extends full width, sidebar on top
-            // This allows withinWindow blur to see the terminal content
+            // Overlay mode: keep the terminal full-width under translucent sidebars
+            // so within-window blur samples live content instead of an inset lane.
             layout = AnyView(
                 ZStack {
                     terminalContentWithSidebarDropOverlay
-                        .padding(.leading, sidebarState.isVisible ? effectiveSidebarWidth : 0)
-                        .padding(.trailing, explorerPaneVisible ? explorerPaneWidth : 0)
                     if sidebarState.isVisible {
                         HStack(spacing: 0) {
                             sidebarView
