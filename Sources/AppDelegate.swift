@@ -4133,6 +4133,57 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         NotificationCenter.default.post(name: .mainWindowContextsDidChange, object: self)
     }
 
+    private func scheduleDuplicateMainWindowCollapse(
+        duplicateWindow: NSWindow,
+        existingWindow: NSWindow,
+        windowId: UUID
+    ) {
+#if DEBUG
+        dlog(
+            "mainWindow.register.rejectDuplicate windowId=\(String(windowId.uuidString.prefix(8))) " +
+            "duplicate={\(debugWindowToken(duplicateWindow))} existing={\(debugWindowToken(existingWindow))}"
+        )
+#endif
+        DispatchQueue.main.async { [weak duplicateWindow, weak existingWindow] in
+            guard let duplicateWindow else { return }
+            duplicateWindow.orderOut(nil)
+            duplicateWindow.close()
+            if let existingWindow,
+               NSApp.windows.contains(where: { $0 === existingWindow }) {
+                existingWindow.makeKeyAndOrderFront(nil)
+            }
+        }
+    }
+
+    private func shouldRejectDuplicateMainWindowRegistration(
+        existingContext: MainWindowContext,
+        candidateWindow: NSWindow,
+        windowId: UUID,
+        tabManager: TabManager,
+        sidebarState: SidebarState,
+        sidebarSelectionState: SidebarSelectionState
+    ) -> Bool {
+        // The primary SwiftUI scene is a single logical window. If macOS materializes
+        // a second scene instance, it reuses the same app-scoped state objects and
+        // windowId, which would otherwise show the same workspace tree in parallel.
+        guard existingContext.windowId == windowId,
+              existingContext.tabManager === tabManager,
+              existingContext.sidebarState === sidebarState,
+              existingContext.sidebarSelectionState === sidebarSelectionState,
+              let existingWindow = existingContext.window,
+              existingWindow !== candidateWindow,
+              NSApp.windows.contains(where: { $0 === existingWindow }) else {
+            return false
+        }
+
+        scheduleDuplicateMainWindowCollapse(
+            duplicateWindow: candidateWindow,
+            existingWindow: existingWindow,
+            windowId: windowId
+        )
+        return true
+    }
+
     /// Register a terminal window with the AppDelegate so menu commands and socket control
     /// can target whichever window is currently active.
     func registerMainWindow(
@@ -4151,6 +4202,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         if let existing = mainWindowContexts[key] {
             existing.window = window
         } else if let existing = mainWindowContexts.values.first(where: { $0.windowId == windowId }) {
+            if shouldRejectDuplicateMainWindowRegistration(
+                existingContext: existing,
+                candidateWindow: window,
+                windowId: windowId,
+                tabManager: tabManager,
+                sidebarState: sidebarState,
+                sidebarSelectionState: sidebarSelectionState
+            ) {
+                return
+            }
             existing.window = window
             reindexMainWindowContextIfNeeded(existing, for: window)
         } else {
@@ -5767,6 +5828,44 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         }
         if let sidebarState {
             sidebarState.toggle()
+            return true
+        }
+        return false
+    }
+
+    @discardableResult
+    func toggleDetailSidebarInActiveMainWindow() -> Bool {
+        if let activeManager = tabManager,
+           let activeContext = mainWindowContexts.values.first(where: { $0.tabManager === activeManager }) {
+            if let window = activeContext.window ?? windowForMainWindowId(activeContext.windowId) {
+                setActiveMainWindow(window)
+            }
+            activeContext.sidebarSelectionState.toggleDetailSidebar()
+            return true
+        }
+        if let keyContext = contextForMainWindow(NSApp.keyWindow) {
+            if let window = keyContext.window ?? windowForMainWindowId(keyContext.windowId) {
+                setActiveMainWindow(window)
+            }
+            keyContext.sidebarSelectionState.toggleDetailSidebar()
+            return true
+        }
+        if let mainContext = contextForMainWindow(NSApp.mainWindow) {
+            if let window = mainContext.window ?? windowForMainWindowId(mainContext.windowId) {
+                setActiveMainWindow(window)
+            }
+            mainContext.sidebarSelectionState.toggleDetailSidebar()
+            return true
+        }
+        if let fallbackContext = mainWindowContexts.values.first {
+            if let window = fallbackContext.window ?? windowForMainWindowId(fallbackContext.windowId) {
+                setActiveMainWindow(window)
+            }
+            fallbackContext.sidebarSelectionState.toggleDetailSidebar()
+            return true
+        }
+        if let sidebarSelectionState {
+            sidebarSelectionState.toggleDetailSidebar()
             return true
         }
         return false

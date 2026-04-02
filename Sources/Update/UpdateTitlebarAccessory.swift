@@ -267,6 +267,7 @@ struct TitlebarControlsView: View {
     @ObservedObject var notificationStore: TerminalNotificationStore
     @ObservedObject var viewModel: TitlebarControlsViewModel
     let onToggleSidebar: () -> Void
+    let onToggleDetailSidebar: () -> Void
     let onToggleNotifications: () -> Void
     let onOpenFolder: () -> Void
     let onNewWindow: () -> Void
@@ -388,6 +389,28 @@ struct TitlebarControlsView: View {
                 .accessibilityIdentifier("titlebarControl.toggleSidebar")
                 .accessibilityLabel(String(localized: "titlebar.sidebar.accessibilityLabel", defaultValue: "Toggle Sidebar"))
                 .safeHelp(KeyboardShortcutSettings.Action.toggleSidebar.tooltip(String(localized: "titlebar.sidebar.tooltip", defaultValue: "Show or hide the sidebar")))
+
+                TitlebarControlButton(config: config, action: {
+                    #if DEBUG
+                    dlog("titlebar.toggleDetailSidebar")
+                    #endif
+                    onToggleDetailSidebar()
+                }) {
+                    iconLabel(systemName: "sidebar.right", config: config)
+                }
+                .accessibilityIdentifier("titlebarControl.toggleDetailSidebar")
+                .accessibilityLabel(
+                    String(
+                        localized: "titlebar.detailSidebar.accessibilityLabel",
+                        defaultValue: "Toggle Right Sidebar"
+                    )
+                )
+                .safeHelp(
+                    String(
+                        localized: "titlebar.detailSidebar.tooltip",
+                        defaultValue: "Show or hide the right sidebar"
+                    )
+                )
 
                 TitlebarControlButton(config: config, action: {
                     #if DEBUG
@@ -525,10 +548,10 @@ struct TitlebarControlsView: View {
         case .toggleSidebar:
             index = 0
         case .showNotifications:
-            index = 1
+            index = 2
         case .openFolder:
             // The linked-mode quick action sits before the creation menu in full mode.
-            index = 3
+            index = 4
         }
         return (index + 1) * config.buttonSize + index * config.spacing
     }
@@ -649,7 +672,7 @@ struct HiddenTitlebarSidebarControlsView: View {
     @ObservedObject var notificationStore: TerminalNotificationStore
     @StateObject private var viewModel = TitlebarControlsViewModel()
 
-    private let hostWidth: CGFloat = 124
+    private let hostWidth: CGFloat = 152
     private let hostHeight: CGFloat = 28
 
     var body: some View {
@@ -657,6 +680,7 @@ struct HiddenTitlebarSidebarControlsView: View {
             notificationStore: notificationStore,
             viewModel: viewModel,
             onToggleSidebar: { _ = AppDelegate.shared?.sidebarState?.toggle() },
+            onToggleDetailSidebar: { _ = AppDelegate.shared?.toggleDetailSidebarInActiveMainWindow() },
             onToggleNotifications: { [viewModel] in
                 AppDelegate.shared?.toggleNotificationsPopover(
                     animated: true,
@@ -923,6 +947,7 @@ final class TitlebarControlsAccessoryViewController: NSTitlebarAccessoryViewCont
                 notificationStore: notificationStore,
                 viewModel: viewModel,
                 onToggleSidebar: toggleSidebar,
+                onToggleDetailSidebar: { _ = AppDelegate.shared?.toggleDetailSidebarInActiveMainWindow() },
                 onToggleNotifications: toggleNotifications,
                 onOpenFolder: openFolder,
                 onNewWindow: newWindow,

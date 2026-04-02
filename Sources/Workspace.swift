@@ -5275,7 +5275,12 @@ final class Workspace: Identifiable, ObservableObject {
     @Published var customTitle: String?
     @Published var isPinned: Bool = false
     @Published var customColor: String?  // hex string, e.g. "#C0392B"
-    @Published var currentDirectory: String
+    @Published var currentDirectory: String {
+        didSet {
+            guard currentDirectory != oldValue else { return }
+            persistRemoteHostCurrentDirectoryIfNeeded()
+        }
+    }
     private(set) var preferredBrowserProfileID: UUID?
 
     /// Ordinal for ICC_PORT range assignment (monotonically increasing per app session)
@@ -5426,6 +5431,10 @@ final class Workspace: Identifiable, ObservableObject {
     private var preservesSSHTerminalConnection: Bool {
         activeRemoteTerminalSessionCount > 0
             && remoteConfiguration?.terminalStartupCommand?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+    }
+
+    private var shouldPreserveRemoteConfigurationAfterImplicitTerminalExit: Bool {
+        remoteConfiguration?.terminalStartupCommand?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
     }
 
     var hasInteractiveRemoteSSHSession: Bool {
@@ -6255,6 +6264,16 @@ final class Workspace: Identifiable, ObservableObject {
         }
     }
 
+    private func persistRemoteHostCurrentDirectoryIfNeeded() {
+        guard let destination = remoteConfiguration?.destination.trimmingCharacters(in: .whitespacesAndNewlines),
+              !destination.isEmpty else {
+            return
+        }
+        let trimmedDirectory = currentDirectory.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedDirectory.isEmpty else { return }
+        RemoteHostPathStore.savePath(trimmedDirectory, for: destination)
+    }
+
     // MARK: - Directory Updates
 
     func updatePanelDirectory(panelId: UUID, directory: String) {
@@ -6792,6 +6811,9 @@ final class Workspace: Identifiable, ObservableObject {
 
     func configureRemoteConnection(_ configuration: WorkspaceRemoteConfiguration, autoConnect: Bool = true) {
         remoteConfiguration = configuration
+        if let lastRemotePath = RemoteHostPathStore.loadPath(for: configuration.destination) {
+            currentDirectory = lastRemotePath
+        }
         seedInitialRemoteTerminalSessionIfNeeded(configuration: configuration)
         remoteDetectedPorts = []
         remoteForwardedPorts = []
@@ -6841,7 +6863,10 @@ final class Workspace: Identifiable, ObservableObject {
         configureRemoteConnection(configuration, autoConnect: true)
     }
 
-    func disconnectRemoteConnection(clearConfiguration: Bool = false) {
+    func disconnectRemoteConnection(
+        clearConfiguration: Bool = false,
+        detailOverride: String? = nil
+    ) {
         let previousController = remoteSessionController
         activeRemoteSessionControllerID = nil
         remoteSessionController = nil
@@ -6855,7 +6880,7 @@ final class Workspace: Identifiable, ObservableObject {
         remoteHeartbeatCount = 0
         remoteLastHeartbeatAt = nil
         remoteConnectionState = .disconnected
-        remoteConnectionDetail = nil
+        remoteConnectionDetail = detailOverride?.trimmingCharacters(in: .whitespacesAndNewlines)
         remoteGhosttyTerminfoInstalled = false
         remoteGhosttyTerminfoSummary = nil
         remoteDaemonStatus = WorkspaceRemoteDaemonStatus()
@@ -6874,6 +6899,23 @@ final class Workspace: Identifiable, ObservableObject {
 
     private func clearRemoteConfigurationIfWorkspaceBecameLocal() {
         guard panels.isEmpty, remoteConfiguration != nil else { return }
+        if shouldPreserveRemoteConfigurationAfterImplicitTerminalExit {
+#if DEBUG
+            dlog(
+                "remote.workspace.preserve reason=emptyPanels " +
+                "target=\(remoteDisplayTarget ?? remoteConfiguration?.destination ?? "remote")"
+            )
+#endif
+            disconnectRemoteConnection(
+                clearConfiguration: false,
+                detailOverride: String(
+                    localized: "remote.workspace.preservedAfterTerminalClose",
+                    defaultValue: "SSH 终端已关闭，远程工作区配置已保留。点击连接即可恢复。"
+                )
+            )
+            return
+        }
+
         disconnectRemoteConnection(clearConfiguration: true)
     }
 
@@ -6907,6 +6949,23 @@ final class Workspace: Identifiable, ObservableObject {
             if remoteConnectionState == .error || remoteDaemonStatus.state == .error || remoteConnectionState == .connecting {
                 return
             }
+            if shouldPreserveRemoteConfigurationAfterImplicitTerminalExit {
+#if DEBUG
+                dlog(
+                    "remote.workspace.preserve reason=sessionEnded " +
+                    "target=\(remoteDisplayTarget ?? remoteConfiguration?.destination ?? "remote")"
+                )
+#endif
+                disconnectRemoteConnection(
+                    clearConfiguration: false,
+                    detailOverride: String(
+                        localized: "remote.workspace.preservedAfterSessionEnd",
+                        defaultValue: "SSH 会话已结束，远程工作区配置已保留。点击连接即可恢复。"
+                    )
+                )
+                return
+            }
+
             disconnectRemoteConnection(clearConfiguration: true)
         }
     }

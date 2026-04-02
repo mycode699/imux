@@ -1454,8 +1454,41 @@ class GhosttyApp {
         loadLegacyGhosttyConfigIfNeeded(config)
         ghostty_config_load_recursive_files(config)
         loadIccAppSupportGhosttyConfigIfNeeded(config)
+        loadIccDefaultFontSizeIfNeeded(config)
         loadCJKFontFallbackIfNeeded(config)
         ghostty_config_finalize(config)
+    }
+
+    /// icc keeps the default terminal slightly more compact than upstream unless
+    /// the user has explicitly configured a font size in Ghostty config.
+    private static let iccDefaultFontSize: Double = 12
+
+    static var iccDefaultFontSizePoints: Float {
+        Float(iccDefaultFontSize)
+    }
+
+    static func shouldApplyIccDefaultFontSizeFallback() -> Bool {
+        !userConfigContainsExplicitFontSize()
+    }
+
+    private func loadIccDefaultFontSizeIfNeeded(_ config: ghostty_config_t) {
+        if !Self.shouldApplyIccDefaultFontSizeFallback() { return }
+
+        let tmpURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("icc-default-font-size-\(UUID().uuidString).conf")
+        let lines = "font-size = \(Self.iccDefaultFontSize)\n"
+
+        do {
+            try lines.write(to: tmpURL, atomically: true, encoding: .utf8)
+            defer { try? FileManager.default.removeItem(at: tmpURL) }
+            tmpURL.path.withCString { path in
+                ghostty_config_load_file(config, path)
+            }
+        } catch {
+#if DEBUG
+            Self.initLog("failed to write icc default font-size config: \(error)")
+#endif
+        }
     }
 
     /// When the user has not configured `font-codepoint-map` for CJK ranges,
@@ -1569,6 +1602,19 @@ class GhosttyApp {
         return false
     }
 
+    static func userConfigContainsExplicitFontSize(
+        configPaths: [String] = defaultCJKScanPaths()
+    ) -> Bool {
+        var visited = Set<String>()
+        for rawPath in configPaths {
+            let path = NSString(string: rawPath).expandingTildeInPath
+            if Self.configFileContainsExplicitFontSize(atPath: path, visited: &visited) {
+                return true
+            }
+        }
+        return false
+    }
+
     /// Returns the default set of config paths to scan for existing
     /// `font-codepoint-map` entries. Includes both the standard Ghostty
     /// config locations and any app-support paths that icc may load.
@@ -1634,6 +1680,48 @@ class GhosttyApp {
                         ? expanded
                         : (parentDir as NSString).appendingPathComponent(expanded)
                     if configFileContainsCodepointMap(atPath: absolute, visited: &visited) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private static func configFileContainsExplicitFontSize(
+        atPath path: String,
+        visited: inout Set<String>
+    ) -> Bool {
+        let resolved = (path as NSString).standardizingPath
+        guard !visited.contains(resolved) else { return false }
+        visited.insert(resolved)
+
+        guard let contents = try? String(contentsOfFile: resolved, encoding: .utf8) else {
+            return false
+        }
+        let parentDir = (resolved as NSString).deletingLastPathComponent
+
+        for line in contents.components(separatedBy: .newlines) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("#") { continue }
+            if trimmed.hasPrefix("font-size") {
+                return true
+            }
+            if trimmed.hasPrefix("config-file") {
+                let parts = trimmed.split(separator: "=", maxSplits: 1)
+                if parts.count == 2 {
+                    var includePath = parts[1]
+                        .trimmingCharacters(in: .whitespaces)
+                    if includePath.hasSuffix("?") {
+                        includePath.removeLast()
+                    }
+                    includePath = includePath
+                        .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                    let expanded = NSString(string: includePath).expandingTildeInPath
+                    let absolute = (expanded as NSString).isAbsolutePath
+                        ? expanded
+                        : (parentDir as NSString).appendingPathComponent(expanded)
+                    if configFileContainsExplicitFontSize(atPath: absolute, visited: &visited) {
                         return true
                     }
                 }
@@ -3409,6 +3497,10 @@ final class TerminalSurface: Identifiable, ObservableObject {
         let scaleFactors = scaleFactors(for: view)
 
         var surfaceConfig = configTemplate ?? ghostty_surface_config_new()
+        if surfaceConfig.font_size <= 0,
+           GhosttyApp.shouldApplyIccDefaultFontSizeFallback() {
+            surfaceConfig.font_size = GhosttyApp.iccDefaultFontSizePoints
+        }
         surfaceConfig.platform_tag = GHOSTTY_PLATFORM_MACOS
         surfaceConfig.platform = ghostty_platform_u(macos: ghostty_platform_macos_s(
             nsview: Unmanaged.passUnretained(view).toOpaque()
@@ -3692,6 +3784,7 @@ final class TerminalSurface: Identifiable, ObservableObject {
         // transition nudges the renderer.
         view.forceRefreshSurface()
         ghostty_surface_refresh(createdSurface)
+        view.armTextInputRecoveryRefresh(reason: "surface.created")
 
 #if DEBUG
         let runtimeFontText = iccCurrentSurfaceFontSizePoints(createdSurface).map {
@@ -4116,10 +4209,16 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
     private var pendingSurfaceSize: CGSize?
     private var deferredSurfaceSizeRetryQueued = false
     private var lastDrawableSize: CGSize = .zero
+    private var textInputRecoveryRefreshArmedUntil: CFTimeInterval = 0
+    private var lastTextInputRecoveryRefreshAt: CFTimeInterval = 0
     private var isFindEscapeSuppressionArmed = false
 #if DEBUG
     private var lastSizeSkipSignature: String?
 #endif
+    // Keep a short post-transition safety window for blank-frame recovery, but
+    // avoid forcing a synchronous refresh on every steady-state text keystroke.
+    private static let textInputRecoveryRefreshWindow: CFTimeInterval = 1.0
+    private static let textInputRecoveryRefreshMinInterval: CFTimeInterval = 0.12
 
     private var hasUsableFocusGeometry: Bool {
         bounds.width > 1 && bounds.height > 1
@@ -4148,8 +4247,58 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
         // queue a redraw when they become visible again.
         fileprivate var isVisibleInUI: Bool { visibleInUI }
         fileprivate func setVisibleInUI(_ visible: Bool) {
+            let wasVisible = visibleInUI
             visibleInUI = visible
+            if visible {
+                if !wasVisible {
+                    armTextInputRecoveryRefresh(reason: "portal.visible")
+                }
+            } else if wasVisible {
+                textInputRecoveryRefreshArmedUntil = 0
+            }
         }
+
+    fileprivate func armTextInputRecoveryRefresh(reason: String) {
+        let armedUntil = CACurrentMediaTime() + Self.textInputRecoveryRefreshWindow
+        if armedUntil > textInputRecoveryRefreshArmedUntil {
+            textInputRecoveryRefreshArmedUntil = armedUntil
+        }
+#if DEBUG
+        dlog(
+            "surface.textInputRefresh.arm surface=\(terminalSurface?.id.uuidString.prefix(5) ?? "nil") " +
+            "reason=\(reason) until=\(String(format: "%.3f", textInputRecoveryRefreshArmedUntil))"
+        )
+#endif
+    }
+
+    fileprivate func shouldRequestTextInputRecoveryRefresh() -> Bool {
+        guard visibleInUI,
+              window != nil,
+              bounds.width > 1,
+              bounds.height > 1 else {
+            return false
+        }
+
+        let now = CACurrentMediaTime()
+        let currentLayer = layer?.presentation() ?? layer
+        let isMissingLayerContents = currentLayer?.contents == nil
+        guard isMissingLayerContents || now <= textInputRecoveryRefreshArmedUntil else {
+            return false
+        }
+        guard now - lastTextInputRecoveryRefreshAt >= Self.textInputRecoveryRefreshMinInterval else {
+            return false
+        }
+
+        lastTextInputRecoveryRefreshAt = now
+#if DEBUG
+        let trigger = isMissingLayerContents ? "missingContents" : "armedWindow"
+        dlog(
+            "surface.textInputRefresh.request surface=\(terminalSurface?.id.uuidString.prefix(5) ?? "nil") " +
+            "trigger=\(trigger) armed=\(now <= textInputRecoveryRefreshArmedUntil ? 1 : 0)"
+        )
+#endif
+        return true
+    }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -4318,6 +4467,11 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
         if !isAlreadyAttached {
             updateSurfaceSize()
         }
+        if !isSameSurface || !isAlreadyAttached {
+            armTextInputRecoveryRefresh(
+                reason: !isSameSurface ? "surface.attach.newSurface" : "surface.attach.reattach"
+            )
+        }
         applySurfaceBackground()
         applySurfaceColorScheme(force: !isSameSurface || !isAlreadyAttached)
     }
@@ -4335,7 +4489,10 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
             "pending=\(String(format: "%.1fx%.1f", pendingSurfaceSize?.width ?? 0, pendingSurfaceSize?.height ?? 0))"
         )
 #endif
-        guard let window else { return }
+        guard let window else {
+            textInputRecoveryRefreshArmedUntil = 0
+            return
+        }
 
         // If the surface creation was deferred while detached, create/attach it now.
         terminalSurface?.attachToView(self)
@@ -4369,6 +4526,7 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
         superview?.layoutSubtreeIfNeeded()
         layoutSubtreeIfNeeded()
         updateSurfaceSize()
+        armTextInputRecoveryRefresh(reason: "surface.windowMove")
         applySurfaceBackground()
         applySurfaceColorScheme(force: true)
         GhosttyApp.shared.synchronizeThemeWithAppearance(
@@ -5689,7 +5847,8 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
             }
         }
 
-        if shouldRefreshAfterTextInput {
+        if shouldRefreshAfterTextInput,
+           shouldRequestTextInputRecoveryRefresh() {
 #if DEBUG
             let refreshStart = ProcessInfo.processInfo.systemUptime
 #endif
@@ -6297,6 +6456,7 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
             ghostty_surface_set_display_id(surface, displayID)
         }
 
+        armTextInputRecoveryRefresh(reason: "surface.screenChange")
         DispatchQueue.main.async { [weak self] in
             self?.viewDidChangeBackingProperties()
         }
@@ -8135,6 +8295,9 @@ final class GhosttySurfaceScrollView: NSView {
         }
 #endif
         if active {
+            if !wasActive {
+                surfaceView.armTextInputRecoveryRefresh(reason: "portal.active")
+            }
             scheduleAutomaticFirstResponderApply(reason: "setActive")
         } else {
             resignOwnedFirstResponderIfNeeded(reason: "setActive(false)")

@@ -208,6 +208,38 @@ enum RemoteHostPasswordStore {
     }
 }
 
+enum RemoteHostPathStore {
+    private static let defaultsKey = "icc.remote-host.last-paths"
+
+    static func loadPath(for account: String) -> String? {
+        guard let storedPath = storedPaths()[normalizedAccount(account)] else {
+            return nil
+        }
+        let trimmedPath = storedPath.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmedPath.isEmpty ? nil : trimmedPath
+    }
+
+    static func savePath(_ path: String, for account: String) {
+        let normalizedPath = path.trimmingCharacters(in: .whitespacesAndNewlines)
+        let key = normalizedAccount(account)
+        var paths = storedPaths()
+        if normalizedPath.isEmpty {
+            paths.removeValue(forKey: key)
+        } else {
+            paths[key] = normalizedPath
+        }
+        UserDefaults.standard.set(paths, forKey: defaultsKey)
+    }
+
+    private static func storedPaths() -> [String: String] {
+        UserDefaults.standard.dictionary(forKey: defaultsKey) as? [String: String] ?? [:]
+    }
+
+    private static func normalizedAccount(_ account: String) -> String {
+        account.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
 private struct SSHConfigBlock {
     let aliases: [String]
     let sourcePath: String
@@ -1041,7 +1073,29 @@ private func loadLocalExplorerChildren(
     }
 }
 
+private enum ExplorerSidebarLayout {
+    static let rowSpacing: CGFloat = 1
+    static let rowHeight: CGFloat = 20
+    static let rowCornerRadius: CGFloat = 5
+    static let rowIndentStep: CGFloat = 10
+    static let rowLeadingBase: CGFloat = 6
+
+    static func leadingInset(forDepth depth: Int) -> CGFloat {
+        CGFloat(max(0, depth - 1)) * rowIndentStep + rowLeadingBase
+    }
+}
+
+private enum ExplorerDragPayload {
+    static func provider(for fileURL: URL) -> NSItemProvider {
+        let provider = NSItemProvider(object: fileURL as NSURL)
+        provider.suggestedName = fileURL.lastPathComponent
+        provider.registerObject(fileURL.path as NSString, visibility: .all)
+        return provider
+    }
+}
+
 struct LocalFileExplorerSidebar: View {
+    @Environment(\.colorScheme) private var colorScheme
     let rootPath: String
     let selectedFilePath: String?
     let onOpenFile: (URL) -> Void
@@ -1056,7 +1110,7 @@ struct LocalFileExplorerSidebar: View {
             explorerHeader
 
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2) {
+                LazyVStack(alignment: .leading, spacing: ExplorerSidebarLayout.rowSpacing) {
                     if let errorMessage {
                         Text(errorMessage)
                             .font(.caption)
@@ -1084,7 +1138,7 @@ struct LocalFileExplorerSidebar: View {
                             .padding(12)
                     }
                 }
-                .padding(.vertical, 8)
+                .padding(.vertical, 2)
             }
             .overlay(alignment: .topTrailing) {
                 if isLoading, rootNode != nil {
@@ -1111,18 +1165,22 @@ struct LocalFileExplorerSidebar: View {
     }
 
     private var explorerHeader: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("目录")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.secondary)
-            Text(SidebarPathFormatter.shortenedPath(rootPath))
-                .font(.system(size: 12, weight: .medium))
-                .lineLimit(2)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 12)
-        .padding(.top, 12)
-        .padding(.bottom, 8)
+        Text(SidebarPathFormatter.shortenedPath(rootPath))
+            .font(.system(size: 10.5, weight: .medium))
+            .foregroundStyle(Color.primary.opacity(0.72))
+            .lineLimit(1)
+            .truncationMode(.middle)
+            .safeHelp(rootPath)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 12)
+            .padding(.top, 8)
+            .padding(.bottom, 5)
+            .background(ICCChrome.headerFill(for: colorScheme))
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(ICCChrome.borderColor(for: colorScheme, emphasis: 0.9))
+                    .frame(height: 1)
+            }
     }
 
     private func reload() async {
@@ -1191,7 +1249,7 @@ private struct FileExplorerNodeRows: View {
     let onOpenFile: (URL) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: ExplorerSidebarLayout.rowSpacing) {
             if node.depth > 0 {
                 FileExplorerRow(
                     node: node,
@@ -1214,6 +1272,7 @@ private struct FileExplorerNodeRows: View {
 }
 
 private struct FileExplorerRow: View {
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var node: LocalFileExplorerNode
     let isSelected: Bool
     let onOpenFile: (URL) -> Void
@@ -1236,39 +1295,54 @@ private struct FileExplorerRow: View {
                 onOpenFile(node.url)
             }
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 4) {
                 if node.isDirectory {
                     Image(systemName: node.isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 8, weight: .semibold))
                         .foregroundStyle(.secondary)
-                        .frame(width: 10)
-                    Image(systemName: "folder")
+                        .frame(width: 8)
+                    Image(systemName: "folder.fill")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.secondary)
                 } else {
-                    Color.clear.frame(width: 10)
-                    Image(systemName: "doc")
+                    Color.clear.frame(width: 8)
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.secondary)
                 }
                 Text(node.name)
-                    .font(.system(size: 12))
+                    .font(.system(size: 11))
                     .lineLimit(1)
 
                 if node.isLoading {
                     ProgressView()
                         .controlSize(.small)
-                        .scaleEffect(0.8)
+                        .scaleEffect(0.75)
                 }
 
                 Spacer(minLength: 0)
             }
-            .padding(.leading, CGFloat(max(0, node.depth - 1)) * 14 + 10)
-            .padding(.trailing, 8)
-            .padding(.vertical, 5)
+            .frame(minHeight: ExplorerSidebarLayout.rowHeight, alignment: .leading)
+            .padding(.leading, ExplorerSidebarLayout.leadingInset(forDepth: node.depth))
+            .padding(.trailing, 4)
+            .padding(.vertical, 2)
             .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(
-                        isSelected
-                            ? Color.accentColor.opacity(0.14)
-                            : (isHovering ? Color.primary.opacity(0.05) : Color.clear)
-                    )
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: ExplorerSidebarLayout.rowCornerRadius, style: .continuous)
+                        .fill(
+                            isSelected
+                                ? ICCChrome.listSelectionFill(for: colorScheme)
+                                : (isHovering ? ICCChrome.hoverFill(for: colorScheme) : Color.clear)
+                        )
+
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 1, style: .continuous)
+                            .fill(ICCChrome.accent(for: colorScheme))
+                            .frame(width: 2)
+                            .padding(.leading, 2)
+                            .padding(.vertical, 3)
+                    }
+                }
             )
             .contentShape(Rectangle())
         }
@@ -1277,7 +1351,7 @@ private struct FileExplorerRow: View {
             isHovering = hovering
         }
         .onDrag {
-            NSItemProvider(object: node.url as NSURL)
+            ExplorerDragPayload.provider(for: node.url)
         }
         .contextMenu {
             if !node.isDirectory {
@@ -1359,7 +1433,7 @@ private struct RemoteFileExplorerNodeRows: View {
     let onOpenFile: (String) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: ExplorerSidebarLayout.rowSpacing) {
             if node.depth > 0 {
                 RemoteFileExplorerRow(
                     node: node,
@@ -1382,9 +1456,11 @@ private struct RemoteFileExplorerNodeRows: View {
 }
 
 private struct RemoteFileExplorerRow: View {
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var node: RemoteFileExplorerNode
     let isSelected: Bool
     let onOpenFile: (String) -> Void
+    @State private var isHovering = false
 
     var body: some View {
         Button {
@@ -1397,39 +1473,62 @@ private struct RemoteFileExplorerRow: View {
                 onOpenFile(node.path)
             }
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 4) {
                 if node.isDirectory {
                     Image(systemName: node.isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 8, weight: .semibold))
                         .foregroundStyle(.secondary)
-                        .frame(width: 10)
-                    Image(systemName: "folder")
+                        .frame(width: 8)
+                    Image(systemName: "folder.fill")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.secondary)
                 } else {
-                    Color.clear.frame(width: 10)
-                    Image(systemName: "doc")
+                    Color.clear.frame(width: 8)
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.secondary)
                 }
 
                 Text(node.name)
-                    .font(.system(size: 12))
+                    .font(.system(size: 11))
                     .lineLimit(1)
 
                 if node.isLoading {
                     ProgressView()
                         .controlSize(.small)
+                        .scaleEffect(0.75)
                 }
 
                 Spacer(minLength: 0)
             }
-            .padding(.leading, CGFloat(max(0, node.depth - 1)) * 14 + 10)
-            .padding(.trailing, 8)
-            .padding(.vertical, 4)
+            .frame(minHeight: ExplorerSidebarLayout.rowHeight, alignment: .leading)
+            .padding(.leading, ExplorerSidebarLayout.leadingInset(forDepth: node.depth))
+            .padding(.trailing, 4)
+            .padding(.vertical, 2)
             .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(isSelected ? Color.accentColor.opacity(0.14) : Color.clear)
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: ExplorerSidebarLayout.rowCornerRadius, style: .continuous)
+                        .fill(
+                            isSelected
+                                ? ICCChrome.listSelectionFill(for: colorScheme)
+                                : (isHovering ? ICCChrome.hoverFill(for: colorScheme) : Color.clear)
+                        )
+
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 1, style: .continuous)
+                            .fill(ICCChrome.accent(for: colorScheme))
+                            .frame(width: 2)
+                            .padding(.leading, 2)
+                            .padding(.vertical, 3)
+                    }
+                }
             )
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { hovering in
+            isHovering = hovering
+        }
         .onDrag {
             NSItemProvider(object: node.path as NSString)
         }
@@ -1706,7 +1805,56 @@ private struct PlainTextEditorRepresentable: NSViewRepresentable {
     }
 }
 
+private struct LiveSecureFieldRepresentable: NSViewRepresentable {
+    let placeholder: String
+    @Binding var text: String
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(text: $text)
+    }
+
+    func makeNSView(context: Context) -> NSSecureTextField {
+        let field = NSSecureTextField()
+        field.delegate = context.coordinator
+        field.placeholderString = placeholder
+        field.isBezeled = true
+        field.isBordered = true
+        field.focusRingType = .default
+        field.lineBreakMode = .byTruncatingTail
+        field.target = context.coordinator
+        field.action = #selector(Coordinator.commit(_:))
+        return field
+    }
+
+    func updateNSView(_ nsView: NSSecureTextField, context: Context) {
+        if nsView.placeholderString != placeholder {
+            nsView.placeholderString = placeholder
+        }
+        if nsView.stringValue != text {
+            nsView.stringValue = text
+        }
+    }
+
+    final class Coordinator: NSObject, NSTextFieldDelegate {
+        @Binding private var text: String
+
+        init(text: Binding<String>) {
+            _text = text
+        }
+
+        func controlTextDidChange(_ obj: Notification) {
+            guard let field = obj.object as? NSSecureTextField else { return }
+            text = field.stringValue
+        }
+
+        @objc func commit(_ sender: NSSecureTextField) {
+            text = sender.stringValue
+        }
+    }
+}
+
 struct RemoteHostsSidebar: View {
+    @Environment(\.colorScheme) private var colorScheme
     let onConnect: (SSHConfigHostEntry) -> Void
 
     @AppStorage(RemoteSSHTermMode.appStorageKey) private var remoteSSHTermModeRaw = RemoteSSHTermMode.defaultValue.rawValue
@@ -1718,26 +1866,46 @@ struct RemoteHostsSidebar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("SSH 主机")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 5) {
+                HStack(alignment: .center, spacing: 8) {
+                    Text("SSH 主机")
+                        .font(.system(size: 10.5, weight: .bold))
+                        .foregroundStyle(.secondary)
+
+                    Spacer(minLength: 0)
+
+                    Text(remoteSSHTermMode.statusLabel)
+                        .font(.system(size: 9.5, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(ICCChrome.mutedFill(for: colorScheme))
+                        )
+                }
+
                 Text("来自 ~/.ssh/config")
-                    .font(.system(size: 12, weight: .medium))
-                Text("密码仅保存在本机钥匙串中。")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                Text(remoteSSHTermMode.localizedSummary)
-                    .font(.system(size: 11))
+                    .font(.system(size: 10.5, weight: .medium))
+                    .foregroundStyle(Color.primary.opacity(0.72))
+
+                Text("密码保存在本机钥匙串")
+                    .font(.system(size: 10.5))
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 12)
-            .padding(.top, 12)
-            .padding(.bottom, 8)
+            .padding(.top, 8)
+            .padding(.bottom, 6)
+            .background(ICCChrome.headerFill(for: colorScheme))
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(ICCChrome.borderColor(for: colorScheme, emphasis: 0.9))
+                    .frame(height: 1)
+            }
 
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2) {
+                LazyVStack(alignment: .leading, spacing: 0) {
                     if hosts.isEmpty {
                         Text("未找到 SSH 主机。")
                             .font(.caption)
@@ -1745,60 +1913,23 @@ struct RemoteHostsSidebar: View {
                             .padding(12)
                     } else {
                         ForEach(hosts) { host in
-                            HStack(spacing: 8) {
-                                Button {
+                            RemoteHostListRow(
+                                host: host,
+                                hasSavedCredential: RemoteHostPasswordStore.hasPassword(for: host.alias),
+                                onConnect: {
                                     onConnect(host)
-                                } label: {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        HStack(spacing: 6) {
-                                            Text(host.alias)
-                                                .font(.system(size: 12, weight: .semibold))
-                                            if RemoteHostPasswordStore.hasPassword(for: host.alias) {
-                                                Image(systemName: "key.fill")
-                                                    .font(.system(size: 10, weight: .semibold))
-                                                    .foregroundStyle(.orange)
-                                            }
-                                        }
-                                        Text(host.subtitle)
-                                            .font(.system(size: 11))
-                                            .foregroundStyle(.secondary)
-                                            .lineLimit(1)
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 8)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .fill(Color.primary.opacity(0.04))
-                                    )
-                                    .contentShape(Rectangle())
-                                }
-                                .buttonStyle(.plain)
-
-                                Button {
+                                },
+                                onEditCredential: {
                                     editingCredentialHost = host
                                     credentialDraft = RemoteHostPasswordStore.loadPassword(for: host.alias) ?? ""
                                     credentialStatusMessage = nil
                                     credentialStatusIsError = false
-                                } label: {
-                                    Image(systemName: RemoteHostPasswordStore.hasPassword(for: host.alias) ? "key.fill" : "key")
-                                        .font(.system(size: 13, weight: .semibold))
-                                        .foregroundStyle(RemoteHostPasswordStore.hasPassword(for: host.alias) ? Color.orange : Color.secondary)
-                                        .frame(width: 30, height: 30)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                                .fill(Color.primary.opacity(0.05))
-                                        )
                                 }
-                                .buttonStyle(.plain)
-                                .help("保存到钥匙串")
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 2)
+                            )
                         }
                     }
                 }
-                .padding(.vertical, 8)
+                .padding(.vertical, 4)
             }
         }
         .background(SidebarBackdrop().ignoresSafeArea())
@@ -1811,9 +1942,11 @@ struct RemoteHostsSidebar: View {
                     Section("主机") {
                         LabeledContent("别名", value: host.alias)
                         LabeledContent("目标", value: host.subtitle)
+                        LabeledContent("上次路径", value: RemoteHostPathStore.loadPath(for: host.alias) ?? "未记录")
                     }
                     Section("密码") {
-                        SecureField("密码", text: $credentialDraft)
+                        LiveSecureFieldRepresentable(placeholder: "密码", text: $credentialDraft)
+                            .frame(height: 22)
                         Text("密码仅保存在当前 Mac 的本地钥匙串中，icc 会在后续连接时复用它。")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -1846,8 +1979,15 @@ struct RemoteHostsSidebar: View {
                         }
                         Button("保存") {
                             do {
+                                _ = NSApp.keyWindow?.makeFirstResponder(nil)
                                 try RemoteHostPasswordStore.savePassword(credentialDraft, for: host.alias)
-                                credentialStatusMessage = "密码已保存到钥匙串。"
+                                let savedPassword = RemoteHostPasswordStore.loadPassword(for: host.alias) ?? ""
+                                credentialDraft = savedPassword
+                                if savedPassword.isEmpty {
+                                    credentialStatusMessage = "密码为空，已从钥匙串移除。"
+                                } else {
+                                    credentialStatusMessage = "密码已保存到钥匙串。"
+                                }
                                 credentialStatusIsError = false
                             } catch {
                                 credentialStatusMessage = "保存到钥匙串失败：\(error.localizedDescription)"
@@ -1863,6 +2003,70 @@ struct RemoteHostsSidebar: View {
 
     private var remoteSSHTermMode: RemoteSSHTermMode {
         RemoteSSHTermMode(rawValue: remoteSSHTermModeRaw) ?? RemoteSSHTermMode.defaultValue
+    }
+}
+
+private struct RemoteHostListRow: View {
+    @Environment(\.colorScheme) private var colorScheme
+    let host: SSHConfigHostEntry
+    let hasSavedCredential: Bool
+    let onConnect: () -> Void
+    let onEditCredential: () -> Void
+    @State private var isHovering = false
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Button(action: onConnect) {
+                HStack(spacing: 8) {
+                    Image(systemName: "desktopcomputer")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 12)
+
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(host.alias)
+                            .font(.system(size: 11.5, weight: .medium))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+
+                        Text(host.subtitle)
+                            .font(.system(size: 10, weight: .regular, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            Button(action: onEditCredential) {
+                Image(systemName: hasSavedCredential ? "key.fill" : "key")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(hasSavedCredential ? Color.orange : Color.secondary)
+                    .frame(width: 20, height: 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(ICCChrome.mutedFill(for: colorScheme))
+                    )
+            }
+            .buttonStyle(.plain)
+            .help("保存到钥匙串")
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(isHovering ? ICCChrome.hoverFill(for: colorScheme) : Color.clear)
+        )
+        .padding(.horizontal, 8)
+        .padding(.vertical, 1)
+        .onHover { hovering in
+            isHovering = hovering
+        }
     }
 }
 
@@ -1935,6 +2139,7 @@ private struct RemoteGhosttyTerminfoBannerState {
 }
 
 struct RemoteWorkspaceExplorerSidebar: View {
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var workspace: Workspace
     let selectedRemotePath: String?
     let onOpenRemoteFile: (String) -> Void
@@ -1998,14 +2203,14 @@ struct RemoteWorkspaceExplorerSidebar: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .center) {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text("远程文件")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: 10.5, weight: .bold))
                         .foregroundStyle(.secondary)
                     Text(workspace.remoteDisplayTarget ?? "未连接")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: 11.5, weight: .medium))
                         .lineLimit(1)
                 }
 
@@ -2013,23 +2218,24 @@ struct RemoteWorkspaceExplorerSidebar: View {
 
                 Text(remoteStatusText)
                     .font(.system(size: 10, weight: .semibold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
                     .background(Capsule().fill(remoteStatusColor.opacity(0.15)))
                     .foregroundStyle(remoteStatusColor)
             }
 
             if let resolvedRootPath {
                 Text(resolvedRootPath)
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                    .font(.system(size: 10.5, weight: .medium))
+                    .foregroundStyle(Color.primary.opacity(0.72))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
             }
 
             Text(activeRemoteSSHTermSummary)
-                .font(.system(size: 11))
+                .font(.system(size: 10.5))
                 .foregroundStyle(.secondary)
-                .lineLimit(2)
+                .lineLimit(1)
 
             HStack(spacing: 8) {
                 Text(ghosttyTerminfoState.badgeText)
@@ -2078,8 +2284,14 @@ struct RemoteWorkspaceExplorerSidebar: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 12)
-        .padding(.top, 12)
-        .padding(.bottom, 8)
+        .padding(.top, 8)
+        .padding(.bottom, 6)
+        .background(ICCChrome.headerFill(for: colorScheme))
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(ICCChrome.borderColor(for: colorScheme, emphasis: 0.9))
+                .frame(height: 1)
+        }
     }
 
     private var remoteStatusText: String {
@@ -2148,14 +2360,14 @@ struct RemoteWorkspaceExplorerSidebar: View {
         case .connected:
             return "如果远程文件树没有出现，请点击刷新。"
         case .connecting:
-            return "icc 正在启动远程工作区服务。SSH 连接准备完成后，文件树会自动出现。"
+            return "正在连接，文件树稍后出现。"
         case .error:
-            return "先在终端完成 SSH 登录，然后再点击连接。"
+            return "先完成 SSH 登录，再点击连接。"
         case .disconnected:
             if canAttemptRemoteConnection {
-                return "终端完成 SSH 登录后，点击连接即可启用远程文件树和远程文件编辑。"
+                return "SSH 登录后点击连接。"
             }
-            return "先选择主机，在终端中打开交互式 SSH 会话。登录成功前，右侧不会展示远程文件树。"
+            return "先选择主机并在终端登录。"
         }
     }
 

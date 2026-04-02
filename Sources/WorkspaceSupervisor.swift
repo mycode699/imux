@@ -1203,7 +1203,7 @@ struct SupervisorPaneView: View {
     }
 
     private var metricColumns: [GridItem] {
-        [GridItem(.adaptive(minimum: 120, maximum: 180), spacing: 10, alignment: .top)]
+        [GridItem(.adaptive(minimum: 96, maximum: 148), spacing: 8, alignment: .top)]
     }
 
     private var compactInfoColumns: [GridItem] {
@@ -1221,20 +1221,19 @@ struct SupervisorPaneView: View {
             let blueprint = skillBlueprint
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                ICCSidebarCard(emphasized: true) {
-                    VStack(alignment: .leading, spacing: 14) {
-                        HStack(alignment: .top, spacing: 12) {
-                            ICCIconBadge(
-                                systemImage: "brain.head.profile",
-                                primary: reviewHealth.tint,
-                                secondary: ICCChrome.secondaryAccent(for: colorScheme)
-                            )
+                VStack(alignment: .leading, spacing: 12) {
+                SupervisorPanelCard(emphasized: true) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "brain.head.profile")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(reviewHealth.tint)
+                                .frame(width: 18)
 
-                            VStack(alignment: .leading, spacing: 5) {
+                            VStack(alignment: .leading, spacing: 4) {
                                 HStack(alignment: .center, spacing: 8) {
-                                    Text("监督器 / Operator")
-                                        .font(.title3.weight(.semibold))
+                                    Text("监督器")
+                                        .font(.system(size: 16, weight: .semibold))
                                         .lineLimit(1)
                                     ICCStatusPill(text: reviewHealth.displayText, tint: reviewHealth.tint, emphasized: reviewHealth != .idle)
                                     if !widthClass.hidesSupplementaryText {
@@ -1251,15 +1250,17 @@ struct SupervisorPaneView: View {
                                     .truncationMode(.tail)
                                     .safeHelp(profile.missionTitle)
 
-                                Text(profile.missionSummary)
-                                    .font(.system(size: 12.5, weight: .medium))
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                    .safeHelp(profile.missionSummary)
+                                if !widthClass.hidesSupplementaryText {
+                                    Text(profile.missionSummary)
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                        .truncationMode(.tail)
+                                        .safeHelp(profile.missionSummary)
+                                }
 
                                 Text("LLM: \(llmConfig.sourceLabel)")
-                                    .font(.system(size: 11.5, weight: .medium))
+                                    .font(.system(size: 11, weight: .medium))
                                     .foregroundStyle(.secondary)
                                     .lineLimit(1)
                             }
@@ -1267,13 +1268,13 @@ struct SupervisorPaneView: View {
                             Spacer(minLength: 0)
                         }
 
-                        LazyVGrid(columns: metricColumns, alignment: .leading, spacing: 10) {
-                            ICCMetricCard(title: "监督状态", value: reviewHealth.displayText, subtitle: updatedText, tint: reviewHealth.tint)
-                            ICCMetricCard(title: "操作模式", value: operatorMode.displayText, subtitle: operatorMode.subtitle, tint: operatorMode.tint)
-                            ICCMetricCard(title: "窗口交接", value: "\(workspace.supervisorPanelHandoffs.count)", subtitle: "可编排窗口", tint: .blue)
-                            ICCMetricCard(title: "空闲终端", value: "\(readiness.promptReadyCount)", subtitle: "可安全派发", tint: readiness.promptReadyCount > 0 ? .green : .secondary)
-                            ICCMetricCard(title: "已访目录", value: "\(snapshot.observedDirectories.count)", subtitle: "当前上下文", tint: .teal)
-                            ICCMetricCard(
+                        LazyVGrid(columns: metricColumns, alignment: .leading, spacing: 8) {
+                            SupervisorCompactMetric(title: "监督", value: reviewHealth.displayText, subtitle: updatedText, tint: reviewHealth.tint)
+                            SupervisorCompactMetric(title: "模式", value: operatorMode.displayText, subtitle: operatorMode.subtitle, tint: operatorMode.tint)
+                            SupervisorCompactMetric(title: "交接", value: "\(workspace.supervisorPanelHandoffs.count)", subtitle: "可编排窗口", tint: .blue)
+                            SupervisorCompactMetric(title: "空闲", value: "\(readiness.promptReadyCount)", subtitle: "可安全派发", tint: readiness.promptReadyCount > 0 ? .green : .secondary)
+                            SupervisorCompactMetric(title: "目录", value: "\(snapshot.observedDirectories.count)", subtitle: "已访目录", tint: .teal)
+                            SupervisorCompactMetric(
                                 title: "远程状态",
                                 value: snapshot.remoteTarget == nil ? "本地" : readiness.statusText,
                                 subtitle: snapshot.remoteTarget ?? "未连接远程主机",
@@ -1304,7 +1305,7 @@ struct SupervisorPaneView: View {
                         }
 
                         VStack(alignment: .leading, spacing: 10) {
-                            SupervisorSectionHeader(title: "工作方式", subtitle: "默认使用零配置自动推断；需要时再切换到专家模式。")
+                            SupervisorSectionHeader(title: "工作方式", subtitle: "自动推断或专家控制")
 
                             LazyVGrid(columns: [GridItem(.adaptive(minimum: 140, maximum: .infinity), spacing: 8)], alignment: .leading, spacing: 8) {
                                 ForEach(WorkspaceSupervisorExperienceMode.allCases) { mode in
@@ -2229,7 +2230,7 @@ struct SupervisorPaneView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-            .padding(16)
+            .padding(12)
             .environment(\.sidebarTextWidthClass, widthClass)
         }
         .background(Color.clear)
@@ -2404,6 +2405,72 @@ private extension WorkspaceSupervisorCapabilityAvailability {
     }
 }
 
+private struct SupervisorPanelCard<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
+    var emphasized: Bool = false
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            content()
+        }
+        .padding(emphasized ? 12 : 11)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? (emphasized ? 0.34 : 0.28) : (emphasized ? 0.90 : 0.84)))
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(ICCChrome.borderColor(for: colorScheme, emphasis: emphasized ? 1.0 : 0.82), lineWidth: 1)
+        }
+    }
+}
+
+private struct SupervisorCompactMetric: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.sidebarTextWidthClass) private var sidebarTextWidthClass
+    let title: String
+    let value: String
+    let subtitle: String?
+    var tint: Color = .accentColor
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.system(size: 10.5, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+
+            Text(value)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(tint)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .safeHelp(value)
+
+            if let subtitle, !subtitle.isEmpty, !sidebarTextWidthClass.hidesSupplementaryText {
+                Text(subtitle)
+                    .font(.system(size: 10.5, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .safeHelp(subtitle)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 9)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? 0.24 : 0.78))
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(tint.opacity(0.16), lineWidth: 1)
+        }
+    }
+}
+
 private struct SupervisorSectionHeader: View {
     let title: String
     let subtitle: String
@@ -2452,10 +2519,10 @@ private struct SupervisorExperienceButton: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
             .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(isSelected ? ICCChrome.cardGradient(for: colorScheme, emphasized: true) : ICCChrome.cardGradient(for: colorScheme))
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? (isSelected ? 0.34 : 0.24) : (isSelected ? 0.90 : 0.80)))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .stroke(mode.tint.opacity(isSelected ? 0.42 : 0.12), lineWidth: isSelected ? 1.4 : 1)
                     )
             )
@@ -2493,10 +2560,10 @@ private struct SupervisorModeButton: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
             .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(isSelected ? ICCChrome.cardGradient(for: colorScheme, emphasized: true) : ICCChrome.cardGradient(for: colorScheme))
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? (isSelected ? 0.34 : 0.24) : (isSelected ? 0.90 : 0.80)))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .stroke(mode.tint.opacity(isSelected ? 0.42 : 0.12), lineWidth: isSelected ? 1.4 : 1)
                     )
             )
@@ -2514,7 +2581,7 @@ private struct SupervisorExpandableCard<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        ICCSidebarCard {
+        SupervisorPanelCard {
             VStack(alignment: .leading, spacing: 12) {
                 Button {
                     withAnimation(.easeInOut(duration: 0.18)) {
@@ -2592,10 +2659,10 @@ private struct SupervisorDigestTile: View {
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(ICCChrome.cardGradient(for: colorScheme))
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? 0.24 : 0.78))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(tint.opacity(0.16), lineWidth: 1)
                 )
         )
@@ -2626,10 +2693,10 @@ private struct SupervisorInfoTile: View {
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(ICCChrome.cardGradient(for: colorScheme))
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? 0.24 : 0.78))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(ICCChrome.borderColor(for: colorScheme, emphasis: 0.9), lineWidth: 1)
                 )
         )
@@ -2675,10 +2742,10 @@ private struct SupervisorListTile: View {
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(ICCChrome.cardGradient(for: colorScheme))
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? 0.24 : 0.78))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(ICCChrome.borderColor(for: colorScheme, emphasis: 0.9), lineWidth: 1)
                 )
         )
@@ -2733,10 +2800,10 @@ private struct SupervisorCapabilityTile: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(ICCChrome.cardGradient(for: colorScheme))
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? 0.24 : 0.78))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(capability.availability.tint.opacity(0.16), lineWidth: 1)
                 )
         )
@@ -2782,10 +2849,10 @@ private struct SupervisorLaneTile: View {
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(ICCChrome.cardGradient(for: colorScheme))
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(colorScheme == .dark ? 0.24 : 0.78))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(ICCChrome.borderColor(for: colorScheme, emphasis: 0.9), lineWidth: 1)
                 )
         )

@@ -12,7 +12,8 @@ struct GhosttyConfig {
     private static var cachedConfigsByColorScheme: [ColorSchemePreference: GhosttyConfig] = [:]
 
     var fontFamily: String = "Menlo"
-    var fontSize: CGFloat = 14
+    // Keep the Swift-side fallback aligned with icc's injected Ghostty default.
+    var fontSize: CGFloat = 12
     var theme: String?
     var workingDirectory: String?
     var scrollbackLimit: Int = 10000

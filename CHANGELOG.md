@@ -7,6 +7,18 @@ Historical note:
 - This codebase originated from `icc`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
+## [1.4.0] - 2026-04-02
+
+### Changed
+- Refreshed the workspace chrome with denser VS Code-style sidebars, simpler pane titles, tighter file and remote lists, and dedicated left and right sidebar toggles in the titlebar.
+- Local file rows now expose cleaner drag payloads so file paths can be dropped directly into terminal inputs and other compatible targets from the sidebar.
+- Remote SSH workspaces now remember the last visited path for each host and keep the remote workspace configuration available after an SSH session ends, so reconnecting restores context instead of discarding the workspace.
+
+### Fixed
+- Reduced the default terminal font fallback to 12pt when the user has not set a font size explicitly, bringing the terminal back in line with the tighter layout.
+- Scoped text-input recovery refreshes to short post-transition windows, which reduces unnecessary refresh work on macOS while still recovering blank terminal frames after visibility and window changes.
+- Prevented duplicate primary windows from remaining open when macOS re-materializes the same logical workspace scene.
+
 ## [1.3.1] - 2026-04-02
 
 ### Fixed
