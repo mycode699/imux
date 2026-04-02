@@ -11004,62 +11004,24 @@ struct ICCCLI {
         }
 
         let isDark = UserDefaults.standard.string(forKey: "AppleInterfaceStyle") == "Dark"
-
-        let c1 = trueColor(239, 173, 63)
-        let c2 = trueColor(216, 138, 52)
-        let c3 = trueColor(187, 109, 43)
-        let c4 = trueColor(51, 143, 146)
-        let c5 = trueColor(65, 169, 172)
-        let c6 = trueColor(87, 197, 198)
-        let c7 = trueColor(111, 220, 218)
-
-        let tagline: String
-        let subdued: String
-
-        if isDark {
-            tagline = trueColor(130, 130, 140)
-            subdued = "\u{001B}[2m"
-        } else {
-            tagline = trueColor(90, 90, 98)
-            subdued = trueColor(100, 100, 108)
-        }
-
-        let logo = """
-        \(c1)    ●\(reset)
-        \(c4)    ││\(reset)                 \(c4)i\(c5)c\(c3)c\(reset)
-        \(c4)    ││\(reset)
-        \(c5)  ╭─╯╰────╮\(reset)            \(tagline)AI Command Center for macOS\(reset)
-        \(c6)  ╰───╮ ╭─╯\(reset)            \(tagline)One cockpit for terminal-first AI execution\(reset)
-        \(c7)      ╰─╯\(reset)
-        """
-
-        let shortcuts = """
-          \(bold)Shortcuts\(reset)
-
-          \(bold)\u{2318}N\(reset)\(subdued)                  New workspace\(reset)
-          \(bold)\u{2318}T\(reset)\(subdued)                  New tab\(reset)
-          \(bold)\u{2318}P\(reset)\(subdued)                  Go to workspace\(reset)
-          \(bold)\u{2318}D\(reset)\(subdued)                  Split right\(reset)
-          \(bold)\u{2318}\u{21E7}D\(reset)\(subdued)                 Split down\(reset)
-          \(bold)\u{2318}\u{21E7}P\(reset)\(subdued)                 Command palette\(reset)
-          \(bold)\u{2318}\u{21E7}R\(reset)\(subdued)                 Rename workspace\(reset)
-          \(bold)\u{2318}\u{21E7}L\(reset)\(subdued)                 New browser\(reset)
-          \(bold)\u{2318}\u{21E7}U\(reset)\(subdued)                 Jump to latest unread\(reset)
-        """
+        let accent = isDark ? trueColor(111, 220, 218) : trueColor(51, 143, 146)
+        let subdued = isDark ? "\u{001B}[2m" : trueColor(100, 100, 108)
+        let versionInfo = resolvedVersionInfo()
+        let marketingVersion = versionInfo["CFBundleShortVersionString"]?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let buildVersion = versionInfo["CFBundleVersion"]?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let displayVersion: String = {
+            let version = (marketingVersion?.isEmpty == false) ? marketingVersion! : "dev"
+            guard let buildVersion, !buildVersion.isEmpty else { return version }
+            return "\(version) (\(buildVersion))"
+        }()
+        let newWorkspaceLabel = String(localized: "command.newWorkspace.title", defaultValue: "New Workspace")
+        let goToWorkspaceLabel = String(localized: "menu.file.goToWorkspace", defaultValue: "Go to Workspace…")
+        let commandPaletteLabel = String(localized: "menu.file.commandPalette", defaultValue: "Command Palette…")
 
         print()
-        print(logo)
-        print()
-        print(shortcuts)
-        print()
-        print("  \(bold)Site\(reset)\(subdued)                https://www.iccjk.com\(reset)")
-        print("  \(bold)Docs\(reset)\(subdued)                https://github.com/mycode699/imux#readme\(reset)")
-        print("  \(bold)GitHub\(reset)\(subdued)              https://github.com/mycode699/imux\(reset)")
-        print("  \(bold)Issues\(reset)\(subdued)              https://github.com/mycode699/imux/issues\(reset)")
-        print()
-        print("  \(subdued)Run \(reset)\(bold)icc --help\(reset)\(subdued) for all commands.\(reset)")
-        print("  \(subdued)Run \(reset)\(bold)icc shortcuts\(reset)\(subdued) to edit shortcuts.\(reset)")
-        print("  \(subdued)Run \(reset)\(bold)icc feedback\(reset)\(subdued) to report an issue.\(reset)")
+        print("  \(bold)\(accent)icc\(reset) \(subdued)\(displayVersion)\(reset)")
+        print("  \(bold)\u{2318}N\(reset) \(newWorkspaceLabel)   \(bold)\u{2318}P\(reset) \(goToWorkspaceLabel)   \(bold)\u{2318}\u{21E7}P\(reset) \(commandPaletteLabel)")
+        print("  \(subdued)icc --help   github.com/mycode699/imux\(reset)")
         print()
     }
 

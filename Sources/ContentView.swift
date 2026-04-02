@@ -2368,7 +2368,7 @@ struct ContentView: View {
     nonisolated private static let commandPaletteCommandsPrefix = ">"
     private static let commandPaletteVisiblePreviewResultLimit = 48
     private static let commandPaletteVisiblePreviewCandidateLimit = 192
-    private static let activityRailWidth: CGFloat = 42
+    private static let activityRailWidth: CGFloat = 40
     private static let minimumSidebarWidth: CGFloat = CGFloat(SessionPersistencePolicy.minimumSidebarWidth)
     private static let remoteMinimumSidebarWidth: CGFloat = 228
     private static let maximumSidebarWidthRatio: CGFloat = 1.0 / 3.0
@@ -9515,32 +9515,32 @@ struct VerticalTabsSidebar: View {
     private var selectWorkspaceByNumberShortcutData = Data()
 
     /// Space at top of sidebar for traffic light buttons
-    private let trafficLightPadding: CGFloat = 30
-    private let tabRowSpacing: CGFloat = 2
+    private let trafficLightPadding: CGFloat = 28
+    private let tabRowSpacing: CGFloat = 1
     private let hiddenTitlebarControlsLeadingInset: CGFloat = 72
 
     private func workspaceHeader(widthClass: SidebarTextWidthClass) -> some View {
-        let buttonSize: CGFloat = widthClass.isCompact ? 22 : 24
+        let buttonSize: CGFloat = widthClass.isCompact ? 18 : 20
 
-        return HStack(spacing: 8) {
-            HStack(spacing: 6) {
+        return HStack(spacing: 6) {
+            HStack(spacing: 5) {
                 Text("工作区")
-                    .font(.system(size: 10.5, weight: .bold))
-                    .tracking(0.8)
+                    .font(.system(size: 9, weight: .semibold))
+                    .tracking(0.4)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
 
                 if !widthClass.hidesSupplementaryText {
                     Text("\(tabManager.tabs.count)")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(.secondary.opacity(0.75))
+                        .font(.system(size: 8.5, weight: .medium))
+                        .foregroundStyle(.secondary.opacity(0.68))
                         .lineLimit(1)
                 }
             }
 
             Spacer(minLength: 0)
 
-            HStack(spacing: 4) {
+            HStack(spacing: 3) {
                 Button {
                     tabManager.addWorkspace(placementOverride: .end)
                     if let selectedId = tabManager.selectedTabId {
@@ -9549,12 +9549,12 @@ struct VerticalTabsSidebar: View {
                     }
                 } label: {
                     Image(systemName: "plus")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.system(size: 9.5, weight: .bold))
                         .frame(width: buttonSize, height: buttonSize)
                 }
                 .buttonStyle(.plain)
                 .background(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
                         .fill(ICCChrome.mutedFill(for: colorScheme))
                 )
                 .help("新建工作区")
@@ -9563,21 +9563,21 @@ struct VerticalTabsSidebar: View {
                     AppDelegate.shared?.openFolderFromTitlebar()
                 } label: {
                     Image(systemName: "folder.badge.plus")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: 9.5, weight: .semibold))
                         .frame(width: buttonSize, height: buttonSize)
                 }
                 .buttonStyle(.plain)
                 .background(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
                         .fill(ICCChrome.mutedFill(for: colorScheme))
                 )
                 .help("打开文件夹")
             }
             .foregroundStyle(.secondary.opacity(0.92))
         }
-        .padding(.horizontal, 10)
-        .padding(.top, 8)
-        .padding(.bottom, 6)
+        .padding(.horizontal, 8)
+        .padding(.top, 5)
+        .padding(.bottom, 3)
         .background(ICCChrome.headerFill(for: colorScheme))
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -9675,9 +9675,9 @@ struct VerticalTabsSidebar: View {
                             .equatable()
                         }
                     }
-                    .padding(.horizontal, 8)
-                    .padding(.top, 2)
-                    .padding(.bottom, 10)
+                    .padding(.horizontal, 4)
+                    .padding(.top, 1)
+                    .padding(.bottom, 6)
 
                     SidebarEmptyArea(
                         rowSpacing: tabRowSpacing,
@@ -12626,9 +12626,9 @@ private struct SidebarActivityRail: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-                .frame(height: 8)
+                .frame(height: 6)
 
-            VStack(spacing: 4) {
+            VStack(spacing: 3) {
                 SidebarActivityRailButton(selection: $selection, target: .tabs, systemImage: "square.grid.2x2", label: "工作区")
                 SidebarActivityRailButton(selection: $selection, target: .files, systemImage: "folder", label: "文件")
                 SidebarActivityRailButton(selection: $selection, target: .sourceControl, systemImage: "arrow.triangle.branch", label: "Git")
@@ -12636,11 +12636,11 @@ private struct SidebarActivityRail: View {
                 SidebarActivityRailButton(selection: $selection, target: .wechat, systemImage: "message", label: "微信")
                 SidebarActivityRailButton(selection: $selection, target: .supervisor, systemImage: "brain", label: "自动化")
             }
-            .padding(.top, 10)
+            .padding(.top, 8)
 
-            Spacer(minLength: 10)
+            Spacer(minLength: 8)
 
-            VStack(spacing: 4) {
+            VStack(spacing: 3) {
                 SidebarSettingsButton(action: onOpenSettings)
 
                 SidebarHelpMenuButton(onSendFeedback: onSendFeedback)
@@ -12653,11 +12653,11 @@ private struct SidebarActivityRail: View {
                         }
                     } label: {
                         Image(systemName: "arrow.down.circle.fill")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(.orange)
-                            .frame(width: 28, height: 28)
+                            .frame(width: 24, height: 24)
                             .background(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
                                     .fill(ICCChrome.mutedFill(for: colorScheme))
                             )
                     }
@@ -12665,7 +12665,7 @@ private struct SidebarActivityRail: View {
                     .help("检查更新")
                 }
             }
-            .padding(.bottom, 10)
+            .padding(.bottom, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(ICCChrome.railGradient(for: colorScheme))
@@ -12678,8 +12678,8 @@ private struct SidebarActivityRail: View {
 }
 
 private struct SidebarSettingsButton: View {
-    private let buttonSize: CGFloat = 22
-    private let iconSize: CGFloat = 11
+    private let buttonSize: CGFloat = 20
+    private let iconSize: CGFloat = 10
 
     let action: () -> Void
 
@@ -12709,6 +12709,8 @@ private struct SidebarActivityRailButton: View {
     let systemImage: String
     let label: String
     @State private var isHovered = false
+    private let buttonSize: CGFloat = 28
+    private let cornerRadius: CGFloat = 6
 
     private var isActive: Bool {
         selection == target
@@ -12721,7 +12723,7 @@ private struct SidebarActivityRailButton: View {
             }
         } label: {
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(
                         isActive
                             ? ICCChrome.listSelectionFill(for: colorScheme)
@@ -12729,18 +12731,19 @@ private struct SidebarActivityRailButton: View {
                     )
 
                 if isActive {
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    RoundedRectangle(cornerRadius: 1, style: .continuous)
                         .fill(ICCChrome.accent(for: colorScheme))
-                        .frame(width: 2, height: 14)
+                        .frame(width: 2, height: 16)
+                        .padding(.leading, 1)
                 }
 
                 Image(systemName: systemImage)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(isActive ? Color.primary.opacity(0.92) : Color.primary.opacity(0.74))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(width: 30, height: 30)
-            .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .frame(width: buttonSize, height: buttonSize)
+            .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
@@ -14436,21 +14439,26 @@ private struct TabItemView: View, Equatable {
     }
 
     private var activeBorderLineWidth: CGFloat {
-        if isHovering && !isActive {
-            return 1
+        switch activeTabIndicatorStyle {
+        case .leftRail:
+            return 0
+        case .solidFill:
+            if isHovering && !isActive {
+                return 1
+            }
+            return isActive ? 1 : 0
         }
-        return isActive ? 1 : 0
     }
 
     private var activeBorderColor: Color {
-        if isHovering && !isActive {
-            return ICCChrome.borderColor(for: colorScheme, emphasis: 0.85)
-        }
-        guard isActive else { return .clear }
         switch activeTabIndicatorStyle {
         case .leftRail:
-            return ICCChrome.borderColor(for: colorScheme, emphasis: 0.9)
+            return .clear
         case .solidFill:
+            if isHovering && !isActive {
+                return ICCChrome.borderColor(for: colorScheme, emphasis: 0.85)
+            }
+            guard isActive else { return .clear }
             return ICCChrome.accent(for: colorScheme).opacity(colorScheme == .dark ? 0.42 : 0.28)
         }
     }
@@ -14672,28 +14680,28 @@ private struct TabItemView: View, Equatable {
             return pullRequestDisplays(orderedPanelIds: orderedPanelIds)
         }()
 
-        VStack(alignment: .leading, spacing: 3) {
-            HStack(spacing: 6) {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 5) {
                 if unreadCount > 0 {
                     ZStack {
                         Circle()
                             .fill(activeUnreadBadgeFillColor)
                         Text("\(unreadCount)")
-                            .font(.system(size: 9, weight: .semibold))
+                            .font(.system(size: 8.5, weight: .semibold))
                             .foregroundColor(.white)
                     }
-                    .frame(width: 14, height: 14)
+                    .frame(width: 12, height: 12)
                 }
 
                 if tab.isPinned {
                     Image(systemName: "pin.fill")
-                        .font(.system(size: 8, weight: .semibold))
+                        .font(.system(size: 7, weight: .semibold))
                         .foregroundColor(activeSecondaryColor(0.8))
                         .safeHelp(protectedWorkspaceTooltip)
                 }
 
                 Text(tab.title)
-                    .font(.system(size: 12, weight: titleFontWeight))
+                    .font(.system(size: 11.5, weight: titleFontWeight))
                     .foregroundColor(activePrimaryTextColor)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -14709,12 +14717,12 @@ private struct TabItemView: View, Equatable {
                         tabManager.closeWorkspaceWithConfirmation(tab)
                     }) {
                         Image(systemName: "xmark")
-                            .font(.system(size: 9, weight: .medium))
+                            .font(.system(size: 8, weight: .medium))
                             .foregroundColor(activeSecondaryColor(0.7))
                     }
                     .buttonStyle(.plain)
                     .safeHelp(closeButtonTooltip)
-                    .frame(width: SidebarTrailingAccessoryWidthPolicy.closeButtonWidth, height: 16, alignment: .center)
+                    .frame(width: SidebarTrailingAccessoryWidthPolicy.closeButtonWidth, height: 14, alignment: .center)
                     .opacity(showCloseButton && !showsWorkspaceShortcutHint ? 1 : 0)
                     .allowsHitTesting(showCloseButton && !showsWorkspaceShortcutHint)
 
@@ -14722,11 +14730,11 @@ private struct TabItemView: View, Equatable {
                         Text(workspaceShortcutLabel)
                             .lineLimit(1)
                             .fixedSize(horizontal: true, vertical: false)
-                            .font(.system(size: 10, weight: .semibold, design: .rounded))
+                            .font(.system(size: 9.5, weight: .semibold, design: .rounded))
                             .monospacedDigit()
                             .foregroundColor(activePrimaryTextColor)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
                             .background(ShortcutHintPillBackground(emphasis: shortcutHintEmphasis))
                             .offset(
                                 x: ShortcutHintDebugSettings.clamped(sidebarShortcutHintXOffset),
@@ -14736,12 +14744,12 @@ private struct TabItemView: View, Equatable {
                     }
                 }
                 .animation(.easeInOut(duration: 0.14), value: showsModifierShortcutHints || alwaysShowShortcutHints)
-                .frame(width: trailingAccessoryWidth, height: 16, alignment: .trailing)
+                .frame(width: trailingAccessoryWidth, height: 14, alignment: .trailing)
             }
 
             if let subtitle = effectiveSubtitle, !sidebarTextWidthClass.hidesSupplementaryText {
                 Text(subtitle)
-                    .font(.system(size: 9.5))
+                    .font(.system(size: 9))
                     .foregroundColor(activeSecondaryColor(0.8))
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -14909,13 +14917,14 @@ private struct TabItemView: View, Equatable {
         .animation(.easeInOut(duration: 0.2), value: tab.progress != nil)
         .animation(.easeInOut(duration: 0.2), value: tab.metadataBlocks.count)
         .environment(\.sidebarTextWidthClass, sidebarTextWidthClass)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 5)
+        .frame(minHeight: 20, alignment: .leading)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
         .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: 5, style: .continuous)
                 .fill(backgroundColor)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
                         .strokeBorder(activeBorderColor, lineWidth: activeBorderLineWidth)
                 }
                 .overlay(alignment: .leading) {
@@ -14923,12 +14932,12 @@ private struct TabItemView: View, Equatable {
                         RoundedRectangle(cornerRadius: 1, style: .continuous)
                             .fill(railColor)
                             .frame(width: 2)
-                            .padding(.leading, 3)
-                            .padding(.vertical, 4)
+                            .padding(.leading, 1)
+                            .padding(.vertical, 3)
                     }
                 }
         )
-        .padding(.horizontal, 2)
+        .padding(.horizontal, 1)
         .background {
             GeometryReader { proxy in
                 Color.clear

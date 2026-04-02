@@ -11,10 +11,14 @@ Historical note:
 
 ### Changed
 - Promoted the active stable line to `v1.5.0` so the desktop app, GitHub release path, and website metadata can converge on a fresh release target instead of reusing the earlier `v1.4.0` line.
+- Tightened the leading workspace chrome again so the activity rail, workspace header, and sidebar rows sit much closer to a dense VS Code-style layout instead of the rounder card-like presentation from earlier builds.
+- Replaced the oversized terminal welcome banner with a compact version and shortcut strip so a fresh workspace opens into usable terminal space immediately.
 
 ### Fixed
 - Website production builds no longer require feedback-delivery secrets at build time, so the public site can compile even when feedback sending is intentionally disabled.
 - Added an explicit production website deployment workflow for the ICC site so the web release path has a dedicated publish job instead of relying on indirect release-only updates.
+- Restored right-sidebar resizing when the inspector is showing files so users can widen and narrow that panel directly instead of getting stuck at one width.
+- Scoped Return forwarding away from active macOS input-method composition in the affected terminal path so pressing Return during IME composition no longer submits the partially composed text unexpectedly.
 
 ## [1.4.0] - 2026-04-02
 

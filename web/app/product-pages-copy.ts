@@ -361,13 +361,13 @@ const englishCopy: ProductPageCopy = {
       {
         date: "April 2, 2026",
         version: "v1.5.0",
-        title: "Stable line refresh with website deployment hardening",
+        title: "Denser workspace polish and cleaner release surface",
         body:
-          "This stable release advances ICC to a fresh public version line and keeps the release-facing web path ready to publish the same installer, manifest, and changelog state.",
+          "This stable release finishes the current UI pass with a tighter VS Code-like workspace layout, safer text-input handling, and a cleaner public release path for the same installer and website surface.",
         bullets: [
-          "Promoted the active ICC stable line to v1.5.0 so operators can publish a clearly newer package instead of continuing to reuse the earlier v1.4.0 tag.",
-          "Made the website production build tolerate missing feedback-delivery secrets, which prevents the marketing site from failing at build time when feedback sending is not configured.",
-          "Added a dedicated production website deployment workflow so the public site can be republished explicitly once the hosting credentials are available.",
+          "Tightened the activity rail, workspace list, and sidebar header so the main operating surface reads much closer to a dense VS Code-style layout.",
+          "Reduced the terminal startup banner to a compact status strip and fixed the stuck-width right sidebar path in the file inspector.",
+          "Scoped Return forwarding away from the affected macOS IME composition path and kept the `v1.5.0` website and release pipeline aligned around one current installer target.",
         ],
       },
       {
@@ -792,13 +792,13 @@ const zhCnCopy: ProductPageCopy = {
       {
         date: "2026年4月2日",
         version: "v1.5.0",
-        title: "网站发布链路加固的稳定线刷新",
+        title: "更紧凑的工作区界面与更干净的发布面",
         body:
-          "这个稳定版把 ICC 推进到新的公开版本线，并让发布侧网站路径继续围绕同一套安装包、manifest 和升级记录来组织。",
+          "这个稳定版继续收紧当前界面打磨，把主工作区做得更接近 VS Code 的密集布局，同时修正输入与侧边栏细节，并让安装包与网站发布面继续保持一致。",
         bullets: [
-          "将当前 ICC 稳定线提升到 v1.5.0，避免继续复用较早的 v1.4.0 标签作为新的公开安装包目标。",
-          "让网站生产构建在缺少反馈投递密钥时也能完成，从而避免未配置反馈发送时营销站点直接构建失败。",
-          "新增独立的生产网站部署工作流，这样一旦补齐托管凭据，就可以明确地重新发布公开站点。",
+          "继续压缩活动栏、工作区列表和侧边栏头部，让主操作面更接近 VS Code 那种高密度布局。",
+          "把终端启动欢迎区缩成简洁状态条，并修复文件检查器场景下右侧边栏宽度卡死的问题。",
+          "把受影响的 macOS 输入法组合态回车转发收紧，并继续让 `v1.5.0` 的网站与 GitHub 发布链路围绕同一份安装包目标对齐。",
         ],
       },
       {
