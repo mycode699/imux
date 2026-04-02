@@ -31,26 +31,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
+      - name: Validate Vercel configuration
+        id: vercel_config
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            if [ -z "${!name:-}" ]; then
+              missing+=("$name")
+            fi
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            printf '::notice::Skipping website deploy because required Vercel secrets are missing: %s\n' "$(IFS=', '; echo "${missing[*]}")"
+            exit 0
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
       - name: Setup Node
+        if: steps.vercel_config.outputs.ready == 'true'
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
         with:
           node-version: "20"
 
-      - name: Validate Vercel configuration
-        run: |
-          set -euo pipefail
-          for name in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
-            if [ -z "${!name:-}" ]; then
-              echo "Missing required secret: $name" >&2
-              exit 1
-            fi
-          done
-
       - name: Install Vercel CLI
+        if: steps.vercel_config.outputs.ready == 'true'
         run: npm install --global vercel@50.9.5
 
       - name: Pull production project settings
+        if: steps.vercel_config.outputs.ready == 'true'
         run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
 
       - name: Deploy production website
+        if: steps.vercel_config.outputs.ready == 'true'
         run: vercel deploy --prod --yes --token="$VERCEL_TOKEN"

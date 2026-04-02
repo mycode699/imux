@@ -150,8 +150,64 @@ jobs:
           test -f "existing-release-assets/$ICC_STABLE_APPCAST_NAME"
           test -f "existing-release-assets/remote-daemon-assets/iccd-remote-manifest.json"
 
+      - name: Validate release secrets
+        id: release_secrets
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.guard_release_assets.outputs.skip_all }}" == "true" ]]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "mode=existing-assets" >> "$GITHUB_OUTPUT"
+            echo "::notice::Release assets already exist for $ICC_TARGET_TAG. Skipping signing and notarization."
+            exit 0
+          fi
+
+          missing=()
+          require_secret() {
+            local name="$1"
+            if [ -z "${!name:-}" ]; then
+              missing+=("$name")
+            fi
+          }
+
+          require_secret SPARKLE_PRIVATE_KEY
+          require_secret APPLE_CERTIFICATE_BASE64
+          require_secret APPLE_CERTIFICATE_PASSWORD
+          require_secret APPLE_SIGNING_IDENTITY
+
+          notarization_ready=false
+          if [ -n "${APP_STORE_CONNECT_API_KEY:-}" ] && [ -n "${APP_STORE_CONNECT_KEY_ID:-}" ] && [ -n "${APP_STORE_CONNECT_ISSUER_ID:-}" ]; then
+            notarization_ready=true
+          fi
+          if [ -n "${APPLE_ID:-}" ] && [ -n "${APPLE_APP_SPECIFIC_PASSWORD:-}" ] && [ -n "${APPLE_TEAM_ID:-}" ]; then
+            notarization_ready=true
+          fi
+          if [ "$notarization_ready" != "true" ]; then
+            missing+=("notarization credentials (APP_STORE_CONNECT_* or APPLE_ID/APPLE_APP_SPECIFIC_PASSWORD/APPLE_TEAM_ID)")
+          fi
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "mode=missing-secrets" >> "$GITHUB_OUTPUT"
+            printf '::notice::Skipping release packaging for %s because required secrets are missing: %s\n' "$ICC_TARGET_TAG" "$(IFS=', '; echo "${missing[*]}")"
+            exit 0
+          fi
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "mode=build" >> "$GITHUB_OUTPUT"
+
       - name: Select Xcode
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         run: |
           set -euo pipefail
           if [ -d "/Applications/Xcode.app/Contents/Developer" ]; then
@@ -171,7 +227,7 @@ jobs:
           xcrun --sdk macosx --show-sdk-path
 
       - name: Install build deps
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         run: |
           ZIG_REQUIRED="0.15.2"
           if command -v zig >/dev/null 2>&1 && zig version 2>/dev/null | grep -q "^${ZIG_REQUIRED}"; then
@@ -189,12 +245,12 @@ jobs:
           npm install --global "create-dmg@${CREATE_DMG_VERSION}"
 
       - name: Download pre-built GhosttyKit.xcframework
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         run: |
           ./scripts/download-prebuilt-ghosttykit.sh
 
       - name: Cache Swift packages
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
         with:
           path: .spm-cache
@@ -202,13 +258,13 @@ jobs:
           restore-keys: spm-
 
       - name: Setup Go
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           go-version-file: daemon/remote/go.mod
 
       - name: Derive Sparkle public key from private key
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: |
@@ -221,14 +277,14 @@ jobs:
           echo "SPARKLE_PUBLIC_KEY=$DERIVED_PUBLIC_KEY" >> "$GITHUB_ENV"
 
       - name: Build app (Release)
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         run: |
           xcodebuild -scheme icc -configuration Release -derivedDataPath build \
             -clonedSourcePackagesDirPath .spm-cache \
             CODE_SIGNING_ALLOWED=NO build
 
       - name: Build remote daemon release assets and inject manifest
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         run: |
           set -euo pipefail
           APP_PLIST="build/Build/Products/Release/${ICC_APP_BUNDLE_NAME}/Contents/Info.plist"
@@ -243,7 +299,7 @@ jobs:
           plutil -insert ICCRemoteDaemonManifestJSON -string "$MANIFEST_JSON" "$APP_PLIST"
 
       - name: Run CLI version memory guard regression
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         run: |
           set -euo pipefail
           CLI_BINARY="build/Build/Products/Release/${ICC_APP_BUNDLE_NAME}/Contents/Resources/bin/${ICC_CLI_NAME}"
@@ -251,14 +307,14 @@ jobs:
           ICC_CLI_BIN="$CLI_BINARY" python3 tests/test_cli_version_memory_guard.py
 
       - name: Verify bundled Ghostty theme picker helper
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         run: |
           set -euo pipefail
           HELPER_BINARY="build/Build/Products/Release/${ICC_APP_BUNDLE_NAME}/Contents/Resources/bin/ghostty"
           [ -x "$HELPER_BINARY" ] || { echo "Ghostty theme picker helper not found at $HELPER_BINARY" >&2; exit 1; }
 
       - name: Inject Sparkle keys into Info.plist
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         run: |
           APP_PLIST="build/Build/Products/Release/${ICC_APP_BUNDLE_NAME}/Contents/Info.plist"
           /usr/libexec/PlistBuddy -c "Delete :SUPublicEDKey" "$APP_PLIST" >/dev/null 2>&1 || true
@@ -272,7 +328,7 @@ jobs:
           /usr/libexec/PlistBuddy -c "Print :SUFeedURL" "$APP_PLIST"
 
       - name: Import signing cert
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         env:
           APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -296,7 +352,7 @@ jobs:
           security list-keychains -d user -s build.keychain
 
       - name: Codesign app
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         env:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         run: |
@@ -318,7 +374,7 @@ jobs:
           /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP_PATH"
 
       - name: Notarize app
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
@@ -381,7 +437,7 @@ jobs:
           fi
 
       - name: Upload dSYMs to Sentry
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: manaflow
@@ -395,7 +451,7 @@ jobs:
           sentry-cli debug-files upload --include-sources build/Build/Products/Release/
 
       - name: Generate Sparkle appcast
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: |
@@ -405,7 +461,13 @@ jobs:
           fi
           ./scripts/sparkle_generate_appcast.sh "$ICC_RELEASE_DMG_NAME" "$ICC_TARGET_TAG" "$ICC_STABLE_APPCAST_NAME"
 
+      - name: Report skipped release packaging
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready != 'true'
+        run: |
+          echo "Release packaging skipped for $ICC_TARGET_TAG because required signing/notarization secrets are not configured."
+
       - name: Stage website release assets
+        if: steps.guard_release_assets.outputs.skip_all == 'true' || steps.release_secrets.outputs.ready == 'true'
         run: |
           set -euo pipefail
           APP_VERSION="$ICC_RELEASE_VERSION"
@@ -431,6 +493,7 @@ jobs:
             --remote-assets-dir "$REMOTE_ASSETS_DIR"
 
       - name: Sync website release assets to main
+        if: steps.guard_release_assets.outputs.skip_all == 'true' || steps.release_secrets.outputs.ready == 'true'
         run: |
           set -euo pipefail
           git fetch origin main
@@ -453,7 +516,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Attest remote daemon release assets
-        if: steps.guard_release_assets.outputs.skip_all != 'true'
+        if: steps.guard_release_assets.outputs.skip_all != 'true' && steps.release_secrets.outputs.ready == 'true'
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-path: |
@@ -465,7 +528,7 @@ jobs:
             remote-daemon-assets/iccd-remote-manifest.json
 
       - name: Upload release asset
-        if: steps.guard_release_assets.outputs.skip_upload != 'true'
+        if: steps.guard_release_assets.outputs.skip_upload != 'true' && steps.release_secrets.outputs.ready == 'true'
         uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
         with:
           tag_name: ${{ env.ICC_TARGET_TAG }}
