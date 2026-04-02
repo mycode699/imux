@@ -1900,6 +1900,8 @@ struct ContentView: View {
     @State private var hoveredResizerHandles: Set<SidebarResizerHandle> = []
     @State private var isResizerDragging = false
     @State private var sidebarDragStartWidth: CGFloat?
+    @State private var isExplorerResizerDragging = false
+    @State private var explorerPaneDragStartWidth: CGFloat?
     @State private var selectedTabIds: Set<UUID> = []
     @State private var mountedWorkspaceIds: [UUID] = []
     @State private var lastSidebarSelectionIndex: Int? = nil
@@ -2370,9 +2372,13 @@ struct ContentView: View {
     private static let minimumSidebarWidth: CGFloat = CGFloat(SessionPersistencePolicy.minimumSidebarWidth)
     private static let remoteMinimumSidebarWidth: CGFloat = 228
     private static let maximumSidebarWidthRatio: CGFloat = 1.0 / 3.0
+    private static let minimumExplorerPaneWidth: CGFloat = 260
+    private static let maximumExplorerPaneWidthRatio: CGFloat = 0.40
+    private static let minimumPrimaryContentWidth: CGFloat = 360
 
     private enum SidebarResizerHandle: Hashable {
         case divider
+        case detailDivider
     }
 
     private var sidebarResizerSidebarHitWidth: CGFloat {
@@ -2416,6 +2422,43 @@ struct ContentView: View {
         }
     }
 
+    private func maxExplorerPaneWidth(availableWidth: CGFloat? = nil) -> CGFloat {
+        let resolvedAvailableWidth = availableWidth
+            ?? observedWindow?.contentView?.bounds.width
+            ?? observedWindow?.contentLayoutRect.width
+            ?? NSApp.keyWindow?.contentView?.bounds.width
+            ?? NSApp.keyWindow?.contentLayoutRect.width
+        if let resolvedAvailableWidth, resolvedAvailableWidth > 0 {
+            let leadingWidth = sidebarState.isVisible ? effectiveSidebarWidth : 0
+            let remainingWidth = max(Self.minimumExplorerPaneWidth, resolvedAvailableWidth - leadingWidth)
+            let ratioMaximum = max(Self.minimumExplorerPaneWidth, remainingWidth * Self.maximumExplorerPaneWidthRatio)
+            let contentPreservingMaximum = max(
+                Self.minimumExplorerPaneWidth,
+                remainingWidth - Self.minimumPrimaryContentWidth
+            )
+            return max(Self.minimumExplorerPaneWidth, min(ratioMaximum, contentPreservingMaximum))
+        }
+
+        let fallbackScreenWidth = NSApp.keyWindow?.screen?.frame.width
+            ?? NSScreen.main?.frame.width
+            ?? 1920
+        return max(Self.minimumExplorerPaneWidth, fallbackScreenWidth * Self.maximumExplorerPaneWidthRatio)
+    }
+
+    private func normalizedExplorerPaneWidth(_ candidate: CGFloat, availableWidth: CGFloat? = nil) -> CGFloat {
+        let maximumWidth = maxExplorerPaneWidth(availableWidth: availableWidth)
+        guard candidate.isFinite else { return min(368, maximumWidth) }
+        return max(Self.minimumExplorerPaneWidth, min(maximumWidth, candidate))
+    }
+
+    private func clampExplorerPaneWidthIfNeeded(availableWidth: CGFloat? = nil) {
+        let nextWidth = normalizedExplorerPaneWidth(explorerPaneWidth, availableWidth: availableWidth)
+        guard abs(nextWidth - explorerPaneWidth) > 0.5 else { return }
+        withTransaction(Transaction(animation: nil)) {
+            explorerPaneWidth = nextWidth
+        }
+    }
+
     private func minimumSidebarWidth(for selection: SidebarSelection) -> CGFloat {
         switch selection {
         case .remote:
@@ -2443,7 +2486,13 @@ struct ContentView: View {
     private func releaseSidebarResizerCursorIfNeeded(force: Bool = false) {
         let isLeftMouseButtonDown = CGEventSource.buttonState(.combinedSessionState, button: .left)
         let shouldKeepCursor = !force
-            && (isResizerDragging || isResizerBandActive || !hoveredResizerHandles.isEmpty || isLeftMouseButtonDown)
+            && (
+                isResizerDragging ||
+                isExplorerResizerDragging ||
+                isResizerBandActive ||
+                !hoveredResizerHandles.isEmpty ||
+                isLeftMouseButtonDown
+            )
         guard !shouldKeepCursor else { return }
         guard isSidebarResizerCursorActive else { return }
         isSidebarResizerCursorActive = false
@@ -2486,9 +2535,10 @@ struct ContentView: View {
         let pointInWindow = window.convertPoint(fromScreen: NSEvent.mouseLocation)
         let pointInContent = contentView.convert(pointInWindow, from: nil)
         let isInDividerBand = dividerBandContains(pointInContent: pointInContent, contentBounds: contentView.bounds)
+        let isTrailingHandleActive = hoveredResizerHandles.contains(.detailDivider) || isExplorerResizerDragging
         isResizerBandActive = isInDividerBand
 
-        if isInDividerBand || isResizerDragging {
+        if isInDividerBand || isResizerDragging || isTrailingHandleActive {
             activateSidebarResizerCursor()
             startSidebarResizerCursorStabilizer()
             // AppKit cursorUpdate handlers from overlapped portal/web views can run
@@ -2509,7 +2559,7 @@ struct ContentView: View {
         timer.schedule(deadline: .now(), repeating: .milliseconds(16), leeway: .milliseconds(2))
         timer.setEventHandler {
             updateSidebarResizerBandState()
-            if isResizerBandActive || isResizerDragging {
+            if isResizerBandActive || isResizerDragging || isExplorerResizerDragging || !hoveredResizerHandles.isEmpty {
                 Self.fixedSidebarResizeCursor.set()
             } else {
                 stopSidebarResizerCursorStabilizer()
@@ -2671,6 +2721,100 @@ struct ContentView: View {
             }
             .onChange(of: totalWidth) {
                 clampSidebarWidthIfNeeded(availableWidth: totalWidth)
+            }
+        }
+    }
+
+    private func explorerPaneResizerHandleOverlay(
+        width: CGFloat,
+        availableWidth: CGFloat,
+        accessibilityIdentifier: String? = nil
+    ) -> some View {
+        Color.clear
+            .frame(width: width)
+            .frame(maxHeight: .infinity)
+            .contentShape(Rectangle())
+            .onHover { hovering in
+                if hovering {
+                    hoveredResizerHandles.insert(.detailDivider)
+                    activateSidebarResizerCursor()
+                    startSidebarResizerCursorStabilizer()
+                } else {
+                    hoveredResizerHandles.remove(.detailDivider)
+                    if !isExplorerResizerDragging {
+                        scheduleSidebarResizerCursorRelease(delay: 0.05)
+                    }
+                }
+                updateSidebarResizerBandState()
+            }
+            .onDisappear {
+                hoveredResizerHandles.remove(.detailDivider)
+                if isExplorerResizerDragging {
+                    TerminalWindowPortalRegistry.endInteractiveGeometryResize()
+                    isExplorerResizerDragging = false
+                }
+                explorerPaneDragStartWidth = nil
+                scheduleSidebarResizerCursorRelease(force: true)
+            }
+            .gesture(
+                DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                    .onChanged { value in
+                        if !isExplorerResizerDragging {
+                            TerminalWindowPortalRegistry.beginInteractiveGeometryResize()
+                            isExplorerResizerDragging = true
+                            explorerPaneDragStartWidth = explorerPaneWidth
+                        }
+
+                        activateSidebarResizerCursor()
+                        let startWidth = explorerPaneDragStartWidth ?? explorerPaneWidth
+                        let nextWidth = normalizedExplorerPaneWidth(
+                            startWidth - value.translation.width,
+                            availableWidth: availableWidth
+                        )
+                        withTransaction(Transaction(animation: nil)) {
+                            explorerPaneWidth = nextWidth
+                        }
+                    }
+                    .onEnded { _ in
+                        if isExplorerResizerDragging {
+                            TerminalWindowPortalRegistry.endInteractiveGeometryResize()
+                            isExplorerResizerDragging = false
+                            explorerPaneDragStartWidth = nil
+                        }
+                        activateSidebarResizerCursor()
+                        scheduleSidebarResizerCursorRelease()
+                    }
+            )
+            .modifier(SidebarResizerAccessibilityModifier(accessibilityIdentifier: accessibilityIdentifier))
+    }
+
+    private var explorerPaneResizerOverlay: some View {
+        GeometryReader { proxy in
+            let totalWidth = max(0, proxy.size.width)
+            let dividerX = max(0, totalWidth - explorerPaneWidth)
+            let leadingWidth = max(0, dividerX - sidebarResizerContentHitWidth)
+
+            HStack(spacing: 0) {
+                Color.clear
+                    .frame(width: leadingWidth)
+                    .allowsHitTesting(false)
+
+                explorerPaneResizerHandleOverlay(
+                    width: SidebarResizeInteraction.totalHitWidth,
+                    availableWidth: totalWidth,
+                    accessibilityIdentifier: "DetailSidebarResizer"
+                )
+
+                Color.clear
+                    .frame(maxWidth: .infinity)
+                    .allowsHitTesting(false)
+            }
+            .frame(width: totalWidth, height: proxy.size.height, alignment: .leading)
+            .onAppear {
+                clampExplorerPaneWidthIfNeeded(availableWidth: totalWidth)
+            }
+            .onChange(of: totalWidth) {
+                clampExplorerPaneWidthIfNeeded(availableWidth: totalWidth)
             }
         }
     }
@@ -2927,7 +3071,7 @@ struct ContentView: View {
                                 onOpenFile: { url in
                                     selectedExplorerLocation = .local(url)
                                     selectedExplorerDocument = ExplorerTextDocumentLoader.load(url: url)
-                                    explorerPaneWidth = max(explorerPaneWidth, 540)
+                                    explorerPaneWidth = normalizedExplorerPaneWidth(max(explorerPaneWidth, 540))
                                 }
                             )
                             .frame(maxWidth: .infinity)
@@ -3483,6 +3627,12 @@ struct ContentView: View {
                             .zIndex(1000)
                     }
                 }
+                .overlay {
+                    if explorerPaneVisible {
+                        explorerPaneResizerOverlay
+                            .zIndex(1000)
+                    }
+                }
         )
     }
 
@@ -3513,6 +3663,7 @@ struct ContentView: View {
             if abs(sidebarState.persistedWidth - restoredWidth) > 0.5 {
                 sidebarState.persistedWidth = restoredWidth
             }
+            clampExplorerPaneWidthIfNeeded()
             if selectedTabIds.isEmpty, let selectedId = tabManager.selectedTabId {
                 selectedTabIds = [selectedId]
                 lastSidebarSelectionIndex = tabManager.tabs.firstIndex { $0.id == selectedId }
@@ -3908,7 +4059,9 @@ struct ContentView: View {
         view = AnyView(view.onReceive(NotificationCenter.default.publisher(for: NSWindow.didResizeNotification)) { notification in
             guard let window = notification.object as? NSWindow,
                   window === observedWindow else { return }
-            clampSidebarWidthIfNeeded(availableWidth: window.contentView?.bounds.width ?? window.contentLayoutRect.width)
+            let availableWidth = window.contentView?.bounds.width ?? window.contentLayoutRect.width
+            clampSidebarWidthIfNeeded(availableWidth: availableWidth)
+            clampExplorerPaneWidthIfNeeded(availableWidth: availableWidth)
             updateSidebarResizerBandState()
         })
 
@@ -3929,6 +4082,7 @@ struct ContentView: View {
                 sidebarWidth = sanitized
                 return
             }
+            clampExplorerPaneWidthIfNeeded()
             if abs(sidebarState.persistedWidth - sanitized) > 0.5 {
                 sidebarState.persistedWidth = sanitized
             }
@@ -3942,7 +4096,22 @@ struct ContentView: View {
             updateSidebarResizerBandState()
         })
 
+        view = AnyView(view.onChange(of: explorerPaneWidth) { _ in
+            let sanitized = normalizedExplorerPaneWidth(explorerPaneWidth)
+            if abs(explorerPaneWidth - sanitized) > 0.5 {
+                explorerPaneWidth = sanitized
+                return
+            }
+            if let observedWindow {
+                TerminalWindowPortalRegistry.scheduleExternalGeometrySynchronize(for: observedWindow)
+            } else {
+                TerminalWindowPortalRegistry.scheduleExternalGeometrySynchronizeForAllWindows()
+            }
+            updateSidebarResizerBandState()
+        })
+
         view = AnyView(view.onChange(of: sidebarState.isVisible) { _ in
+            clampExplorerPaneWidthIfNeeded()
             if let observedWindow {
                 TerminalWindowPortalRegistry.scheduleExternalGeometrySynchronize(for: observedWindow)
             } else {
@@ -3968,6 +4137,7 @@ struct ContentView: View {
             if abs(sidebarWidth - sanitized) > 0.5 {
                 sidebarWidth = sanitized
             }
+            clampExplorerPaneWidthIfNeeded()
         })
 
         view = AnyView(view.ignoresSafeArea())
@@ -3980,6 +4150,11 @@ struct ContentView: View {
                 TerminalWindowPortalRegistry.endInteractiveGeometryResize()
                 isResizerDragging = false
                 sidebarDragStartWidth = nil
+            }
+            if isExplorerResizerDragging {
+                TerminalWindowPortalRegistry.endInteractiveGeometryResize()
+                isExplorerResizerDragging = false
+                explorerPaneDragStartWidth = nil
             }
             removeSidebarResizerPointerMonitor()
         })
@@ -4000,7 +4175,9 @@ struct ContentView: View {
                 DispatchQueue.main.async {
                     observedWindow = window
                     isFullScreen = window.styleMask.contains(.fullScreen)
-                    clampSidebarWidthIfNeeded(availableWidth: window.contentView?.bounds.width ?? window.contentLayoutRect.width)
+                    let availableWidth = window.contentView?.bounds.width ?? window.contentLayoutRect.width
+                    clampSidebarWidthIfNeeded(availableWidth: availableWidth)
+                    clampExplorerPaneWidthIfNeeded(availableWidth: availableWidth)
                     syncCommandPaletteDebugStateForObservedWindow()
                     installSidebarResizerPointerMonitorIfNeeded()
                     updateSidebarResizerBandState()
