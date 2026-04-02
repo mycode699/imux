@@ -45,6 +45,13 @@ type PreparedAttachment = {
   size: number;
 };
 
+type FeedbackConfig = {
+  resendApiKey: string;
+  fromEmail: string;
+  toEmail: string;
+  rateLimitId: string;
+};
+
 export async function POST(request: Request) {
   const feedbackConfig = resolveFeedbackConfig();
   if (!feedbackConfig) {
@@ -172,15 +179,17 @@ export async function POST(request: Request) {
   );
 }
 
-function resolveFeedbackConfig() {
-  const resendApiKey = env.RESEND_API_KEY;
-  const fromEmail = env.ICC_FEEDBACK_FROM_EMAIL;
-  const toEmail = env.ICC_FEEDBACK_TO_EMAIL?.trim() || fromEmail;
-  const rateLimitId = env.ICC_FEEDBACK_RATE_LIMIT_ID;
+function resolveFeedbackConfig(): FeedbackConfig | null {
+  const resendApiKey = env.RESEND_API_KEY?.trim();
+  const fromEmail = env.ICC_FEEDBACK_FROM_EMAIL?.trim();
+  const configuredToEmail = env.ICC_FEEDBACK_TO_EMAIL?.trim();
+  const rateLimitId = env.ICC_FEEDBACK_RATE_LIMIT_ID?.trim();
 
   if (!resendApiKey || !fromEmail || !rateLimitId) {
     return null;
   }
+
+  const toEmail = configuredToEmail || fromEmail;
 
   return {
     resendApiKey,

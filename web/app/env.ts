@@ -3,10 +3,10 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    RESEND_API_KEY: z.string().min(1),
-    ICC_FEEDBACK_FROM_EMAIL: z.string().email(),
+    RESEND_API_KEY: z.string().min(1).optional(),
+    ICC_FEEDBACK_FROM_EMAIL: z.string().email().optional(),
     ICC_FEEDBACK_TO_EMAIL: z.string().email().optional(),
-    ICC_FEEDBACK_RATE_LIMIT_ID: z.string().min(1),
+    ICC_FEEDBACK_RATE_LIMIT_ID: z.string().min(1).optional(),
   },
   runtimeEnv: {
     RESEND_API_KEY: process.env.RESEND_API_KEY,
