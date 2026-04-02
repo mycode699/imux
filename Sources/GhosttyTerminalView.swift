@@ -6047,7 +6047,13 @@ class GhosttyNSView: NSView, NSUserInterfaceValidations {
 
     private func shouldSendCommittedIMEConfirmKey(event: NSEvent, markedTextBefore: Bool) -> Bool {
         guard markedTextBefore, markedText.length == 0 else { return false }
-        return event.keyCode == 36 || event.keyCode == 76
+        guard event.keyCode == 36 || event.keyCode == 76 else { return false }
+
+        // Some Korean input sources commit Hangul on Return but still expect the
+        // same keypress to execute the terminal command. That behavior is not
+        // correct for Pinyin/Japanese-style candidate selection, where Return
+        // should only confirm the candidate and must not also submit the shell.
+        return KeyboardLayout.id?.lowercased().contains("korean") == true
     }
 
     private func ghosttyKeyEvent(for event: NSEvent, surface: ghostty_surface_t) -> ghostty_input_key_s {
