@@ -7,6 +7,13 @@ Historical note:
 - This codebase originated from `icc`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
+## [1.5.2] - 2026-04-03
+
+### Fixed
+- Session restore now preserves richer multi-workspace ICC snapshots when the last main window closes, so reopening the app no longer tends to collapse a previously open pane set into a thin single-workspace state.
+- Recent thin lifecycle saves no longer override a fuller recent stable snapshot during restore, which makes previously opened conversation and workspace panes far more likely to come back intact after close and reopen.
+- Notification-driven workspace reorder and focus jumps now trigger explicit render recovery, reducing the intermittent black front panel that could appear after task-completion events.
+
 ## [1.5.1] - 2026-04-03
 
 ### Fixed

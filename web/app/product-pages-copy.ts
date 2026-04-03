@@ -320,7 +320,7 @@ const englishCopy: ProductPageCopy = {
       "This log is the public release record for ICC. It tracks the current product line, the official website rollout, documentation changes, and the operating notes you should check before replacing your current build.",
     currentReleaseLabel: "Current release line",
     currentReleaseBody:
-      "ICC is currently published as v1.5.1. This stable line preserves remote SSH workspaces when the last session terminal exits, enables terminal portal recovery by default for the recent black-screen path, and keeps the website plus GitHub release surface aligned on one current installer.",
+      "ICC is currently published as v1.5.2. This stable line hardens multi-workspace session restore after close and reopen, adds explicit recovery for the recent task-completion black-panel path, and keeps the website plus GitHub release surface aligned on one current installer.",
     releaseModelTitle: "How to read ICC releases",
     releaseModelIntro:
       "Use the changelog as an operating document, not just a marketing page. A good release note helps you decide whether to adopt immediately, validate first, or hold until an active workflow is done.",
@@ -358,6 +358,18 @@ const englishCopy: ProductPageCopy = {
     ],
     entriesTitle: "Release history",
     entries: [
+      {
+        date: "April 3, 2026",
+        version: "v1.5.2",
+        title: "Durable session restore and stronger black-panel recovery",
+        body:
+          "This stable release focuses on two trust failures in the active workspace loop: ICC reopening into a thinner pane set than the one you left behind, and intermittent black front panels after task-completion driven workspace churn.",
+        bullets: [
+          "Session persistence now keeps a richer stable snapshot and forces a full save when the last main window closes, so reopening ICC is far less likely to drop previously opened conversation and workspace panes.",
+          "Thin lifecycle saves no longer immediately downgrade a fuller recent snapshot during restore, which makes close-and-reopen behavior much more durable for multi-workspace setups.",
+          "Notification-driven workspace reorders and focus jumps now request explicit render recovery, reducing the intermittent black front panel seen after task completion events.",
+        ],
+      },
       {
         date: "April 3, 2026",
         version: "v1.5.1",
@@ -763,7 +775,7 @@ const zhCnCopy: ProductPageCopy = {
       "这份页面是 ICC 的公开发布记录。它追踪当前产品线、官网上线、多语言站点扩展，以及替换当前构建前应该检查的操作说明。",
     currentReleaseLabel: "当前发布线",
     currentReleaseBody:
-      "ICC 当前对外发布版本为 v1.5.1。这条稳定线会在最后一个 SSH 终端退出时保留远程工作区，默认开启终端 portal 恢复路径来压低黑屏概率，并继续让网站与 GitHub 发布面围绕同一份安装包对齐。",
+      "ICC 当前对外发布版本为 v1.5.2。这条稳定线会加固多工作区会话在关闭重开后的恢复行为，给最近任务完成后的黑色前面板路径补上显式恢复，并继续让网站与 GitHub 发布面围绕同一份安装包对齐。",
     releaseModelTitle: "应该怎么读 ICC 的版本发布",
     releaseModelIntro:
       "把升级日志当成操作文档，而不仅仅是宣传页。好的发布记录应该帮助你判断是马上采用、先验证，还是等当前任务结束后再更新。",
@@ -801,6 +813,18 @@ const zhCnCopy: ProductPageCopy = {
     ],
     entriesTitle: "发布历史",
     entries: [
+      {
+        date: "2026年4月3日",
+        version: "v1.5.2",
+        title: "更稳的会话恢复与更强的黑屏恢复路径",
+        body:
+          "这个稳定版聚焦两条会直接破坏连续操作信任的问题: ICC 关闭重开后恢复成更薄的面板集合，以及任务完成驱动的工作区切换后前面板偶发变黑。",
+        bullets: [
+          "会话持久化现在会保留更完整的稳定快照，并在最后一个主窗口关闭时强制落盘完整会话，所以重开 ICC 时更不容易丢掉之前打开的对话面板和工作区面板。",
+          "最近的轻量生命周期保存不再立刻覆盖更完整的近期稳定快照，这让多工作区场景下的关闭再打开恢复结果更可靠。",
+          "通知驱动的工作区重排和焦点跳转现在会显式触发渲染恢复，降低任务完成事件后当前前面板偶发黑屏的概率。",
+        ],
+      },
       {
         date: "2026年4月3日",
         version: "v1.5.1",

@@ -8740,6 +8740,21 @@ final class Workspace: Identifiable, ObservableObject {
         }
     }
 
+    func requestRenderRecovery(reason: String, includeGeometry: Bool = true) {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                self?.requestRenderRecovery(reason: reason, includeGeometry: includeGeometry)
+            }
+            return
+        }
+
+        scheduleFocusReconcile()
+        beginEventDrivenLayoutFollowUp(
+            reason: reason,
+            includeGeometry: includeGeometry
+        )
+    }
+
     // MARK: - Utility
 
     /// Create a new terminal panel (used when replacing the last panel)

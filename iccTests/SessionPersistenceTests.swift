@@ -394,7 +394,7 @@ final class SessionPersistenceTests: XCTestCase {
         XCTAssertFalse(
             AppDelegate.shouldPersistSnapshotOnWindowUnregister(isTerminatingApp: true)
         )
-        XCTAssertTrue(
+        XCTAssertFalse(
             AppDelegate.shouldRemoveSnapshotWhenNoWindowsRemainOnWindowUnregister(isTerminatingApp: false)
         )
         XCTAssertFalse(
@@ -762,6 +762,95 @@ final class SessionPersistenceTests: XCTestCase {
         )
 
         XCTAssertNil(resolved)
+    }
+
+    func testStableSnapshotIsWrittenForPromotedSaveReasons() {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("icc-session-tests-\(UUID().uuidString)", isDirectory: true)
+        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let snapshotURL = tempDir.appendingPathComponent("session.json", isDirectory: false)
+        let stableURL = snapshotURL
+            .deletingPathExtension()
+            .appendingPathExtension("stable")
+            .appendingPathExtension("json")
+        var snapshot = makeSnapshot(version: SessionSnapshotSchema.currentVersion)
+        snapshot.persistence = SessionPersistenceMetadata(
+            saveReason: .applicationWillTerminate,
+            includesScrollback: true
+        )
+
+        XCTAssertTrue(SessionPersistenceStore.save(snapshot, fileURL: snapshotURL))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: stableURL.path))
+    }
+
+    func testLoadPrefersRecentStableSnapshotOverThinLifecycleDowngrade() {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("icc-session-tests-\(UUID().uuidString)", isDirectory: true)
+        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let snapshotURL = tempDir.appendingPathComponent("session.json", isDirectory: false)
+        var stableSnapshot = makeSnapshot(version: SessionSnapshotSchema.currentVersion)
+        stableSnapshot.createdAt = Date().timeIntervalSince1970
+        stableSnapshot.persistence = SessionPersistenceMetadata(
+            saveReason: .applicationWillTerminate,
+            includesScrollback: true
+        )
+        stableSnapshot.windows[0].tabManager.workspaces.append(
+            stableSnapshot.windows[0].tabManager.workspaces[0]
+        )
+
+        XCTAssertTrue(SessionPersistenceStore.save(stableSnapshot, fileURL: snapshotURL))
+
+        var downgradedSnapshot = makeSnapshot(version: SessionSnapshotSchema.currentVersion)
+        downgradedSnapshot.createdAt = stableSnapshot.createdAt + 10
+        downgradedSnapshot.persistence = SessionPersistenceMetadata(
+            saveReason: .startupRestoreCompletion,
+            includesScrollback: false
+        )
+
+        XCTAssertTrue(SessionPersistenceStore.save(downgradedSnapshot, fileURL: snapshotURL))
+
+        let loaded = SessionPersistenceStore.load(fileURL: snapshotURL)
+        XCTAssertEqual(loaded?.windows.first?.tabManager.workspaces.count, 2)
+        XCTAssertEqual(loaded?.persistence?.saveReason, .applicationWillTerminate)
+    }
+
+    func testLoadKeepsThinPrimarySnapshotAfterProtectionWindowExpires() {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("icc-session-tests-\(UUID().uuidString)", isDirectory: true)
+        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let snapshotURL = tempDir.appendingPathComponent("session.json", isDirectory: false)
+        var stableSnapshot = makeSnapshot(version: SessionSnapshotSchema.currentVersion)
+        stableSnapshot.createdAt = Date().timeIntervalSince1970
+        stableSnapshot.persistence = SessionPersistenceMetadata(
+            saveReason: .applicationWillTerminate,
+            includesScrollback: true
+        )
+        stableSnapshot.windows[0].tabManager.workspaces.append(
+            stableSnapshot.windows[0].tabManager.workspaces[0]
+        )
+
+        XCTAssertTrue(SessionPersistenceStore.save(stableSnapshot, fileURL: snapshotURL))
+
+        var primarySnapshot = makeSnapshot(version: SessionSnapshotSchema.currentVersion)
+        primarySnapshot.createdAt = stableSnapshot.createdAt
+            + SessionPersistencePolicy.stableSnapshotDowngradeProtectionWindow
+            + 10
+        primarySnapshot.persistence = SessionPersistenceMetadata(
+            saveReason: .autosave,
+            includesScrollback: false
+        )
+
+        XCTAssertTrue(SessionPersistenceStore.save(primarySnapshot, fileURL: snapshotURL))
+
+        let loaded = SessionPersistenceStore.load(fileURL: snapshotURL)
+        XCTAssertEqual(loaded?.windows.first?.tabManager.workspaces.count, 1)
+        XCTAssertEqual(loaded?.persistence?.saveReason, .autosave)
     }
 
     private func makeSnapshot(version: Int) -> AppSessionSnapshot {

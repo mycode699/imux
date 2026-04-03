@@ -6,6 +6,41 @@ enum SessionSnapshotSchema {
     static let currentVersion = 1
 }
 
+enum SessionSaveReason: String, Codable, Sendable {
+    case autosave
+    case appResignActive
+    case startupRestoreCompletion
+    case mainWindowRegister
+    case windowUnregister
+    case lastWindowClose
+    case applicationShouldTerminate
+    case applicationWillTerminate
+    case updateRelaunch
+
+    var promotesStableSnapshot: Bool {
+        switch self {
+        case .lastWindowClose, .applicationShouldTerminate, .applicationWillTerminate, .updateRelaunch:
+            return true
+        case .autosave, .appResignActive, .startupRestoreCompletion, .mainWindowRegister, .windowUnregister:
+            return false
+        }
+    }
+
+    var isThinLifecycleSave: Bool {
+        switch self {
+        case .autosave, .appResignActive, .startupRestoreCompletion, .mainWindowRegister, .windowUnregister:
+            return true
+        case .lastWindowClose, .applicationShouldTerminate, .applicationWillTerminate, .updateRelaunch:
+            return false
+        }
+    }
+}
+
+struct SessionPersistenceMetadata: Codable, Sendable {
+    var saveReason: SessionSaveReason?
+    var includesScrollback: Bool?
+}
+
 enum SessionPersistencePolicy {
     static let defaultSidebarWidth: Double = 200
     static let minimumSidebarWidth: Double = 180
@@ -18,6 +53,7 @@ enum SessionPersistencePolicy {
     static let maxPanelsPerWorkspace: Int = 512
     static let maxScrollbackLinesPerTerminal: Int = 4000
     static let maxScrollbackCharactersPerTerminal: Int = 400_000
+    static let stableSnapshotDowngradeProtectionWindow: TimeInterval = 300
 
     static func sanitizedSidebarWidth(_ candidate: Double?) -> Double {
         let fallback = defaultSidebarWidth
@@ -399,17 +435,51 @@ struct AppSessionSnapshot: Codable, Sendable {
     var version: Int
     var createdAt: TimeInterval
     var windows: [SessionWindowSnapshot]
+    var persistence: SessionPersistenceMetadata?
+
+    init(
+        version: Int,
+        createdAt: TimeInterval,
+        windows: [SessionWindowSnapshot],
+        persistence: SessionPersistenceMetadata? = nil
+    ) {
+        self.version = version
+        self.createdAt = createdAt
+        self.windows = windows
+        self.persistence = persistence
+    }
 }
 
 enum SessionPersistenceStore {
+    private struct SnapshotMetrics {
+        let windowCount: Int
+        let workspaceCount: Int
+        let panelCount: Int
+        let terminalScrollbackPanelCount: Int
+
+        var richnessScore: Int {
+            windowCount * 10_000
+                + workspaceCount * 100
+                + panelCount * 10
+                + terminalScrollbackPanelCount
+        }
+    }
+
     static func load(fileURL: URL? = nil) -> AppSessionSnapshot? {
         guard let fileURL = fileURL ?? defaultSnapshotFileURL() else { return nil }
-        guard let data = try? Data(contentsOf: fileURL) else { return nil }
-        let decoder = JSONDecoder()
-        guard let snapshot = try? decoder.decode(AppSessionSnapshot.self, from: data) else { return nil }
-        guard snapshot.version == SessionSnapshotSchema.currentVersion else { return nil }
-        guard !snapshot.windows.isEmpty else { return nil }
-        return snapshot
+        let primary = loadSnapshot(fileURL: fileURL)
+        let stable = loadSnapshot(fileURL: stableSnapshotFileURL(for: fileURL))
+
+        switch (primary, stable) {
+        case let (primary?, stable?):
+            return shouldPreferStableSnapshot(primary: primary, stable: stable) ? stable : primary
+        case let (primary?, nil):
+            return primary
+        case let (nil, stable?):
+            return stable
+        case (nil, nil):
+            return nil
+        }
     }
 
     @discardableResult
@@ -419,10 +489,21 @@ enum SessionPersistenceStore {
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
             let data = try encodedSnapshotData(snapshot)
-            if let existingData = try? Data(contentsOf: fileURL), existingData == data {
-                return true
+            let shouldPromoteStable = shouldPromoteStableSnapshot(snapshot)
+            let stableFileURL = stableSnapshotFileURL(for: fileURL)
+
+            let existingPrimaryData = try? Data(contentsOf: fileURL)
+            if existingPrimaryData != data {
+                try data.write(to: fileURL, options: .atomic)
             }
-            try data.write(to: fileURL, options: .atomic)
+
+            if shouldPromoteStable {
+                let existingStableData = try? Data(contentsOf: stableFileURL)
+                if existingStableData != data {
+                    try data.write(to: stableFileURL, options: .atomic)
+                }
+            }
+
             return true
         } catch {
             return false
@@ -438,6 +519,7 @@ enum SessionPersistenceStore {
     static func removeSnapshot(fileURL: URL? = nil) {
         guard let fileURL = fileURL ?? defaultSnapshotFileURL() else { return }
         try? FileManager.default.removeItem(at: fileURL)
+        try? FileManager.default.removeItem(at: stableSnapshotFileURL(for: fileURL))
     }
 
     static func defaultSnapshotFileURL(
@@ -463,6 +545,81 @@ enum SessionPersistenceStore {
         return resolvedAppSupport
             .appendingPathComponent("iatlas", isDirectory: true)
             .appendingPathComponent("session-\(safeBundleId).json", isDirectory: false)
+    }
+
+    private static func stableSnapshotFileURL(for primaryFileURL: URL) -> URL {
+        primaryFileURL
+            .deletingPathExtension()
+            .appendingPathExtension("stable")
+            .appendingPathExtension("json")
+    }
+
+    private static func loadSnapshot(fileURL: URL) -> AppSessionSnapshot? {
+        guard let data = try? Data(contentsOf: fileURL) else { return nil }
+        let decoder = JSONDecoder()
+        guard let snapshot = try? decoder.decode(AppSessionSnapshot.self, from: data) else { return nil }
+        guard snapshot.version == SessionSnapshotSchema.currentVersion else { return nil }
+        guard !snapshot.windows.isEmpty else { return nil }
+        return snapshot
+    }
+
+    private static func shouldPromoteStableSnapshot(_ snapshot: AppSessionSnapshot) -> Bool {
+        snapshot.persistence?.saveReason?.promotesStableSnapshot == true
+    }
+
+    private static func shouldPreferStableSnapshot(primary: AppSessionSnapshot, stable: AppSessionSnapshot) -> Bool {
+        guard let primaryReason = primary.persistence?.saveReason, primaryReason.isThinLifecycleSave else {
+            return false
+        }
+
+        let ageDelta = primary.createdAt - stable.createdAt
+        guard ageDelta >= 0, ageDelta <= SessionPersistencePolicy.stableSnapshotDowngradeProtectionWindow else {
+            return false
+        }
+
+        let primaryMetrics = metrics(for: primary)
+        let stableMetrics = metrics(for: stable)
+        guard stableMetrics.richnessScore > primaryMetrics.richnessScore else { return false }
+
+        if primaryMetrics.panelCount == 0 || primaryMetrics.workspaceCount == 0 {
+            return true
+        }
+
+        if stableMetrics.terminalScrollbackPanelCount > primaryMetrics.terminalScrollbackPanelCount,
+           stableMetrics.workspaceCount >= primaryMetrics.workspaceCount,
+           stableMetrics.panelCount >= primaryMetrics.panelCount {
+            return true
+        }
+
+        return stableMetrics.windowCount > primaryMetrics.windowCount
+            || stableMetrics.workspaceCount > primaryMetrics.workspaceCount
+            || stableMetrics.panelCount > primaryMetrics.panelCount
+    }
+
+    private static func metrics(for snapshot: AppSessionSnapshot) -> SnapshotMetrics {
+        var workspaceCount = 0
+        var panelCount = 0
+        var terminalScrollbackPanelCount = 0
+
+        for window in snapshot.windows {
+            workspaceCount += window.tabManager.workspaces.count
+            for workspace in window.tabManager.workspaces {
+                panelCount += workspace.panels.count
+                terminalScrollbackPanelCount += workspace.panels.reduce(into: 0) { count, panel in
+                    guard panel.type == .terminal else { return }
+                    if panel.terminal?.scrollback?.contains(where: { !$0.isWhitespace }) == true {
+                        count += 1
+                    }
+                }
+            }
+        }
+
+        return SnapshotMetrics(
+            windowCount: snapshot.windows.count,
+            workspaceCount: workspaceCount,
+            panelCount: panelCount,
+            terminalScrollbackPanelCount: terminalScrollbackPanelCount
+        )
     }
 }
 

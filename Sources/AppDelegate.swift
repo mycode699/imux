@@ -3036,13 +3036,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         isTerminatingApp = true
-        _ = saveSessionSnapshot(includeScrollback: true, removeWhenEmpty: false)
+        _ = saveSessionSnapshot(
+            includeScrollback: true,
+            removeWhenEmpty: false,
+            reason: .applicationShouldTerminate
+        )
         return .terminateNow
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         isTerminatingApp = true
-        _ = saveSessionSnapshot(includeScrollback: true, removeWhenEmpty: false)
+        _ = saveSessionSnapshot(
+            includeScrollback: true,
+            removeWhenEmpty: false,
+            reason: .applicationWillTerminate
+        )
         stopSessionAutosaveTimer()
         TerminalController.shared.stop()
         VSCodeServeWebController.shared.stop()
@@ -3056,12 +3064,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
     func applicationWillResignActive(_ notification: Notification) {
         guard !isTerminatingApp else { return }
-        _ = saveSessionSnapshot(includeScrollback: false)
+        _ = saveSessionSnapshot(includeScrollback: false, reason: .appResignActive)
     }
 
     func persistSessionForUpdateRelaunch() {
         isTerminatingApp = true
-        _ = saveSessionSnapshot(includeScrollback: true, removeWhenEmpty: false)
+        _ = saveSessionSnapshot(
+            includeScrollback: true,
+            removeWhenEmpty: false,
+            reason: .updateRelaunch
+        )
     }
 
     func configure(tabManager: TabManager, notificationStore: TerminalNotificationStore, sidebarState: SidebarState) {
@@ -3291,7 +3303,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private func completeStartupSessionRestore() {
         startupSessionSnapshot = nil
         isApplyingStartupSessionRestore = false
-        _ = saveSessionSnapshot(includeScrollback: false)
+        _ = saveSessionSnapshot(includeScrollback: false, reason: .startupRestoreCompletion)
     }
 
     private func applySessionWindowSnapshot(
@@ -3671,7 +3683,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 self.isTerminatingApp = true
-                _ = self.saveSessionSnapshot(includeScrollback: true, removeWhenEmpty: false)
+                _ = self.saveSessionSnapshot(
+                    includeScrollback: true,
+                    removeWhenEmpty: false,
+                    reason: .applicationWillTerminate
+                )
             }
         }
         lifecycleSnapshotObservers.append(powerOffObserver)
@@ -3684,9 +3700,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 if self.isTerminatingApp {
-                    _ = self.saveSessionSnapshot(includeScrollback: true, removeWhenEmpty: false)
+                    _ = self.saveSessionSnapshot(
+                        includeScrollback: true,
+                        removeWhenEmpty: false,
+                        reason: .applicationWillTerminate
+                    )
                 } else {
-                    _ = self.saveSessionSnapshot(includeScrollback: false)
+                    _ = self.saveSessionSnapshot(includeScrollback: false, reason: .appResignActive)
                 }
             }
         }
@@ -3783,7 +3803,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     }
 
     @discardableResult
-    private func saveSessionSnapshot(includeScrollback: Bool, removeWhenEmpty: Bool = false) -> Bool {
+    private func saveSessionSnapshot(
+        includeScrollback: Bool,
+        removeWhenEmpty: Bool = false,
+        reason: SessionSaveReason,
+        forceSynchronous: Bool = false
+    ) -> Bool {
         if Self.shouldSkipSessionSaveDuringStartupRestore(
             isApplyingStartupSessionRestore: isApplyingStartupSessionRestore,
             includeScrollback: includeScrollback
@@ -3794,7 +3819,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             return false
         }
 
-        let writeSynchronously = Self.shouldWriteSessionSnapshotSynchronously(
+        let writeSynchronously = forceSynchronous || Self.shouldWriteSessionSnapshotSynchronously(
             isTerminatingApp: isTerminatingApp,
             includeScrollback: includeScrollback
         )
@@ -3809,7 +3834,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         }
 #endif
 
-        guard let snapshot = buildSessionSnapshot(includeScrollback: includeScrollback) else {
+        guard var snapshot = buildSessionSnapshot(includeScrollback: includeScrollback) else {
             persistSessionSnapshot(
                 nil,
                 removeWhenEmpty: removeWhenEmpty,
@@ -3818,6 +3843,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             )
             return false
         }
+        snapshot.persistence = SessionPersistenceMetadata(
+            saveReason: reason,
+            includesScrollback: includeScrollback
+        )
 
         let persistedGeometryData = snapshot.windows.first.flatMap { primaryWindow in
             Self.encodedPersistedWindowGeometryData(
@@ -3845,7 +3874,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     nonisolated static func shouldRemoveSnapshotWhenNoWindowsRemainOnWindowUnregister(
         isTerminatingApp: Bool
     ) -> Bool {
-        !isTerminatingApp
+        false
     }
 
     nonisolated static func shouldSkipSessionSaveDuringStartupRestore(
@@ -3951,7 +3980,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 #if DEBUG
         let saveStart = ProcessInfo.processInfo.systemUptime
 #endif
-        _ = saveSessionSnapshot(includeScrollback: false)
+        _ = saveSessionSnapshot(includeScrollback: false, reason: .autosave)
 #if DEBUG
         saveMs = (ProcessInfo.processInfo.systemUptime - saveStart) * 1000.0
 #endif
@@ -4247,7 +4276,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
         attemptStartupSessionRestoreIfNeeded(primaryWindow: window)
         if !isTerminatingApp {
-            _ = saveSessionSnapshot(includeScrollback: false)
+            _ = saveSessionSnapshot(includeScrollback: false, reason: .mainWindowRegister)
         }
     }
 
@@ -11658,9 +11687,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     }
 
     private func unregisterMainWindow(_ window: NSWindow) {
-        // Keep geometry available as a fallback even if the full session snapshot
-        // is removed when the last window closes.
+        // Keep geometry available as a fallback even when the last main window closes.
         persistWindowGeometry(from: window)
+        let isClosingLastMainWindow = mainWindowContexts.count <= 1
+        if isClosingLastMainWindow && !isTerminatingApp {
+            _ = saveSessionSnapshot(
+                includeScrollback: true,
+                removeWhenEmpty: false,
+                reason: .lastWindowClose,
+                forceSynchronous: true
+            )
+        }
         guard let removed = unregisterMainWindowContext(for: window) else { return }
         commandPaletteVisibilityByWindowId.removeValue(forKey: removed.windowId)
         commandPalettePendingOpenByWindowId.removeValue(forKey: removed.windowId)
@@ -11708,7 +11745,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
                 includeScrollback: false,
                 removeWhenEmpty: Self.shouldRemoveSnapshotWhenNoWindowsRemainOnWindowUnregister(
                     isTerminatingApp: isTerminatingApp
-                )
+                ),
+                reason: .windowUnregister
             )
         }
     }

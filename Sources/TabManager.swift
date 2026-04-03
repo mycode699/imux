@@ -2058,6 +2058,10 @@ class TabManager: ObservableObject {
         let pinnedCount = tabs.filter { $0.isPinned }.count
         let insertIndex = tab.isPinned ? 0 : pinnedCount
         tabs.insert(tab, at: insertIndex)
+        requestWorkspaceRenderRecovery(
+            afterReorderOf: [tabId],
+            reason: "workspace.reorder.moveToTop"
+        )
     }
 
     func moveTabsToTop(_ tabIds: Set<UUID>) {
@@ -2070,6 +2074,10 @@ class TabManager: ObservableObject {
         let remainingPinned = remainingTabs.filter { $0.isPinned }
         let remainingUnpinned = remainingTabs.filter { !$0.isPinned }
         tabs = selectedPinned + remainingPinned + selectedUnpinned + remainingUnpinned
+        requestWorkspaceRenderRecovery(
+            afterReorderOf: selectedTabs.map(\.id),
+            reason: "workspace.reorder.batch"
+        )
     }
 
     func moveTabToTopForNotification(_ tabId: UUID) {
@@ -2080,6 +2088,10 @@ class TabManager: ObservableObject {
         guard !tab.isPinned else { return }
         tabs.remove(at: index)
         tabs.insert(tab, at: pinnedCount)
+        requestWorkspaceRenderRecovery(
+            afterReorderOf: [tabId],
+            reason: "workspace.reorder.notification"
+        )
     }
 
     @discardableResult
@@ -2093,6 +2105,10 @@ class TabManager: ObservableObject {
 
         tabs.remove(at: currentIndex)
         tabs.insert(workspace, at: clamped)
+        requestWorkspaceRenderRecovery(
+            afterReorderOf: [tabId],
+            reason: "workspace.reorder.manual"
+        )
         return true
     }
 
@@ -2145,6 +2161,23 @@ class TabManager: ObservableObject {
         let pinnedCount = tabs.filter { $0.isPinned }.count
         let insertIndex = min(pinnedCount, tabs.count)
         tabs.insert(tab, at: insertIndex)
+        requestWorkspaceRenderRecovery(
+            afterReorderOf: [tab.id],
+            reason: "workspace.reorder.pin"
+        )
+    }
+
+    private func requestWorkspaceRenderRecovery(afterReorderOf tabIds: [UUID], reason: String) {
+        var recoveryTabIds: [UUID] = []
+        if let selectedTabId {
+            recoveryTabIds.append(selectedTabId)
+        }
+        recoveryTabIds.append(contentsOf: tabIds)
+
+        var seen: Set<UUID> = []
+        for tabId in recoveryTabIds where seen.insert(tabId).inserted {
+            tabs.first(where: { $0.id == tabId })?.requestRenderRecovery(reason: reason)
+        }
     }
 
     private func clampedReorderIndex(for workspace: Workspace, targetIndex: Int) -> Int {
@@ -3074,6 +3107,9 @@ class TabManager: ObservableObject {
         suppressFocusFlash = true
         focusTab(tabId, surfaceId: desiredPanelId, suppressFlash: true)
         suppressFocusFlash = false
+        DispatchQueue.main.async { [weak self] in
+            self?.tabs.first(where: { $0.id == tabId })?.requestRenderRecovery(reason: "notification.focus")
+        }
 
         if let targetPanelId = desiredPanelId ?? tab.focusedPanelId,
            tab.panels[targetPanelId] != nil {
