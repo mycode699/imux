@@ -83,19 +83,67 @@ Nightly release assets:
 
 ## Current baseline
 
-- Current public stable line: `v1.1.0`
+- Current public stable line: `v1.5.0`
 - Repository: `https://github.com/mycode699/imux`
+
+## Local operator env
+
+Store local release and website deployment secrets in the repo root `.env`.
+
+- `.env` is gitignored and should stay local-only.
+- `.env.example` is the checked-in template for required keys.
+- Release signing still comes from `ICC_RELEASE_ENV_FILE`.
+- Website VPS deployment now reads the same root `.env`.
+
+Current website deploy keys:
+
+- `ICC_DEPLOY_HOST`
+- `ICC_DEPLOY_USER`
+- `ICC_DEPLOY_PASSWORD`
+- `ICC_DEPLOY_PORT`
+- `ICC_DEPLOY_SITE_ROOT`
+- `ICC_DEPLOY_SERVICE`
+- `ICC_DEPLOY_SITE_URL`
+
+Current production values on the active website host:
+
+- `ICC_DEPLOY_SITE_ROOT=/opt/iccjk-site`
+- `ICC_DEPLOY_SERVICE=iccjk-site.service`
+- The Next.js runtime serves from `current` under that root and the parent `CHANGELOG.md`.
 
 ## Release workflow rules
 
-1. Update `MARKETING_VERSION` to the target release, currently `1.1.0`.
+1. Update `MARKETING_VERSION` to the target release, currently `1.5.0`.
 2. Keep `CURRENT_PROJECT_VERSION` increasing even if the marketing version resets for branding reasons.
 3. Build the signed and notarized macOS app, then generate `appcast.xml` with the matching Sparkle private key.
 4. Stage the DMG, appcast, release manifest, and remote helper assets into `web/public/downloads` or the production site's `public/downloads` directory.
 5. Push the staged `web/public/downloads` update onto `main` so the website deployment picks up the same release state as the tag build.
 6. Deploy the website so `iccjk.com` serves the new DMG, `appcast.xml`, `latest.json`, and remote helper manifest.
 7. Push the branch to `mycode699/imux`.
-8. Create and push a tag such as `v1.0.6` after the website-hosted artifacts have been verified.
+8. Create and push a tag such as `v1.5.0` after the website-hosted artifacts have been verified.
+
+## Website deploy command
+
+Use the local env-backed helper:
+
+```bash
+./scripts/deploy-website-vps.sh
+```
+
+Helpful variants:
+
+```bash
+./scripts/deploy-website-vps.sh --dry-run
+./scripts/deploy-website-vps.sh --env-file ~/.secrets/icc-site.env
+```
+
+Behavior:
+
+- Reads local VPS credentials from `.env` by default.
+- Uploads `web/` into a new staged directory under the configured site root.
+- Copies the repo root `CHANGELOG.md` to the parent site root so `/changelog` stays current.
+- Runs `npm ci`, falls back to `npm install` if the lockfile and package manifest drift again, then builds the site.
+- Swaps the staged directory into `current`, restarts the configured systemd service, and verifies the live manifest, DMG URL, changelog page, and homepage download link.
 
 ## Important migration note
 
