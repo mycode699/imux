@@ -574,11 +574,7 @@ final class WindowTerminalPortal: NSObject {
     private static let minimumRevealWidth: CGFloat = 24
     private static let minimumRevealHeight: CGFloat = 18
     private static let transientRecoveryRetryBudget: Int = 12
-#if ICC_ISSUE_483_PORTAL_RECOVERY
     private static let transientRecoveryEnabled = true
-#else
-    private static let transientRecoveryEnabled = false
-#endif
 
     private weak var window: NSWindow?
     private let hostView = WindowTerminalHostView(frame: .zero)

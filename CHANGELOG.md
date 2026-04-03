@@ -7,6 +7,12 @@ Historical note:
 - This codebase originated from `icc`, and older entries intentionally retain legacy names, issue numbers, PR links, and internal binary identifiers where that history still matters.
 - The current product being released from this repository is `icc`.
 
+## [1.5.1] - 2026-04-03
+
+### Fixed
+- Remote SSH child-exit on the last terminal now preserves the workspace instead of cascading into workspace and window close, so reconnecting can continue from the same remote context.
+- Enabled the existing transient terminal portal recovery path by default, reducing black-screen failures during split, sidebar, and workspace churn.
+
 ## [1.5.0] - 2026-04-02
 
 ### Changed

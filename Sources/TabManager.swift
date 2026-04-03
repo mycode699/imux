@@ -2690,6 +2690,13 @@ class TabManager: ObservableObject {
         )
 #endif
 
+        let shouldPreserveRemoteWorkspace = tab.panels.count <= 1 && tab.hasInteractiveRemoteSSHSession
+
+        if shouldPreserveRemoteWorkspace {
+            closeRuntimeSurface(tabId: tabId, surfaceId: surfaceId)
+            return
+        }
+
         // Child-exit on the last panel should collapse the workspace, matching explicit close
         // semantics (and close the window when it was the last workspace).
         if tab.panels.count <= 1 {

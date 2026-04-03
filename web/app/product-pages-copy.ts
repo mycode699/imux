@@ -320,7 +320,7 @@ const englishCopy: ProductPageCopy = {
       "This log is the public release record for ICC. It tracks the current product line, the official website rollout, documentation changes, and the operating notes you should check before replacing your current build.",
     currentReleaseLabel: "Current release line",
     currentReleaseBody:
-      "ICC is currently published as v1.5.0. This stable line moves the release target forward again, keeps the website metadata aligned with the active GitHub line, and preserves the recent install and sidebar fixes in one current package.",
+      "ICC is currently published as v1.5.1. This stable line preserves remote SSH workspaces when the last session terminal exits, enables terminal portal recovery by default for the recent black-screen path, and keeps the website plus GitHub release surface aligned on one current installer.",
     releaseModelTitle: "How to read ICC releases",
     releaseModelIntro:
       "Use the changelog as an operating document, not just a marketing page. A good release note helps you decide whether to adopt immediately, validate first, or hold until an active workflow is done.",
@@ -358,6 +358,18 @@ const englishCopy: ProductPageCopy = {
     ],
     entriesTitle: "Release history",
     entries: [
+      {
+        date: "April 3, 2026",
+        version: "v1.5.1",
+        title: "Remote SSH workspace preservation and portal recovery hardening",
+        body:
+          "This stable release focuses on two interruptions that break active work: remote workspaces disappearing when the last SSH terminal exits, and terminal surfaces occasionally staying black after fast UI churn.",
+        bullets: [
+          "Remote SSH child-exit on the last terminal now preserves the workspace so reconnecting can resume from the same remote context instead of reopening everything from scratch.",
+          "Enabled the existing transient terminal portal recovery path by default to reduce black-screen failures during split changes, sidebar churn, and workspace switching.",
+          "Promoted `v1.5.1` across the public release surface so the website changelog, download endpoints, and GitHub release point to the same current installer.",
+        ],
+      },
       {
         date: "April 2, 2026",
         version: "v1.5.0",
@@ -751,7 +763,7 @@ const zhCnCopy: ProductPageCopy = {
       "这份页面是 ICC 的公开发布记录。它追踪当前产品线、官网上线、多语言站点扩展，以及替换当前构建前应该检查的操作说明。",
     currentReleaseLabel: "当前发布线",
     currentReleaseBody:
-      "ICC 当前对外发布版本为 v1.5.0。这条稳定线把发布目标继续前推，同时让网站元数据和当前 GitHub 发布线保持一致，并保留最近的安装修复与侧边栏改进。",
+      "ICC 当前对外发布版本为 v1.5.1。这条稳定线会在最后一个 SSH 终端退出时保留远程工作区，默认开启终端 portal 恢复路径来压低黑屏概率，并继续让网站与 GitHub 发布面围绕同一份安装包对齐。",
     releaseModelTitle: "应该怎么读 ICC 的版本发布",
     releaseModelIntro:
       "把升级日志当成操作文档，而不仅仅是宣传页。好的发布记录应该帮助你判断是马上采用、先验证，还是等当前任务结束后再更新。",
@@ -789,6 +801,18 @@ const zhCnCopy: ProductPageCopy = {
     ],
     entriesTitle: "发布历史",
     entries: [
+      {
+        date: "2026年4月3日",
+        version: "v1.5.1",
+        title: "远程工作区保留与 portal 恢复加固",
+        body:
+          "这个稳定版聚焦两条会直接打断操作的问题: SSH 最后一个终端退出后远程工作区被带着关闭，以及高频界面切换后终端偶发黑屏。",
+        bullets: [
+          "当远程 SSH 工作区中的最后一个终端因 child-exit 结束时，现在会保留该工作区，便于后续直接在原有远程上下文中重连。",
+          "默认开启现有的短时 terminal portal 恢复路径，降低分栏变化、侧边栏切换和工作区切换期间出现黑屏的概率。",
+          "把 `v1.5.1` 同步到公开发布面，让官网升级日志、下载端点和 GitHub 发布继续指向同一份当前安装包。",
+        ],
+      },
       {
         date: "2026年4月2日",
         version: "v1.5.0",

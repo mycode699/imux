@@ -83,7 +83,7 @@ Nightly release assets:
 
 ## Current baseline
 
-- Current public stable line: `v1.5.0`
+- Current public stable line: `v1.5.1`
 - Repository: `https://github.com/mycode699/imux`
 
 ## Local operator env
@@ -113,14 +113,14 @@ Current production values on the active website host:
 
 ## Release workflow rules
 
-1. Update `MARKETING_VERSION` to the target release, currently `1.5.0`.
+1. Update `MARKETING_VERSION` to the target release, currently `1.5.1`.
 2. Keep `CURRENT_PROJECT_VERSION` increasing even if the marketing version resets for branding reasons.
 3. Build the signed and notarized macOS app, then generate `appcast.xml` with the matching Sparkle private key.
 4. Stage the DMG, appcast, release manifest, and remote helper assets into `web/public/downloads` or the production site's `public/downloads` directory.
 5. Push the staged `web/public/downloads` update onto `main` so the website deployment picks up the same release state as the tag build.
 6. Deploy the website so `iccjk.com` serves the new DMG, `appcast.xml`, `latest.json`, and remote helper manifest.
 7. Push the branch to `mycode699/imux`.
-8. Create and push a tag such as `v1.5.0` after the website-hosted artifacts have been verified.
+8. Create and push a tag such as `v1.5.1` after the website-hosted artifacts have been verified.
 
 ## Website deploy command
 

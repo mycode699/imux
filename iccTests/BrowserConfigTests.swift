@@ -2455,6 +2455,16 @@ final class BrowserOmnibarCommandNavigationTests: XCTestCase {
 }
 
 
+private func shouldDispatchBrowserReturnViaFirstResponderKeyDown(
+    keyCode: UInt16,
+    firstResponderIsBrowser: Bool,
+    flags: NSEvent.ModifierFlags
+) -> Bool {
+    guard firstResponderIsBrowser else { return false }
+    guard keyCode == 36 || keyCode == 76 else { return false }
+    return browserOmnibarShouldSubmitOnReturn(flags: flags)
+}
+
 final class BrowserReturnKeyDownRoutingTests: XCTestCase {
     func testRoutesForReturnWhenBrowserFirstResponder() {
         XCTAssertTrue(

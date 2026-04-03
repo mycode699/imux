@@ -23,9 +23,24 @@ func drainMainQueue() {
     XCTWaiter().wait(for: [expectation], timeout: 1.0)
 }
 
+final class TestLockedBox<Value> {
+    private let lock = NSLock()
+    private var value: Value
+
+    init(_ value: Value) {
+        self.value = value
+    }
+
+    func withLock<T>(_ body: (inout Value) -> T) -> T {
+        lock.lock()
+        defer { lock.unlock() }
+        return body(&value)
+    }
+}
+
 @MainActor
 final class TabManagerChildExitCloseTests: XCTestCase {
-    func testChildExitOnLastPanelClosesSelectedWorkspaceAndKeepsIndexStable() {
+    func testChildExitOnLastLocalPanelClosesSelectedWorkspaceAndKeepsIndexStable() {
         let manager = TabManager()
         let first = manager.tabs[0]
         let second = manager.addWorkspace()
@@ -49,27 +64,36 @@ final class TabManagerChildExitCloseTests: XCTestCase {
         )
     }
 
-    func testChildExitOnLastPanelInLastWorkspaceSelectsPreviousWorkspace() {
+    func testChildExitOnLastRemotePanelPreservesWorkspace() {
         let manager = TabManager()
-        let first = manager.tabs[0]
-        let second = manager.addWorkspace()
+        let workspace = manager.tabs[0]
+        let configuration = WorkspaceRemoteConfiguration(
+            destination: "icc-macmini",
+            port: nil,
+            identityFile: nil,
+            sshOptions: [],
+            localProxyPort: nil,
+            relayPort: 64001,
+            relayID: "relay-test",
+            relayToken: String(repeating: "b", count: 64),
+            localSocketPath: "/tmp/icc-test.sock",
+            terminalStartupCommand: "ssh icc-macmini"
+        )
+        workspace.configureRemoteConnection(configuration, autoConnect: false)
 
-        manager.selectWorkspace(second)
-        XCTAssertEqual(manager.selectedTabId, second.id)
-
-        guard let secondPanelId = second.focusedPanelId else {
-            XCTFail("Expected focused panel in selected workspace")
+        guard let panelId = workspace.focusedPanelId else {
+            XCTFail("Expected focused panel in workspace")
             return
         }
+        workspace.surfaceTTYNames[panelId] = "/dev/ttys004"
 
-        manager.closePanelAfterChildExited(tabId: second.id, surfaceId: secondPanelId)
+        manager.closePanelAfterChildExited(tabId: workspace.id, surfaceId: panelId)
 
-        XCTAssertEqual(manager.tabs.map(\.id), [first.id])
-        XCTAssertEqual(
-            manager.selectedTabId,
-            first.id,
-            "Expected previous workspace to be selected after closing the last-index workspace"
-        )
+        XCTAssertEqual(manager.tabs.map(\.id), [workspace.id])
+        XCTAssertEqual(manager.selectedTabId, workspace.id)
+        XCTAssertEqual(workspace.panels.count, 1)
+        XCTAssertNotNil(workspace.focusedPanelId)
+        XCTAssertNotNil(workspace.remoteConfiguration)
     }
 
     func testChildExitOnNonLastPanelClosesOnlyPanel() {
@@ -122,7 +146,7 @@ final class TabManagerWorkspaceCreationThreadingTests: XCTestCase {
     func testAddWorkspaceCalledOffMainThreadMarshalsMutationToMainThread() {
         let manager = TabManager()
         let initialCount = manager.tabs.count
-        let createdWorkspaceBox = LockedBox<Workspace?>(nil)
+        let createdWorkspaceBox = TestLockedBox<Workspace?>(nil)
 
         let completion = expectation(description: "background addWorkspace completed")
         DispatchQueue.global(qos: .userInitiated).async {

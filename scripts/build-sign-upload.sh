@@ -67,7 +67,7 @@ fi
 source "$ENV_FILE"
 export SPARKLE_PRIVATE_KEY
 SIGN_IDENTITY="${APPLE_SIGNING_IDENTITY:-}"
-for tool in zig xcodebuild create-dmg xcrun codesign ditto gh; do
+for tool in zig xcodebuild create-dmg xcrun codesign ditto gh go python3 plutil; do
   command -v "$tool" >/dev/null || { echo "MISSING: $tool" >&2; exit 1; }
 done
 if [[ -z "$SIGN_IDENTITY" ]]; then
@@ -75,6 +75,16 @@ if [[ -z "$SIGN_IDENTITY" ]]; then
   exit 1
 fi
 echo "Pre-flight checks passed"
+
+REMOTE_ASSETS_DIR="$(mktemp -d "${TMPDIR:-/tmp}/icc-remote-assets.XXXXXX")"
+REMOTE_RELEASE_FILES=(
+  "${REMOTE_ASSETS_DIR}/iccd-remote-darwin-arm64"
+  "${REMOTE_ASSETS_DIR}/iccd-remote-darwin-amd64"
+  "${REMOTE_ASSETS_DIR}/iccd-remote-linux-arm64"
+  "${REMOTE_ASSETS_DIR}/iccd-remote-linux-amd64"
+  "${REMOTE_ASSETS_DIR}/iccd-remote-checksums.txt"
+  "${REMOTE_ASSETS_DIR}/iccd-remote-manifest.json"
+)
 
 # --- Build GhosttyKit (if needed) ---
 if [ ! -d "GhosttyKit.xcframework" ]; then
@@ -92,16 +102,31 @@ rm -rf build/
 xcodebuild -scheme icc -configuration Release -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -5
 echo "Build succeeded"
 
+APP_PLIST="$APP_PATH/Contents/Info.plist"
 HELPER_PATH="$APP_PATH/Contents/Resources/bin/ghostty"
 if [ ! -x "$HELPER_PATH" ]; then
   echo "Ghostty theme picker helper not found at $HELPER_PATH" >&2
   exit 1
 fi
 
+# --- Build remote daemon release assets and embed manifest ---
+echo "Building remote daemon release assets..."
+./scripts/build_remote_daemon_release_assets.sh \
+  --version "$VERSION" \
+  --release-tag "$TAG" \
+  --repo "$ICC_REMOTE_DAEMON_REPO" \
+  --output-dir "$REMOTE_ASSETS_DIR"
+REMOTE_MANIFEST_JSON="$(
+  python3 -c 'import json,sys; print(json.dumps(json.load(open(sys.argv[1], encoding="utf-8")), separators=(",",":")))' \
+    "${REMOTE_ASSETS_DIR}/iccd-remote-manifest.json"
+)"
+plutil -remove ICCRemoteDaemonManifestJSON "$APP_PLIST" >/dev/null 2>&1 || true
+plutil -insert ICCRemoteDaemonManifestJSON -string "$REMOTE_MANIFEST_JSON" "$APP_PLIST"
+echo "Embedded remote daemon manifest"
+
 # --- Inject Sparkle keys ---
 echo "Injecting Sparkle keys..."
 SPARKLE_PUBLIC_KEY_DERIVED=$(swift scripts/derive_sparkle_public_key.swift "$SPARKLE_PRIVATE_KEY")
-APP_PLIST="$APP_PATH/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Delete :SUPublicEDKey" "$APP_PLIST" 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Delete :SUFeedURL" "$APP_PLIST" 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Add :SUPublicEDKey string $SPARKLE_PUBLIC_KEY_DERIVED" "$APP_PLIST"
@@ -123,12 +148,15 @@ echo "Codesign verified"
 
 notary_args=()
 notary_key_file=""
-cleanup_notary_key() {
+cleanup_release_artifacts() {
   if [[ -n "$notary_key_file" && -f "$notary_key_file" ]]; then
     rm -f "$notary_key_file"
   fi
+  if [[ -n "${REMOTE_ASSETS_DIR:-}" && -d "$REMOTE_ASSETS_DIR" ]]; then
+    rm -rf "$REMOTE_ASSETS_DIR"
+  fi
 }
-trap cleanup_notary_key EXIT
+trap cleanup_release_artifacts EXIT
 
 if [[ -n "${APP_STORE_CONNECT_API_KEY:-}" && -n "${APP_STORE_CONNECT_KEY_ID:-}" && -n "${APP_STORE_CONNECT_ISSUER_ID:-}" ]]; then
   notary_key_file="$(mktemp)"
@@ -177,7 +205,7 @@ if gh release view "$TAG" >/dev/null 2>&1; then
   echo "Release $TAG already exists"
   EXISTING_ASSETS="$(gh release view "$TAG" --json assets --jq '.assets[].name' || true)"
   HAS_CONFLICTING_ASSET="false"
-  for asset in "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME"; do
+  for asset in "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME" "${REMOTE_RELEASE_FILES[@]##*/}"; do
     if printf '%s\n' "$EXISTING_ASSETS" | grep -Fxq "$asset"; then
       HAS_CONFLICTING_ASSET="true"
       break
@@ -192,14 +220,14 @@ if gh release view "$TAG" >/dev/null 2>&1; then
 
   if [[ "$ALLOW_OVERWRITE" == "true" ]]; then
     echo "Uploading with overwrite enabled for existing release $TAG..."
-    gh release upload "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME" --clobber
+    gh release upload "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME" "${REMOTE_RELEASE_FILES[@]}" --clobber
   else
     echo "Uploading to existing release $TAG..."
-    gh release upload "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME"
+    gh release upload "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME" "${REMOTE_RELEASE_FILES[@]}"
   fi
 else
   echo "Creating release $TAG and uploading..."
-  gh release create "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME" --title "$TAG" --notes "See CHANGELOG.md for details"
+  gh release create "$TAG" "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME" "${REMOTE_RELEASE_FILES[@]}" --title "$TAG" --notes "See CHANGELOG.md for details"
 fi
 
 # --- Verify ---
