@@ -16,7 +16,7 @@ export function SiteFooter({
     releases: "Releases",
     repository: "GitHub Repository",
     support: "Support / Issues",
-    copyright: "© {year} icc. One cockpit for terminal-first AI execution.",
+    copyright: "© {year} imux. One cockpit for terminal-first AI execution.",
   },
   languageLabel = "Language",
   exploreLinks,

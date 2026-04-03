@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 const supportEmail = "support@iccjk.com";
 
 export const metadata: Metadata = {
-  title: "EULA — icc",
-  description: "End-User License Agreement for icc",
+  title: "EULA — imux",
+  description: "End-User License Agreement for imux",
   alternates: { canonical: "./" },
 };
 
@@ -16,7 +16,7 @@ export default function EulaPage() {
 
       <p>
         Please read this End-User License Agreement carefully before
-        downloading or using icc.
+        downloading or using imux.
       </p>
 
       <h2>Interpretation and Definitions</h2>
@@ -28,13 +28,13 @@ export default function EulaPage() {
           regarding the use of the Application.
         </li>
         <li>
-          <strong>&ldquo;Application&rdquo;</strong> means the icc desktop
+          <strong>&ldquo;Application&rdquo;</strong> means the imux desktop
           application for macOS, a native terminal application built on Ghostty.
         </li>
         <li>
           <strong>&ldquo;Company&rdquo;</strong> (referred to as &ldquo;the
           Company&rdquo;, &ldquo;We&rdquo;, &ldquo;Us&rdquo; or
-          &ldquo;Our&rdquo;) refers to ICC.
+          &ldquo;Our&rdquo;) refers to IMUX.
         </li>
         <li>
           <strong>&ldquo;Content&rdquo;</strong> refers to content such as text,

@@ -299,7 +299,7 @@ jobs:
           echo "NIGHTLY_MARKETING_VERSION=${NIGHTLY_MARKETING_VERSION}" >> "$GITHUB_ENV"
           echo "NIGHTLY_REMOTE_DAEMON_VERSION=${NIGHTLY_MARKETING_VERSION}" >> "$GITHUB_ENV"
 
-          NIGHTLY_DMG_IMMUTABLE="icc-nightly-macos-${NIGHTLY_BUILD}.dmg"
+          NIGHTLY_DMG_IMMUTABLE="${ICC_NIGHTLY_DMG_NAME%.dmg}-${NIGHTLY_BUILD}.dmg"
           echo "NIGHTLY_DMG_IMMUTABLE=${NIGHTLY_DMG_IMMUTABLE}" >> "$GITHUB_ENV"
 
           prepare_variant() {
@@ -503,9 +503,9 @@ jobs:
         if: needs.decide.outputs.should_publish != 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: icc-nightly-${{ needs.decide.outputs.short_sha }}
+          name: imux-nightly-${{ needs.decide.outputs.short_sha }}
           path: |
-            icc-nightly-macos*.dmg
+            imux-nightly-macos*.dmg
             appcast.xml
             remote-daemon-assets/iccd-remote-darwin-arm64
             remote-daemon-assets/iccd-remote-darwin-amd64
@@ -536,15 +536,15 @@ jobs:
           body: |
             Automated nightly build for `${{ needs.decide.outputs.short_sha }}`.
 
-            **icc NIGHTLY** is published as a universal app:
-            - bundle ID `com.icc.app.nightly`
+            **imux NIGHTLY** is published as a universal app:
+            - bundle ID `com.imux.app.nightly`
             - feed `appcast.xml`
             - compatibility feed `appcast-universal.xml` for older universal nightlies
 
-            [Download icc-nightly-macos.dmg](https://github.com/mycode699/imux/releases/download/nightly/icc-nightly-macos.dmg)
+            [Download imux-nightly-macos.dmg](https://github.com/mycode699/imux/releases/download/nightly/imux-nightly-macos.dmg)
           files: |
-            icc-nightly-macos-${{ github.run_id }}*.dmg
-            icc-nightly-macos.dmg
+            imux-nightly-macos-${{ github.run_id }}*.dmg
+            imux-nightly-macos.dmg
             appcast.xml
             remote-daemon-assets/iccd-remote-darwin-arm64
             remote-daemon-assets/iccd-remote-darwin-amd64

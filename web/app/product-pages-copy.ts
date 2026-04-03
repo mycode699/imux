@@ -105,7 +105,7 @@ const englishCopy: ProductPageCopy = {
   },
   resources: {
     eyebrow: "Resources",
-    title: "Use ICC with less guesswork and track what changes release by release.",
+    title: "Use IMUX with less guesswork and track what changes release by release.",
     body:
       "The site now includes a practical product guide plus a changelog that records what shipped, when it shipped, and how to upgrade without losing context.",
     guide: {
@@ -117,29 +117,29 @@ const englishCopy: ProductPageCopy = {
     changelog: {
       title: "Upgrade Log",
       body:
-        "A structured release history for ICC, including the first public line, website rollout, localization updates, and upgrade notes.",
+        "A structured release history for IMUX, including the first public line, website rollout, localization updates, and upgrade notes.",
       cta: "View changelog",
     },
   },
   guide: {
     section: "Guide",
-    metaTitle: "ICC Guide — How to Use ICC",
+    metaTitle: "IMUX Guide — How to Use IMUX",
     metaDescription:
-      "A practical ICC usage guide covering setup, local and remote workspaces, file editing, supervisor flow, source control, and upgrade steps.",
+      "A practical IMUX usage guide covering setup, local and remote workspaces, file editing, supervisor flow, source control, and upgrade steps.",
     eyebrow: "Usage Guide",
-    title: "How to use ICC from first launch to daily execution.",
+    title: "How to use IMUX from first launch to daily execution.",
     intro:
-      "ICC is designed to get you from intent to execution fast, without scattering the workflow across multiple apps. Use this guide as the baseline operating manual for local projects, remote hosts, file editing, source visibility, and supervisor-driven work.",
+      "IMUX is designed to get you from intent to execution fast, without scattering the workflow across multiple apps. Use this guide as the baseline operating manual for local projects, remote hosts, file editing, source visibility, and supervisor-driven work.",
     quickStartTitle: "Quick start",
     quickStartSteps: [
-      "Download the current macOS build from the ICC website and install the app.",
-      "Open ICC and create a workspace from a local folder, or start from a configured SSH target.",
+      "Download the current macOS build from the IMUX website and install the app.",
+      "Open IMUX and create a workspace from a local folder, or start from a configured SSH target.",
       "Set your LLM provider and model in Settings before you hand a task to the supervisor.",
       "Use the right-side explorer and editor to keep files, paths, and task context visible while the terminal remains primary.",
     ],
     workflowsTitle: "Recommended operating methods",
     workflowsIntro:
-      "Most teams do better when ICC is used as a repeatable operating surface rather than a one-off prompt box. These patterns keep the terminal primary while reducing drift.",
+      "Most teams do better when IMUX is used as a repeatable operating surface rather than a one-off prompt box. These patterns keep the terminal primary while reducing drift.",
     workflows: [
       {
         title: "1. Local coding loop",
@@ -164,7 +164,7 @@ const englishCopy: ProductPageCopy = {
       {
         title: "3. Review and verification loop",
         body:
-          "Do not rely on generated output alone. ICC works best when the operator quickly checks files, paths, Git state, and command results before the next step is approved.",
+          "Do not rely on generated output alone. IMUX works best when the operator quickly checks files, paths, Git state, and command results before the next step is approved.",
         points: [
           "Open changed files immediately after each meaningful step.",
           "Confirm the exact path and branch before packaging or publishing.",
@@ -186,7 +186,7 @@ const englishCopy: ProductPageCopy = {
       {
         title: "1. Start with a workspace, not a loose terminal",
         body:
-          "ICC is optimized around a workspace model. The workspace should represent one concrete project or one concrete remote host so the terminal, files, browser tasks, and supervisor all reference the same operating context.",
+          "IMUX is optimized around a workspace model. The workspace should represent one concrete project or one concrete remote host so the terminal, files, browser tasks, and supervisor all reference the same operating context.",
         points: [
           "Create a local workspace from the repo or folder you actually want to work on.",
           "Use a dedicated remote workspace for each SSH target instead of mixing unrelated hosts together.",
@@ -206,7 +206,7 @@ const englishCopy: ProductPageCopy = {
       {
         title: "3. Read, edit, and save files without breaking flow",
         body:
-          "ICC includes in-workspace file viewing and editing so you do not have to keep bouncing out to a second editor for every small change or inspection pass.",
+          "IMUX includes in-workspace file viewing and editing so you do not have to keep bouncing out to a second editor for every small change or inspection pass.",
         points: [
           "Click a file to preview or edit it directly inside the workspace.",
           "Save edits in place and return to the active terminal thread without losing context.",
@@ -226,7 +226,7 @@ const englishCopy: ProductPageCopy = {
       {
         title: "5. Keep source control visible while changes are happening",
         body:
-          "ICC is most useful when Git state stays visible during execution rather than becoming an afterthought at the end of the task.",
+          "IMUX is most useful when Git state stays visible during execution rather than becoming an afterthought at the end of the task.",
         points: [
           "Check branch and working tree state before you start editing.",
           "Use visible file paths and repo context to avoid accidental edits in the wrong place.",
@@ -236,7 +236,7 @@ const englishCopy: ProductPageCopy = {
       {
         title: "6. Upgrade with a release-first habit",
         body:
-          "Do not treat upgrades as a blind overwrite. ICC should be updated with the same discipline you apply to any other developer tool that controls project context, remote access, or model settings.",
+          "Do not treat upgrades as a blind overwrite. IMUX should be updated with the same discipline you apply to any other developer tool that controls project context, remote access, or model settings.",
         points: [
           "Read the changelog before replacing the app build.",
           "Reconfirm model settings, SSH behavior, and any saved connection preferences after updating.",
@@ -246,7 +246,7 @@ const englishCopy: ProductPageCopy = {
     ],
     bestPracticesTitle: "Best practices that improve the experience fast",
     bestPracticesIntro:
-      "A few habits change ICC from a promising shell wrapper into a much more reliable command center.",
+      "A few habits change IMUX from a promising shell wrapper into a much more reliable command center.",
     bestPractices: [
       "Keep one repo or one remote host per workspace whenever possible.",
       "Set the workspace objective before handing control to the supervisor.",
@@ -255,9 +255,9 @@ const englishCopy: ProductPageCopy = {
       "Use the editor for confirmation after every non-trivial generated change.",
       "Validate one clean local path and one clean remote path after every upgrade.",
     ],
-    briefingTitle: "How to brief ICC so execution starts in 2 to 3 turns",
+    briefingTitle: "How to brief IMUX so execution starts in 2 to 3 turns",
     briefingIntro:
-      "Most slow starts come from vague goals, not from missing features. A short, concrete brief usually gets ICC into execution mode fast.",
+      "Most slow starts come from vague goals, not from missing features. A short, concrete brief usually gets IMUX into execution mode fast.",
     briefingChecklist: [
       "Name the exact repo, folder, or SSH target first.",
       "State one outcome you need now instead of bundling several unrelated goals together.",
@@ -267,7 +267,7 @@ const englishCopy: ProductPageCopy = {
     ],
     troubleshootingTitle: "Troubleshooting and recovery",
     troubleshootingIntro:
-      "When ICC feels slow, noisy, or unreliable, the fix is usually operational rather than magical. These are the first checks worth making.",
+      "When IMUX feels slow, noisy, or unreliable, the fix is usually operational rather than magical. These are the first checks worth making.",
     troubleshooting: [
       {
         title: "SSH connection looks stuck",
@@ -302,26 +302,26 @@ const englishCopy: ProductPageCopy = {
     ],
     updateTitle: "Safe update checklist",
     updateSteps: [
-      "Download the latest DMG from the ICC website download endpoint.",
+      "Download the latest DMG from the IMUX website download endpoint.",
       "Quit the current app cleanly so open writes or active sessions are not interrupted mid-task.",
-      "Install the new build, reopen ICC, and verify LLM settings plus SSH connections before resuming important work.",
+      "Install the new build, reopen IMUX, and verify LLM settings plus SSH connections before resuming important work.",
       "Check the changelog for behavior changes in explorers, supervisor flow, file editing, or routing.",
     ],
     secondaryCta: "View changelog",
   },
   changelog: {
     section: "Changelog",
-    metaTitle: "ICC Changelog — Release History",
+    metaTitle: "IMUX Changelog — Release History",
     metaDescription:
-      "Track ICC release history, launch milestones, website updates, multilingual rollout, and upgrade guidance.",
+      "Track IMUX release history, launch milestones, website updates, multilingual rollout, and upgrade guidance.",
     eyebrow: "Upgrade Log",
     title: "What changed, when it changed, and what to verify after upgrading.",
     intro:
-      "This log is the public release record for ICC. It tracks the current product line, the official website rollout, documentation changes, and the operating notes you should check before replacing your current build.",
+      "This log is the public release record for IMUX. It tracks the current product line, the official website rollout, documentation changes, and the operating notes you should check before replacing your current build.",
     currentReleaseLabel: "Current release line",
     currentReleaseBody:
-      "ICC is currently published as v1.5.2. This stable line hardens multi-workspace session restore after close and reopen, adds explicit recovery for the recent task-completion black-panel path, and keeps the website plus GitHub release surface aligned on one current installer.",
-    releaseModelTitle: "How to read ICC releases",
+      "IMUX is currently published as v1.5.2. This stable line hardens multi-workspace session restore after close and reopen, adds explicit recovery for the recent task-completion black-panel path, and keeps the website plus GitHub release surface aligned on one current installer.",
+    releaseModelTitle: "How to read IMUX releases",
     releaseModelIntro:
       "Use the changelog as an operating document, not just a marketing page. A good release note helps you decide whether to adopt immediately, validate first, or hold until an active workflow is done.",
     releaseModel: [
@@ -363,9 +363,9 @@ const englishCopy: ProductPageCopy = {
         version: "v1.5.2",
         title: "Durable session restore and stronger black-panel recovery",
         body:
-          "This stable release focuses on two trust failures in the active workspace loop: ICC reopening into a thinner pane set than the one you left behind, and intermittent black front panels after task-completion driven workspace churn.",
+          "This stable release focuses on two trust failures in the active workspace loop: IMUX reopening into a thinner pane set than the one you left behind, and intermittent black front panels after task-completion driven workspace churn.",
         bullets: [
-          "Session persistence now keeps a richer stable snapshot and forces a full save when the last main window closes, so reopening ICC is far less likely to drop previously opened conversation and workspace panes.",
+          "Session persistence now keeps a richer stable snapshot and forces a full save when the last main window closes, so reopening IMUX is far less likely to drop previously opened conversation and workspace panes.",
           "Thin lifecycle saves no longer immediately downgrade a fuller recent snapshot during restore, which makes close-and-reopen behavior much more durable for multi-workspace setups.",
           "Notification-driven workspace reorders and focus jumps now request explicit render recovery, reducing the intermittent black front panel seen after task completion events.",
         ],
@@ -401,8 +401,8 @@ const englishCopy: ProductPageCopy = {
         body:
           "This stable release focuses on the last friction point in the desktop upgrade path: moving a running copy out of the DMG or translocated location, replacing the existing app bundle cleanly, and relaunching from a supported install path.",
         bullets: [
-          "Added an install-and-relaunch recovery path when ICC is opened from a disk image, App Translocation, or another unsupported launch location.",
-          "Updated the recovery installer so an existing ICC app bundle in Applications is treated as the intended replacement target instead of a blocking directory.",
+          "Added an install-and-relaunch recovery path when IMUX is opened from a disk image, App Translocation, or another unsupported launch location.",
+          "Updated the recovery installer so an existing IMUX app bundle in Applications is treated as the intended replacement target instead of a blocking directory.",
           "Extended updater error handling so incompatible launch locations now expose the same direct repair action instead of ending on a dead-end retry loop.",
         ],
       },
@@ -411,10 +411,10 @@ const englishCopy: ProductPageCopy = {
         version: "v1.1.0",
         title: "Identity hardening pass and release-surface cleanup",
         body:
-          "This stable release removes the remaining inherited brand shadows from the active ICC experience and tightens the release-facing path from website to installer to support.",
+          "This stable release removes the remaining inherited brand shadows from the active IMUX experience and tightens the release-facing path from website to installer to support.",
         bullets: [
-          "Replaced inherited repository, company, and support references across the app, website, docs, and localized public strings with the current ICC-owned surfaces.",
-          "Rebuilt the community, legal, and feedback paths so visible contact and support entry points now read as one deliberate ICC product presence instead of a carried-over fork layer.",
+          "Replaced inherited repository, company, and support references across the app, website, docs, and localized public strings with the current IMUX-owned surfaces.",
+          "Rebuilt the community, legal, and feedback paths so visible contact and support entry points now read as one deliberate IMUX product presence instead of a carried-over fork layer.",
           "Aligned the packaged app, website changelog copy, and download endpoints so the latest stable installer and its public guidance point to the same release line.",
         ],
       },
@@ -435,10 +435,10 @@ const englishCopy: ProductPageCopy = {
         version: "v1.0.9",
         title: "Brand consistency sweep and sidebar interaction consolidation",
         body:
-          "This stable release unifies active website copy around the ICC brand, aligns docs and legal surfaces to current repository endpoints, and stabilizes the sidebar interaction model so workspace navigation and tool panes no longer fight each other.",
+          "This stable release unifies active website copy around the IMUX brand, aligns docs and legal surfaces to current repository endpoints, and stabilizes the sidebar interaction model so workspace navigation and tool panes no longer fight each other.",
         bullets: [
-          "Rebranded active docs, legal, community, and localized website strings from legacy naming to ICC while keeping historical blog and changelog archive content intentionally untouched.",
-          "Aligned active GitHub links and release-facing website routes to the current ICC repository and download endpoints.",
+          "Rebranded active docs, legal, community, and localized website strings from legacy naming to IMUX while keeping historical blog and changelog archive content intentionally untouched.",
+          "Aligned active GitHub links and release-facing website routes to the current IMUX repository and download endpoints.",
           "Updated sidebar behavior so left navigation can stay visible while right-side tools are open, and ensured file/remote explorer editor context resets correctly on workspace switches.",
         ],
       },
@@ -459,9 +459,9 @@ const englishCopy: ProductPageCopy = {
         version: "v1.0.7",
         title: "Release packaging refresh, branded assets, and supervisor layout hardening",
         body:
-          "This stable release republishes ICC with the refreshed branded app assets, a clean versioned installer path, and a safer supervisor panel layout for long generated prompts.",
+          "This stable release republishes IMUX with the refreshed branded app assets, a clean versioned installer path, and a safer supervisor panel layout for long generated prompts.",
         bullets: [
-          "Rebuilt the ICC app, icon set, favicon, Apple touch icon, and website logos from one branded asset generator so app and website visuals stay in sync.",
+          "Rebuilt the IMUX app, icon set, favicon, Apple touch icon, and website logos from one branded asset generator so app and website visuals stay in sync.",
           "Aligned stable download naming around the versioned installer path so GitHub releases, the homepage, and the download manifest resolve to the same macOS package.",
           "Constrained long supervisor prompt cards inside the sidebar so generated task briefs no longer blow out narrow panes or dialogs.",
         ],
@@ -471,11 +471,11 @@ const englishCopy: ProductPageCopy = {
         version: "v1.0.5",
         title: "Brand refinement, migration shortcuts, and updater compatibility improvements",
         body:
-          "The current ICC stable line sharpens the product identity, smooths migration from other AI coding clients, improves in-workspace control surfaces, and hardens update behavior for older local installs.",
+          "The current IMUX stable line sharpens the product identity, smooths migration from other AI coding clients, improves in-workspace control surfaces, and hardens update behavior for older local installs.",
         bullets: [
-          "Replaced release-facing iconography, welcome copy, and visible product labels so ICC is distinct across app and website surfaces.",
+          "Replaced release-facing iconography, welcome copy, and visible product labels so IMUX is distinct across app and website surfaces.",
           "Added quick import actions for VS Code, Cursor, Claude Code, and Codex preferences.",
-          "Upgraded the source-control area and collaboration tools so fast pull, fast push, and multi-model pane creation happen inside live ICC terminals.",
+          "Upgraded the source-control area and collaboration tools so fast pull, fast push, and multi-model pane creation happen inside live IMUX terminals.",
           "Added explicit updater compatibility checks for disk-image, app-translocated, and non-Applications launches so older installs fail with actionable recovery guidance instead of vague Sparkle errors.",
         ],
       },
@@ -488,25 +488,25 @@ const englishCopy: ProductPageCopy = {
         bullets: [
           "Added dedicated /guide and /changelog routes.",
           "Expanded website language coverage across all routed marketing locales.",
-          "Published practical setup, workflow, and upgrade instructions for ICC users.",
+          "Published practical setup, workflow, and upgrade instructions for IMUX users.",
         ],
       },
       {
         date: "March 25, 2026",
         version: "v0.0.1",
-        title: "Official ICC website launch",
+        title: "Official IMUX website launch",
         body:
-          "The public site moved onto the ICC brand and domain, with aligned downloads, repository links, metadata, and production hosting.",
+          "The public site moved onto the IMUX brand and domain, with aligned downloads, repository links, metadata, and production hosting.",
         bullets: [
           "Launched https://www.iccjk.com as the official public domain.",
-          "Aligned branding to ICC across title, metadata, footer, download links, and repository links.",
+          "Aligned branding to IMUX across title, metadata, footer, download links, and repository links.",
           "Connected the website to the public GitHub release path for the macOS build.",
         ],
       },
       {
         date: "March 25, 2026",
         version: "v0.0.1",
-        title: "First public ICC product baseline",
+        title: "First public IMUX product baseline",
         body:
           "The initial public line centered the workflow around a native macOS command center with terminal-first execution and surrounding control surfaces.",
         bullets: [
@@ -529,7 +529,7 @@ const englishCopy: ProductPageCopy = {
       "When something feels off after updating, use the guide to re-check the intended workflow, compare against the releases feed, and report a concrete issue with paths, settings, and reproduction steps.",
     supportChecklistTitle: "What to include in a useful issue report",
     supportChecklist: [
-      "The ICC version and whether the issue is local, remote, or supervisor-related.",
+      "The IMUX version and whether the issue is local, remote, or supervisor-related.",
       "The workspace path or SSH target involved.",
       "Expected behavior versus actual behavior.",
       "A short sequence of clicks, commands, or prompts that reproduces it.",
@@ -541,7 +541,7 @@ const englishCopy: ProductPageCopy = {
     supportRemoteManifestLabel: "Remote helper manifest",
     platformStatusTitle: "Platform status",
     platformStatusBody:
-      "macOS is the only production desktop build today. ICC currently ships as a native AppKit/SwiftUI client, so a Windows installer is not published yet.",
+      "macOS is the only production desktop build today. IMUX currently ships as a native AppKit/SwiftUI client, so a Windows installer is not published yet.",
     secondaryCta: "Open guide",
   },
   shared: {
@@ -560,7 +560,7 @@ const zhCnCopy: ProductPageCopy = {
   },
   resources: {
     eyebrow: "资源",
-    title: "降低上手成本，并按版本追踪 ICC 的变化。",
+    title: "降低上手成本，并按版本追踪 IMUX 的变化。",
     body:
       "官网现在包含一套实用的产品使用说明，以及一份结构化升级日志，记录每次发布内容、发布时间和升级时需要核对的事项。",
     guide: {
@@ -572,29 +572,29 @@ const zhCnCopy: ProductPageCopy = {
     changelog: {
       title: "升级日志",
       body:
-        "按时间记录 ICC 的发布历史，包括首个公开版本、官网上线、多语言扩展以及升级注意事项。",
+        "按时间记录 IMUX 的发布历史，包括首个公开版本、官网上线、多语言扩展以及升级注意事项。",
       cta: "查看日志",
     },
   },
   guide: {
     section: "使用说明",
-    metaTitle: "ICC 使用说明",
+    metaTitle: "IMUX 使用说明",
     metaDescription:
-      "ICC 的完整使用说明，覆盖设置、本地与远程工作区、文件编辑、监督器流程、源码状态以及升级步骤。",
+      "IMUX 的完整使用说明，覆盖设置、本地与远程工作区、文件编辑、监督器流程、源码状态以及升级步骤。",
     eyebrow: "完整使用说明",
-    title: "从第一次启动到日常执行，ICC 应该这样用。",
+    title: "从第一次启动到日常执行，IMUX 应该这样用。",
     intro:
-      "ICC 的目标不是多一个聊天窗口，而是把意图快速压到可执行工作面上。下面这份说明可以作为 ICC 的基准操作手册，帮助你在本地项目、远程主机、文件编辑、源码状态和监督器工作流之间保持一致。",
+      "IMUX 的目标不是多一个聊天窗口，而是把意图快速压到可执行工作面上。下面这份说明可以作为 IMUX 的基准操作手册，帮助你在本地项目、远程主机、文件编辑、源码状态和监督器工作流之间保持一致。",
     quickStartTitle: "快速开始",
     quickStartSteps: [
-      "从 ICC 官方网站下载当前 macOS 安装包并完成安装。",
-      "打开 ICC，从本地目录创建工作区，或者从已配置的 SSH 目标开始。",
+      "从 IMUX 官方网站下载当前 macOS 安装包并完成安装。",
+      "打开 IMUX，从本地目录创建工作区，或者从已配置的 SSH 目标开始。",
       "在交给监督器执行前，先在 Settings 中设置好你的 LLM 提供商与模型。",
       "让右侧资源管理器和编辑器承担文件、路径、任务上下文的展示，保持终端始终是主工作面。",
     ],
     workflowsTitle: "推荐的使用方式",
     workflowsIntro:
-      "ICC 最适合被当作一套可重复执行的操作面，而不是一次性提示框。下面这些方式可以在保持终端优先的同时，减少上下文漂移。",
+      "IMUX 最适合被当作一套可重复执行的操作面，而不是一次性提示框。下面这些方式可以在保持终端优先的同时，减少上下文漂移。",
     workflows: [
       {
         title: "1. 本地开发循环",
@@ -619,7 +619,7 @@ const zhCnCopy: ProductPageCopy = {
       {
         title: "3. 审核与验证循环",
         body:
-          "不要只相信生成结果。ICC 最强的地方，是你可以快速把文件、路径、Git 状态和命令结果放到同一视图里核对。",
+          "不要只相信生成结果。IMUX 最强的地方，是你可以快速把文件、路径、Git 状态和命令结果放到同一视图里核对。",
         points: [
           "每次关键步骤完成后立刻打开相关文件。",
           "发布前确认准确路径和分支状态。",
@@ -641,7 +641,7 @@ const zhCnCopy: ProductPageCopy = {
       {
         title: "1. 先建立工作区，而不是先堆终端",
         body:
-          "ICC 的核心不是孤立终端，而是工作区。一个工作区最好只对应一个明确项目或一个明确远程主机，这样终端、文件、浏览器任务和监督器都基于同一上下文运行。",
+          "IMUX 的核心不是孤立终端，而是工作区。一个工作区最好只对应一个明确项目或一个明确远程主机，这样终端、文件、浏览器任务和监督器都基于同一上下文运行。",
         points: [
           "本地工作区应该直接指向你真正要处理的仓库或目录。",
           "远程工作区最好一台主机一个，不要把不相关的远端任务混在一起。",
@@ -661,7 +661,7 @@ const zhCnCopy: ProductPageCopy = {
       {
         title: "3. 在工作区内直接阅读、编辑和保存文件",
         body:
-          "ICC 提供工作区内文件查看与编辑能力，避免你为了每一次小改动或核对都跳到第二个编辑器里。",
+          "IMUX 提供工作区内文件查看与编辑能力，避免你为了每一次小改动或核对都跳到第二个编辑器里。",
         points: [
           "点击文件即可在工作区内部查看或编辑。",
           "保存后可以立刻回到当前终端线程，不丢上下文。",
@@ -681,7 +681,7 @@ const zhCnCopy: ProductPageCopy = {
       {
         title: "5. 让源码状态在执行过程中始终可见",
         body:
-          "ICC 最大的价值之一，是让 Git 状态在执行过程中始终可见，而不是到最后才想起来核对改动。",
+          "IMUX 最大的价值之一，是让 Git 状态在执行过程中始终可见，而不是到最后才想起来核对改动。",
         points: [
           "开始编辑前先确认当前分支和工作树状态。",
           "利用可见路径和仓库上下文，避免误改到错误目录。",
@@ -689,9 +689,9 @@ const zhCnCopy: ProductPageCopy = {
         ],
       },
       {
-        title: "6. 用发布优先的习惯来升级 ICC",
+        title: "6. 用发布优先的习惯来升级 IMUX",
         body:
-          "不要把升级当成盲覆盖。ICC 控制的是项目上下文、远程访问和模型设置，升级动作本身也应该有工程纪律。",
+          "不要把升级当成盲覆盖。IMUX 控制的是项目上下文、远程访问和模型设置，升级动作本身也应该有工程纪律。",
         points: [
           "先读升级日志，再替换应用构建。",
           "升级后重新确认模型设置、SSH 行为和保存的连接偏好。",
@@ -701,7 +701,7 @@ const zhCnCopy: ProductPageCopy = {
     ],
     bestPracticesTitle: "能立刻改善体验的习惯",
     bestPracticesIntro:
-      "只要建立几条简单习惯，ICC 就会从一个看起来不错的工具，变成真正稳定的指挥中心。",
+      "只要建立几条简单习惯，IMUX 就会从一个看起来不错的工具，变成真正稳定的指挥中心。",
     bestPractices: [
       "尽量保持一个工作区只对应一个仓库或一台远程主机。",
       "把工作区目标先写清楚，再交给监督器推进。",
@@ -710,9 +710,9 @@ const zhCnCopy: ProductPageCopy = {
       "每次非小型改动后，都用编辑器做一次人工确认。",
       "每次升级后至少验证一个本地路径和一个远程路径。",
     ],
-    briefingTitle: "怎样给 ICC 下达任务，才能在 2 到 3 轮内进入执行",
+    briefingTitle: "怎样给 IMUX 下达任务，才能在 2 到 3 轮内进入执行",
     briefingIntro:
-      "大多数启动缓慢的问题，并不是功能不够，而是目标太模糊。一个短而具体的任务简报，通常就足够让 ICC 快速开工。",
+      "大多数启动缓慢的问题，并不是功能不够，而是目标太模糊。一个短而具体的任务简报，通常就足够让 IMUX 快速开工。",
     briefingChecklist: [
       "先说清楚具体仓库、目录或 SSH 目标。",
       "一次只讲当前最重要的一个结果，不要把多个无关目标塞在一起。",
@@ -722,7 +722,7 @@ const zhCnCopy: ProductPageCopy = {
     ],
     troubleshootingTitle: "常见问题与恢复方式",
     troubleshootingIntro:
-      "ICC 出现卡顿、混乱或不可靠时，通常原因都在操作方式本身，而不是神秘错误。优先检查下面这些点。",
+      "IMUX 出现卡顿、混乱或不可靠时，通常原因都在操作方式本身，而不是神秘错误。优先检查下面这些点。",
     troubleshooting: [
       {
         title: "SSH 连接像是卡住了",
@@ -757,26 +757,26 @@ const zhCnCopy: ProductPageCopy = {
     ],
     updateTitle: "安全升级检查表",
     updateSteps: [
-      "从 ICC 官方网站下载最新 DMG。",
+      "从 IMUX 官方网站下载最新 DMG。",
       "先正常退出当前应用，避免中途打断写入或活动会话。",
-      "安装新构建后重新打开 ICC，并在继续重要工作前核对 LLM 设置与 SSH 连接。",
+      "安装新构建后重新打开 IMUX，并在继续重要工作前核对 LLM 设置与 SSH 连接。",
       "如果资源管理器、监督器、文件编辑或路由行为有变化，先读升级日志再继续。",
     ],
     secondaryCta: "查看升级日志",
   },
   changelog: {
     section: "升级日志",
-    metaTitle: "ICC 升级日志",
+    metaTitle: "IMUX 升级日志",
     metaDescription:
-      "查看 ICC 的发布历史、官网更新、多语言扩展以及升级时需要核对的关键事项。",
+      "查看 IMUX 的发布历史、官网更新、多语言扩展以及升级时需要核对的关键事项。",
     eyebrow: "升级日志",
     title: "记录每次变化、发布时间，以及升级后该核对什么。",
     intro:
-      "这份页面是 ICC 的公开发布记录。它追踪当前产品线、官网上线、多语言站点扩展，以及替换当前构建前应该检查的操作说明。",
+      "这份页面是 IMUX 的公开发布记录。它追踪当前产品线、官网上线、多语言站点扩展，以及替换当前构建前应该检查的操作说明。",
     currentReleaseLabel: "当前发布线",
     currentReleaseBody:
-      "ICC 当前对外发布版本为 v1.5.2。这条稳定线会加固多工作区会话在关闭重开后的恢复行为，给最近任务完成后的黑色前面板路径补上显式恢复，并继续让网站与 GitHub 发布面围绕同一份安装包对齐。",
-    releaseModelTitle: "应该怎么读 ICC 的版本发布",
+      "IMUX 当前对外发布版本为 v1.5.2。这条稳定线会加固多工作区会话在关闭重开后的恢复行为，给最近任务完成后的黑色前面板路径补上显式恢复，并继续让网站与 GitHub 发布面围绕同一份安装包对齐。",
+    releaseModelTitle: "应该怎么读 IMUX 的版本发布",
     releaseModelIntro:
       "把升级日志当成操作文档，而不仅仅是宣传页。好的发布记录应该帮助你判断是马上采用、先验证，还是等当前任务结束后再更新。",
     releaseModel: [
@@ -818,9 +818,9 @@ const zhCnCopy: ProductPageCopy = {
         version: "v1.5.2",
         title: "更稳的会话恢复与更强的黑屏恢复路径",
         body:
-          "这个稳定版聚焦两条会直接破坏连续操作信任的问题: ICC 关闭重开后恢复成更薄的面板集合，以及任务完成驱动的工作区切换后前面板偶发变黑。",
+          "这个稳定版聚焦两条会直接破坏连续操作信任的问题: IMUX 关闭重开后恢复成更薄的面板集合，以及任务完成驱动的工作区切换后前面板偶发变黑。",
         bullets: [
-          "会话持久化现在会保留更完整的稳定快照，并在最后一个主窗口关闭时强制落盘完整会话，所以重开 ICC 时更不容易丢掉之前打开的对话面板和工作区面板。",
+          "会话持久化现在会保留更完整的稳定快照，并在最后一个主窗口关闭时强制落盘完整会话，所以重开 IMUX 时更不容易丢掉之前打开的对话面板和工作区面板。",
           "最近的轻量生命周期保存不再立刻覆盖更完整的近期稳定快照，这让多工作区场景下的关闭再打开恢复结果更可靠。",
           "通知驱动的工作区重排和焦点跳转现在会显式触发渲染恢复，降低任务完成事件后当前前面板偶发黑屏的概率。",
         ],
@@ -856,8 +856,8 @@ const zhCnCopy: ProductPageCopy = {
         body:
           "这个稳定版本专门处理桌面升级链路里最后一段阻塞点: 把从 DMG 或转移路径启动的运行中副本移入 Applications，平滑替换现有应用包，并从受支持路径重新拉起。",
         bullets: [
-          "当 ICC 从磁盘镜像、App Translocation 或其他不受支持位置启动时，新增一条“安装并重新启动”的修复路径。",
-          "调整修复安装器逻辑，把 Applications 中已有的 ICC 应用包视为预期替换目标，而不是把它当作阻断目录。",
+          "当 IMUX 从磁盘镜像、App Translocation 或其他不受支持位置启动时，新增一条“安装并重新启动”的修复路径。",
+          "调整修复安装器逻辑，把 Applications 中已有的 IMUX 应用包视为预期替换目标，而不是把它当作阻断目录。",
           "扩展更新错误处理，让不兼容启动位置也能直接触发修复动作，而不是只停留在无效重试上。",
         ],
       },
@@ -866,10 +866,10 @@ const zhCnCopy: ProductPageCopy = {
         version: "v1.1.0",
         title: "产品身份加固与发布入口清理",
         body:
-          "这个稳定版本继续清除活跃 ICC 体验中残留的继承品牌影子，并把从官网到安装包再到支持入口的发布链路收紧成一条统一路径。",
+          "这个稳定版本继续清除活跃 IMUX 体验中残留的继承品牌影子，并把从官网到安装包再到支持入口的发布链路收紧成一条统一路径。",
         bullets: [
-          "把应用、网站、文档以及多语言公开字符串中的旧仓库、旧公司和旧支持入口统一替换为当前 ICC 自有发布面。",
-          "重构社区、法务与反馈路径，让用户可见的联系与支持入口都表现为一套明确的 ICC 产品存在，而不是带有二开痕迹的继承层。",
+          "把应用、网站、文档以及多语言公开字符串中的旧仓库、旧公司和旧支持入口统一替换为当前 IMUX 自有发布面。",
+          "重构社区、法务与反馈路径，让用户可见的联系与支持入口都表现为一套明确的 IMUX 产品存在，而不是带有二开痕迹的继承层。",
           "继续对齐打包后的桌面应用、官网升级日志文案和下载端点，让最新稳定安装包与公开说明始终指向同一条发布线。",
         ],
       },
@@ -890,10 +890,10 @@ const zhCnCopy: ProductPageCopy = {
         version: "v1.0.9",
         title: "品牌一致性清理与侧栏交互整合",
         body:
-          "这个稳定版本集中完成了 ICC 活跃站点面的品牌一致性清理，把文档与法务页面的发布入口对齐到当前仓库，并收敛了侧栏交互模型，避免工作区导航与工具面板互相打架。",
+          "这个稳定版本集中完成了 IMUX 活跃站点面的品牌一致性清理，把文档与法务页面的发布入口对齐到当前仓库，并收敛了侧栏交互模型，避免工作区导航与工具面板互相打架。",
         bullets: [
-          "把当前仍在使用的文档、法务、社区与多语言页面中的旧命名统一为 ICC，同时保留历史博客与历史更新记录中的旧称呼作为档案信息。",
-          "把活跃页面里的 GitHub 链接和发布下载入口统一到当前 ICC 仓库与下载路径。",
+          "把当前仍在使用的文档、法务、社区与多语言页面中的旧命名统一为 IMUX，同时保留历史博客与历史更新记录中的旧称呼作为档案信息。",
+          "把活跃页面里的 GitHub 链接和发布下载入口统一到当前 IMUX 仓库与下载路径。",
           "调整侧栏行为，让左侧导航与右侧工具面板可同时工作，并在切换工作区时正确重置文件/远程编辑上下文。",
         ],
       },
@@ -914,9 +914,9 @@ const zhCnCopy: ProductPageCopy = {
         version: "v1.0.7",
         title: "发布打包刷新、品牌资产统一，以及监督器布局加固",
         body:
-          "这个稳定版本重新发布了 ICC 的安装包，并把品牌化应用资源、官网下载路径，以及监督器侧栏中的长提示词展示统一到同一条发布线上。",
+          "这个稳定版本重新发布了 IMUX 的安装包，并把品牌化应用资源、官网下载路径，以及监督器侧栏中的长提示词展示统一到同一条发布线上。",
         bullets: [
-          "通过统一的品牌资源生成器重建了 ICC 应用图标、网站 logo、favicon 与 Apple touch icon，让应用和官网视觉保持一致。",
+          "通过统一的品牌资源生成器重建了 IMUX 应用图标、网站 logo、favicon 与 Apple touch icon，让应用和官网视觉保持一致。",
           "把稳定版下载统一到带版本号的安装包路径上，让 GitHub Releases、首页下载按钮和发布清单始终指向同一个 macOS 包。",
           "限制了监督器侧栏中长提示词卡片的展开高度，避免生成的任务包把窄侧栏或对话面板撑爆。",
         ],
@@ -926,11 +926,11 @@ const zhCnCopy: ProductPageCopy = {
         version: "v1.0.5",
         title: "品牌细化、迁移快捷入口、协作能力与更新兼容性升级",
         body:
-          "这是 ICC 当前稳定线的持续优化更新，重点在于继续拉开品牌辨识度、降低从其他 AI 编码客户端迁移的成本、增强工作区内协作效率，并修复旧安装副本的更新兼容性问题。",
+          "这是 IMUX 当前稳定线的持续优化更新，重点在于继续拉开品牌辨识度、降低从其他 AI 编码客户端迁移的成本、增强工作区内协作效率，并修复旧安装副本的更新兼容性问题。",
         bullets: [
-          "替换了面向发布的图标、欢迎语和可见产品文案，让 ICC 在应用与网站两侧都更统一、更有辨识度。",
+          "替换了面向发布的图标、欢迎语和可见产品文案，让 IMUX 在应用与网站两侧都更统一、更有辨识度。",
           "新增 VS Code、Cursor、Claude Code、Codex 的快速导入入口。",
-          "升级源码管理区和协作工具，让快速 pull、快速 push 以及多模型 pane 创建都能直接在 ICC 的真实终端里完成。",
+          "升级源码管理区和协作工具，让快速 pull、快速 push 以及多模型 pane 创建都能直接在 IMUX 的真实终端里完成。",
           "为磁盘镜像、App Translocation 和非 Applications 启动路径增加了明确的更新兼容性检查，让旧安装副本在升级失败前就能给出可执行的恢复提示。",
         ],
       },
@@ -943,25 +943,25 @@ const zhCnCopy: ProductPageCopy = {
         bullets: [
           "新增 /guide 与 /changelog 独立页面。",
           "将官网语言覆盖扩展到全部营销路由语言。",
-          "上线 ICC 的实用设置说明、工作流说明与升级说明。",
+          "上线 IMUX 的实用设置说明、工作流说明与升级说明。",
         ],
       },
       {
         date: "2026年3月25日",
         version: "v0.0.1",
-        title: "ICC 官网正式上线",
+        title: "IMUX 官网正式上线",
         body:
-          "公共站点切换到 ICC 品牌与官方域名，并对齐下载地址、仓库地址、元信息和生产环境托管。",
+          "公共站点切换到 IMUX 品牌与官方域名，并对齐下载地址、仓库地址、元信息和生产环境托管。",
         bullets: [
-          "将 https://www.iccjk.com 上线为 ICC 官方域名。",
-          "标题、元信息、页脚、下载地址与仓库地址全部统一到 ICC 品牌。",
+          "将 https://www.iccjk.com 上线为 IMUX 官方域名。",
+          "标题、元信息、页脚、下载地址与仓库地址全部统一到 IMUX 品牌。",
           "将网站下载入口对接到 GitHub 上的 macOS 发布路径。",
         ],
       },
       {
         date: "2026年3月25日",
         version: "v0.0.1",
-        title: "ICC 首个公开产品基线",
+        title: "IMUX 首个公开产品基线",
         body:
           "首个公开版本围绕原生 macOS 指挥中心展开，核心是终端优先执行，以及围绕终端建立的一整套控制平面。",
         bullets: [
@@ -984,7 +984,7 @@ const zhCnCopy: ProductPageCopy = {
       "如果升级后感觉不对劲，先回到使用说明重新核对预期工作流，再对照版本发布页确认变更点，并通过可复现步骤、路径和设置状态提交问题。",
     supportChecklistTitle: "提交有效问题时最好附带这些信息",
     supportChecklist: [
-      "ICC 版本号，以及问题属于本地、远程还是监督器相关。",
+      "IMUX 版本号，以及问题属于本地、远程还是监督器相关。",
       "涉及的工作区路径或 SSH 目标。",
       "你的预期行为和实际行为分别是什么。",
       "一段可以稳定复现的点击、命令或提示词序列。",
@@ -996,7 +996,7 @@ const zhCnCopy: ProductPageCopy = {
     supportRemoteManifestLabel: "远程助手清单",
     platformStatusTitle: "平台状态",
     platformStatusBody:
-      "目前只有 macOS 提供正式桌面安装包。ICC 当前是原生 AppKit/SwiftUI 客户端，因此 Windows 桌面安装包暂未发布。",
+      "目前只有 macOS 提供正式桌面安装包。IMUX 当前是原生 AppKit/SwiftUI 客户端，因此 Windows 桌面安装包暂未发布。",
     secondaryCta: "查看使用说明",
   },
   shared: {

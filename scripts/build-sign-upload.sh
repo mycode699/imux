@@ -19,7 +19,7 @@ EOF
 }
 
 ALLOW_OVERWRITE="false"
-ENV_FILE="${ICC_RELEASE_ENV_FILE:-$HOME/.secrets/icc.env}"
+ENV_FILE="${ICC_RELEASE_ENV_FILE:-$HOME/.secrets/icc-release.env.sh}"
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -186,7 +186,7 @@ rm -f "$ICC_RELEASE_DMG_NAME"
   --app-path "$APP_PATH" \
   --output "$ICC_RELEASE_DMG_NAME" \
   --identity "$SIGN_IDENTITY" \
-  --volume-name "icc ${VERSION}"
+  --volume-name "imux ${VERSION}"
 ./scripts/verify_release_artifact.sh --dmg "$ICC_RELEASE_DMG_NAME" --expected-app "$ICC_APP_BUNDLE_NAME"
 echo "Notarizing DMG..."
 xcrun notarytool submit "$ICC_RELEASE_DMG_NAME" \
@@ -238,15 +238,15 @@ if [[ "$TAG" != *"-nightly"* ]]; then
   VERSION="${TAG#v}"
   DMG_SHA256=$(shasum -a 256 "$ICC_RELEASE_DMG_NAME" | cut -d' ' -f1)
   echo "Updating homebrew cask to $VERSION (SHA: $DMG_SHA256)..."
-  CASK_FILE="homebrew-icc/Casks/icc.rb"
+  CASK_FILE="homebrew-imux/Casks/imux.rb"
   if [ -n "$ICC_HOMEBREW_TAP_REPOSITORY" ] && [ -f "$CASK_FILE" ]; then
     cat > "$CASK_FILE" << CASKEOF
-cask "icc" do
+cask "imux" do
   version "${VERSION}"
   sha256 "${DMG_SHA256}"
 
-  url "https://github.com/mycode699/imux/releases/download/v#{version}/icc-v#{version}-macos.dmg"
-  name "icc"
+  url "https://github.com/mycode699/imux/releases/download/v#{version}/imux-v#{version}-macos.dmg"
+  name "imux"
   desc "Native macOS terminal workspace app for AI execution"
   homepage "https://github.com/mycode699/imux"
 
@@ -257,22 +257,22 @@ cask "icc" do
 
   depends_on macos: ">= :ventura"
 
-  app "icc.app"
-  binary "#{appdir}/icc.app/Contents/Resources/bin/icc"
+  app "imux.app"
+  binary "#{appdir}/imux.app/Contents/Resources/bin/imux"
 
   zap trash: [
-    "~/Library/Application Support/icc",
-    "~/Library/Caches/icc",
-    "~/Library/Preferences/com.icc.app.plist",
+    "~/Library/Application Support/imux",
+    "~/Library/Caches/imux",
+    "~/Library/Preferences/com.imux.app.plist",
   ]
 end
 CASKEOF
-    cd homebrew-icc
-    git add Casks/icc.rb
+    cd homebrew-imux
+    git add Casks/imux.rb
     if git diff --staged --quiet; then
       echo "Homebrew cask already up to date"
     else
-      git commit -m "Update icc to ${VERSION}"
+      git commit -m "Update imux to ${VERSION}"
       git push
       echo "Homebrew cask updated"
     fi
@@ -286,4 +286,4 @@ fi
 rm -rf build/ "$ICC_RELEASE_DMG_NAME" "$ICC_STABLE_APPCAST_NAME"
 echo ""
 echo "=== Release $TAG complete ==="
-say "icc release complete"
+say "imux release complete"

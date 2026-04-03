@@ -1,15 +1,15 @@
 const version = "v1.5.2";
-const releaseDmgName = `icc-${version}-macos.dmg`;
+const releaseDmgName = `imux-${version}-macos.dmg`;
 
 export const siteConfig = {
-  name: "icc",
+  name: "imux",
   version,
   releaseDmgName,
   descriptor: "AI Command Center for macOS",
-  title: "icc",
+  title: "imux",
   tagline: "One cockpit for terminal-first AI execution.",
   description:
-    "icc is a native macOS command center for serious AI work. It combines Ghostty-grade terminal rendering, local and remote file exploration, in-app editing, browser execution, source control visibility, and a supervisor layer in one focused workspace.",
+    "imux is a native macOS command center for serious AI work. It combines Ghostty-grade terminal rendering, local and remote file exploration, in-app editing, browser execution, source control visibility, and a supervisor layer in one focused workspace.",
   canonicalUrl: "https://www.iccjk.com",
   domain: "www.iccjk.com",
   repoUrl: "https://github.com/mycode699/imux",

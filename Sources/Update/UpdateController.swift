@@ -12,11 +12,11 @@ enum UpdateCompatibilityError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .runningFromDiskImage:
-            return "icc is running from a disk image."
+            return "imux is running from a disk image."
         case .runningTranslocated:
-            return "icc is running from a translocated location."
+            return "imux is running from a translocated location."
         case .unsupportedInstallLocation:
-            return "icc is not installed in Applications."
+            return "imux is not installed in Applications."
         }
     }
 
@@ -30,7 +30,7 @@ enum UpdateCompatibilityError: LocalizedError {
     }
 
     var recoverySuggestion: String? {
-        "Move icc.app into /Applications or ~/Applications, relaunch that copy, and try the update again."
+        "Move imux.app into /Applications or ~/Applications, relaunch that copy, and try the update again."
     }
 }
 
@@ -78,7 +78,7 @@ enum UpdateSettings {
     }
 }
 
-/// Controller for managing Sparkle updates in icc.
+/// Controller for managing Sparkle updates in imux.
 class UpdateController {
     private(set) var updater: SPUUpdater
     private let userDriver: UpdateDriver

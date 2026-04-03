@@ -7,7 +7,7 @@ import { siteConfig } from "../site-config";
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "icc — AI Command Center for macOS";
+export const alt = "imux — AI Command Center for macOS";
 
 const S = 2; // render at 2x for sharper images on social platforms
 

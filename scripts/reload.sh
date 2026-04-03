@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="icc DEV"
-BUNDLE_ID="com.icc.app.debug"
-BASE_APP_NAME="icc DEV"
+APP_NAME="imux DEV"
+BUNDLE_ID="com.imux.app.debug"
+BASE_APP_NAME="imux DEV"
 DERIVED_DATA=""
 NAME_SET=0
 BUNDLE_SET=0
@@ -43,7 +43,7 @@ EOF
 }
 
 select_icc_shim_target() {
-  local app_cli_dir="/Applications/icc.app/Contents/Resources/bin"
+  local app_cli_dir="/Applications/imux.app/Contents/Resources/bin"
   local marker="icc dev shim (managed by scripts/reload.sh)"
   local target=""
   local path_entry=""
@@ -183,14 +183,14 @@ print_tag_cleanup_reminder() {
     done
     echo "Cleanup stale tags only:"
     for tag in "${stale_tags[@]}"; do
-      echo "  pkill -f \"icc DEV ${tag}.app/Contents/MacOS/icc DEV\""
+      echo "  pkill -f \"imux DEV ${tag}.app/Contents/MacOS/imux DEV\""
       echo "  rm -rf \"$(tagged_derived_data_path "$tag")\" \"/tmp/icc-${tag}\" \"/tmp/icc-debug-${tag}.sock\""
       echo "  rm -f \"/tmp/icc-debug-${tag}.log\""
       echo "  rm -f \"$HOME/Library/Application Support/icc/iccd-dev-${tag}.sock\""
     done
   fi
   echo "After you verify current tag, cleanup command:"
-  echo "  pkill -f \"icc DEV ${current_slug}.app/Contents/MacOS/icc DEV\""
+  echo "  pkill -f \"imux DEV ${current_slug}.app/Contents/MacOS/imux DEV\""
   echo "  rm -rf \"$(tagged_derived_data_path "$current_slug")\" \"/tmp/icc-${current_slug}\" \"/tmp/icc-debug-${current_slug}.sock\""
   echo "  rm -f \"/tmp/icc-debug-${current_slug}.log\""
   echo "  rm -f \"$HOME/Library/Application Support/icc/iccd-dev-${current_slug}.sock\""
@@ -255,10 +255,10 @@ if [[ -n "$TAG" ]]; then
   TAG_ID="$(sanitize_bundle "$TAG")"
   TAG_SLUG="$(sanitize_path "$TAG")"
   if [[ "$NAME_SET" -eq 0 ]]; then
-    APP_NAME="icc DEV ${TAG}"
+    APP_NAME="imux DEV ${TAG}"
   fi
   if [[ "$BUNDLE_SET" -eq 0 ]]; then
-    BUNDLE_ID="com.icc.app.debug.${TAG_ID}"
+    BUNDLE_ID="com.imux.app.debug.${TAG_ID}"
   fi
   if [[ "$DERIVED_SET" -eq 0 ]]; then
     DERIVED_DATA="$(tagged_derived_data_path "$TAG_SLUG")"
@@ -400,11 +400,11 @@ if [[ -x "$CLI_PATH" ]]; then
 
   # Stable shim that always follows the last reload-selected dev CLI.
   DEV_CLI_SHIM="$HOME/.local/bin/icc-dev"
-  write_dev_cli_shim "$DEV_CLI_SHIM" "/Applications/icc.app/Contents/Resources/bin/icc"
+  write_dev_cli_shim "$DEV_CLI_SHIM" "/Applications/imux.app/Contents/Resources/bin/imux"
 
   ICC_SHIM_TARGET="$(select_icc_shim_target || true)"
   if [[ -n "${ICC_SHIM_TARGET:-}" ]]; then
-    write_dev_cli_shim "$ICC_SHIM_TARGET" "/Applications/icc.app/Contents/Resources/bin/icc"
+    write_dev_cli_shim "$ICC_SHIM_TARGET" "/Applications/imux.app/Contents/Resources/bin/imux"
   fi
 fi
 
@@ -439,7 +439,7 @@ if [[ -x "$GHOSTTY_HELPER_SRC" ]]; then
   cp "$GHOSTTY_HELPER_SRC" "$BIN_DIR/ghostty"
   chmod +x "$BIN_DIR/ghostty"
 fi
-CLI_PATH="$APP_PATH/Contents/Resources/bin/icc"
+CLI_PATH="$APP_PATH/Contents/Resources/bin/imux"
 if [[ -x "$CLI_PATH" ]]; then
   echo "$CLI_PATH" > /tmp/icc-last-cli-path || true
 fi

@@ -7,7 +7,7 @@ struct GhosttyConfig {
         case dark
     }
 
-    private static let iccReleaseBundleIdentifier = "com.icc.app"
+    private static let iccReleaseBundleIdentifier = "com.imux.app"
     private static let loadCacheLock = NSLock()
     private static var cachedConfigsByColorScheme: [ColorSchemePreference: GhosttyConfig] = [:]
 

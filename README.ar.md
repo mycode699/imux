@@ -1,12 +1,12 @@
-# icc
+# imux
 
-`icc` هو مركز أوامر أصلي لنظام macOS مخصص للعمل المعتمد على الذكاء الاصطناعي. يجمع بين عرض طرفية بمستوى Ghostty ومستكشف ملفات محلي وبعيد وتحرير ملفات داخل التطبيق وطبقة إشراف للتخطيط والمتابعة.
+`imux` هو مركز أوامر أصلي لنظام macOS مخصص للعمل المعتمد على الذكاء الاصطناعي. يجمع بين عرض طرفية بمستوى Ghostty ومستكشف ملفات محلي وبعيد وتحرير ملفات داخل التطبيق وطبقة إشراف للتخطيط والمتابعة.
 
 Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
-## ما هو `icc`
+## ما هو `imux`
 
 - مساحة عمل طرفية أصلية لنظام macOS مبنية على `libghostty`
 - مستكشف محلي وSSH عن بعد مع فتح الملفات وتحريرها وحفظها
@@ -17,7 +17,7 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 - [README.md](README.md): النظرة العامة الكاملة والتثبيت وسير العمل
 - [README.zh-CN.md](README.zh-CN.md): دليل الإصدار بالصينية المبسطة
 - [README.zh-TW.md](README.zh-TW.md): دليل الإصدار بالصينية التقليدية
-- [docs/brand-guidelines.md](docs/brand-guidelines.md): قواعد التسمية والتموضع والصوت الخاص بـ ICC
+- [docs/brand-guidelines.md](docs/brand-guidelines.md): قواعد التسمية والتموضع والصوت الخاص بـ IMUX
 
 ## روابط سريعة
 

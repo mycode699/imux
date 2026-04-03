@@ -5,14 +5,14 @@ xcodebuild -project GhosttyTabs.xcodeproj -scheme icc -configuration Release -de
 pkill -x icc || true
 sleep 0.2
 APP_PATH="$(
-  find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Release/icc.app" -print0 \
+  find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Release/imux.app" -print0 \
   | xargs -0 /usr/bin/stat -f "%m %N" 2>/dev/null \
   | sort -nr \
   | head -n 1 \
   | cut -d' ' -f2-
 )"
 if [[ -z "${APP_PATH}" ]]; then
-  echo "icc.app not found in DerivedData" >&2
+  echo "imux.app not found in DerivedData" >&2
   exit 1
 fi
 

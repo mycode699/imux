@@ -5,8 +5,8 @@
       "layers" : [
         {
           "glass" : false,
-          "image-name" : "icc-icon-chevron 2.png",
-          "name" : "icc-icon-chevron 2",
+          "image-name" : "imux-icon-chevron.png",
+          "name" : "imux-icon-chevron",
           "position" : {
             "scale" : 1,
             "translation-in-points" : [

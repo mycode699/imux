@@ -121,7 +121,7 @@ export async function POST(request: Request) {
   const resend = new Resend(feedbackConfig.resendApiKey);
 
   const { error } = await resend.emails.send({
-    from: `ICC <${feedbackConfig.fromEmail}>`,
+    from: `Imux <${feedbackConfig.fromEmail}>`,
     to: [feedbackConfig.toEmail],
     replyTo: email,
     subject,
@@ -261,7 +261,7 @@ function buildSubject(email: string, message: string, appVersion: string) {
       : firstNonEmptyLine;
   const versionSuffix = appVersion ? ` (v${appVersion})` : "";
 
-  return `icc feedback from ${email}${versionSuffix}: ${summary}`;
+  return `imux feedback from ${email}${versionSuffix}: ${summary}`;
 }
 
 function buildTextBody(input: {
@@ -341,7 +341,7 @@ function buildHtmlBody(input: {
 
   return `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111827;line-height:1.5">
-      <h1 style="font-size:18px;margin:0 0 16px">icc feedback</h1>
+      <h1 style="font-size:18px;margin:0 0 16px">imux feedback</h1>
       <p><strong>From:</strong> ${escapeHtml(input.email)}</p>
       <p><strong>App version:</strong> ${escapeHtml(input.appVersion || "unknown")}</p>
       <p><strong>App build:</strong> ${escapeHtml(input.appBuild || "unknown")}</p>

@@ -992,7 +992,7 @@ private final class GhosttySurfaceCallbackContext {
 
 class GhosttyApp {
     static let shared = GhosttyApp()
-    private static let releaseBundleIdentifier = "com.iatlas.app"
+    private static let releaseBundleIdentifier = "com.imux.app"
     private static let backgroundLogTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -2798,12 +2798,12 @@ class GhosttyApp {
     private func activeMainWindow() -> NSWindow? {
         let keyWindow = NSApp.keyWindow
         if let raw = keyWindow?.identifier?.rawValue,
-           raw == "icc.main" || raw == "icc.main" || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.") {
+           raw == "icc.main" || raw == "icc.main" || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.") {
             return keyWindow
         }
         return NSApp.windows.first(where: { window in
             guard let raw = window.identifier?.rawValue else { return false }
-            return raw == "icc.main" || raw == "icc.main" || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+            return raw == "icc.main" || raw == "icc.main" || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
         })
     }
 
@@ -3547,30 +3547,43 @@ final class TerminalSurface: Identifiable, ObservableObject {
             protectedStartupEnvironmentKeys.insert(key)
         }
 
+        setManagedEnvironmentValue("IMUX_SURFACE_ID", id.uuidString)
         setManagedEnvironmentValue("ICC_SURFACE_ID", id.uuidString)
+        setManagedEnvironmentValue("IMUX_WORKSPACE_ID", tabId.uuidString)
         setManagedEnvironmentValue("ICC_WORKSPACE_ID", tabId.uuidString)
         // Backward-compatible shell integration keys used by existing scripts/tests.
+        setManagedEnvironmentValue("IMUX_PANEL_ID", id.uuidString)
         setManagedEnvironmentValue("ICC_PANEL_ID", id.uuidString)
+        setManagedEnvironmentValue("IMUX_TAB_ID", tabId.uuidString)
         setManagedEnvironmentValue("ICC_TAB_ID", tabId.uuidString)
-        setManagedEnvironmentValue("ICC_SOCKET_PATH", SocketControlSettings.socketPath())
-        if let bundledCLIURL = Bundle.main.resourceURL?.appendingPathComponent("bin/icc"),
+        let managedSocketPath = SocketControlSettings.socketPath()
+        setManagedEnvironmentValue("IMUX_SOCKET_PATH", managedSocketPath)
+        setManagedEnvironmentValue("ICC_SOCKET_PATH", managedSocketPath)
+        setManagedEnvironmentValue("ICC_SOCKET", managedSocketPath)
+        if let bundledCLIURL = Bundle.main.resourceURL?.appendingPathComponent("bin/imux"),
            FileManager.default.isExecutableFile(atPath: bundledCLIURL.path) {
+            setManagedEnvironmentValue("IMUX_BUNDLED_CLI_PATH", bundledCLIURL.path)
             setManagedEnvironmentValue("ICC_BUNDLED_CLI_PATH", bundledCLIURL.path)
         }
         if let bundleId = Bundle.main.bundleIdentifier, !bundleId.isEmpty {
+            setManagedEnvironmentValue("IMUX_BUNDLE_ID", bundleId)
             setManagedEnvironmentValue("ICC_BUNDLE_ID", bundleId)
         }
 
         // Port range for this workspace (base/range snapshotted once per app session)
         do {
             let startPort = Self.sessionPortBase + portOrdinal * Self.sessionPortRangeSize
+            setManagedEnvironmentValue("IMUX_PORT", String(startPort))
             setManagedEnvironmentValue("ICC_PORT", String(startPort))
+            setManagedEnvironmentValue("IMUX_PORT_END", String(startPort + Self.sessionPortRangeSize - 1))
             setManagedEnvironmentValue("ICC_PORT_END", String(startPort + Self.sessionPortRangeSize - 1))
+            setManagedEnvironmentValue("IMUX_PORT_RANGE", String(Self.sessionPortRangeSize))
             setManagedEnvironmentValue("ICC_PORT_RANGE", String(Self.sessionPortRangeSize))
         }
 
         let claudeHooksEnabled = ClaudeCodeIntegrationSettings.hooksEnabled()
         if !claudeHooksEnabled {
+            setManagedEnvironmentValue("IMUX_CLAUDE_HOOKS_DISABLED", "1")
             setManagedEnvironmentValue("ICC_CLAUDE_HOOKS_DISABLED", "1")
         }
 

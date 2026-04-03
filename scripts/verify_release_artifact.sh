@@ -8,7 +8,7 @@ EOF
 }
 
 DMG_PATH=""
-EXPECTED_APP="icc.app"
+EXPECTED_APP="imux.app"
 EXPECTED_APPLICATIONS_LINK="/Applications"
 
 while [[ $# -gt 0 ]]; do

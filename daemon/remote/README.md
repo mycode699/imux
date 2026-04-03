@@ -1,15 +1,15 @@
 # iccd-remote
 
-`iccd-remote` is the internal remote helper used by `icc` for managed SSH workspaces.
+`iccd-remote` is the internal remote helper used by `imux` for managed SSH workspaces.
 
 Historical note:
 
-- The product is `icc`.
+- The product is `imux`.
 - The daemon binary intentionally retains the legacy name `iccd-remote`.
 
 ## Responsibilities
 
-- bootstrap remote control for `icc ssh`
+- bootstrap remote control for `imux ssh`
 - proxy browser and helper traffic through the remote session
 - coordinate managed PTY attachments and resize semantics
 - relay selected CLI calls from the remote host back to the local app
@@ -20,7 +20,7 @@ Historical note:
 2. `iccd-remote serve --stdio`
 3. `iccd-remote cli <command> [args...]`
 
-When invoked as `icc` through the installed remote wrapper, the binary can auto-dispatch to the CLI relay path.
+When invoked as `imux` through the installed remote wrapper, the binary can auto-dispatch to the CLI relay path.
 
 ## RPC families
 
@@ -31,4 +31,4 @@ When invoked as `icc` through the installed remote wrapper, the binary can auto-
 
 ## Release note
 
-Even though this daemon keeps the old name, release-facing documentation should describe it as the remote helper for `icc`, not as a separate end-user product.
+Even though this daemon keeps the old name, release-facing documentation should describe it as the remote helper for `imux`, not as a separate end-user product.

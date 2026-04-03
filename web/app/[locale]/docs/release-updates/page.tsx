@@ -48,7 +48,7 @@ ${siteConfig.remoteManifestUrl}`}</CodeBlock>
 
       <h2>{t("artifactsTitle")}</h2>
       <CodeBlock lang="text">{`downloads/${siteConfig.releaseDmgName}
-downloads/icc-macos.dmg
+downloads/imux-macos.dmg
 downloads/appcast.xml
 downloads/latest.json
 downloads/archive/${siteConfig.version}/${siteConfig.releaseDmgName}

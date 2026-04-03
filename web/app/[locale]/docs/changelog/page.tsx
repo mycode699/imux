@@ -127,7 +127,7 @@ function HeroImage({ src, version }: { src: string; version: string }) {
       <div className="overflow-hidden rounded-lg">
         <Image
           src={src}
-          alt={`icc ${version}`}
+          alt={`imux ${version}`}
           width={width}
           height={height}
           sizes="(max-width: 640px) 100vw, 640px"

@@ -1,12 +1,12 @@
-# icc
+# imux
 
-`icc` គឺជា​មជ្ឈមណ្ឌល​បញ្ជា AI សម្រាប់ macOS ដែលដំណើរការ​ដោយផ្ទាល់។ វារួមបញ្ចូល​ការ​បង្ហាញ terminal កម្រិត Ghostty, local និង remote explorer, ការ​មើល និង​កែសម្រួល​ឯកសារ​ក្នុង app និង supervisor layer សម្រាប់​ការ​គ្រោងការ និង​តាមដាន​ការងារ។
+`imux` គឺជា​មជ្ឈមណ្ឌល​បញ្ជា AI សម្រាប់ macOS ដែលដំណើរការ​ដោយផ្ទាល់។ វារួមបញ្ចូល​ការ​បង្ហាញ terminal កម្រិត Ghostty, local និង remote explorer, ការ​មើល និង​កែសម្រួល​ឯកសារ​ក្នុង app និង supervisor layer សម្រាប់​ការ​គ្រោងការ និង​តាមដាន​ការងារ។
 
 Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
-## `icc` ជាអ្វី
+## `imux` ជាអ្វី
 
 - macOS terminal workspace ដោយផ្ទាល់ ស្ថាបនា​លើ `libghostty`
 - local និង remote SSH explorer សម្រាប់​បើក កែ និង​រក្សាទុក​ឯកសារ
@@ -17,7 +17,7 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 - [README.md](README.md): ទិដ្ឋភាព​ទូទៅ​របស់​ផលិតផល ការដំឡើង និង workflow ពេញលេញ
 - [README.zh-CN.md](README.zh-CN.md): មគ្គុទ្ទេសក៍​ចេញផ្សាយ​ជា​ចិន​អក្សរ​កាត់
 - [README.zh-TW.md](README.zh-TW.md): មគ្គុទ្ទេសក៍​ចេញផ្សាយ​ជា​ចិន​អក្សរ​ពេញ
-- [docs/brand-guidelines.md](docs/brand-guidelines.md): ច្បាប់ ICC សម្រាប់​ឈ្មោះ ទីតាំង​ផលិតផល និង​សំឡេង​នៃ​ឯកសារ
+- [docs/brand-guidelines.md](docs/brand-guidelines.md): ច្បាប់ IMUX សម្រាប់​ឈ្មោះ ទីតាំង​ផលិតផល និង​សំឡេង​នៃ​ឯកសារ
 
 ## តំណ​រហ័ស
 

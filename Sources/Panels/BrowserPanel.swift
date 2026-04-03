@@ -459,7 +459,7 @@ final class BrowserProfileStore: ObservableObject {
         guard let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
-        let bundleId = Bundle.main.bundleIdentifier ?? "icc"
+        let bundleId = Bundle.main.bundleIdentifier ?? "imux"
         let namespace = BrowserHistoryStore.normalizedBrowserHistoryNamespaceForBundleIdentifier(bundleId)
         let profilesDir = appSupport
             .appendingPathComponent(namespace, isDirectory: true)
@@ -881,11 +881,11 @@ enum BrowserUserAgentSettings {
 }
 
 func normalizedBrowserHistoryNamespace(bundleIdentifier: String) -> String {
-    if bundleIdentifier.hasPrefix("com.icc.app.debug.") {
-        return "com.icc.app.debug"
+    if bundleIdentifier.hasPrefix("com.imux.app.debug.") {
+        return "com.imux.app.debug"
     }
-    if bundleIdentifier.hasPrefix("com.icc.app.staging.") {
-        return "com.icc.app.staging"
+    if bundleIdentifier.hasPrefix("com.imux.app.staging.") {
+        return "com.imux.app.staging"
     }
     return bundleIdentifier
 }
@@ -1487,7 +1487,7 @@ final class BrowserHistoryStore: ObservableObject {
         guard let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
-        let bundleId = Bundle.main.bundleIdentifier ?? "icc"
+        let bundleId = Bundle.main.bundleIdentifier ?? "imux"
         let namespace = normalizedBrowserHistoryNamespace(bundleIdentifier: bundleId)
         let dir = appSupport.appendingPathComponent(namespace, isDirectory: true)
         return dir.appendingPathComponent("browser_history.json", isDirectory: false)
@@ -3796,12 +3796,12 @@ final class BrowserPanel: Panel, ObservableObject {
         let alert = insecureHTTPAlertFactory()
         alert.alertStyle = .warning
         alert.messageText = String(localized: "browser.error.insecure.title", defaultValue: "Connection isn\u{2019}t secure")
-        alert.informativeText = String(localized: "browser.error.insecure.message", defaultValue: "\(host) uses plain HTTP, so traffic can be read or modified on the network.\n\nOpen this URL in your default browser, or proceed in icc.")
+        alert.informativeText = String(localized: "browser.error.insecure.message", defaultValue: "\(host) uses plain HTTP, so traffic can be read or modified on the network.\n\nOpen this URL in your default browser, or proceed in imux.")
         alert.addButton(withTitle: String(localized: "browser.openInDefaultBrowser", defaultValue: "Open in Default Browser"))
-        alert.addButton(withTitle: String(localized: "browser.proceedInIcc", defaultValue: "Proceed in icc"))
+        alert.addButton(withTitle: String(localized: "browser.proceedInIcc", defaultValue: "Proceed in imux"))
         alert.addButton(withTitle: String(localized: "common.cancel", defaultValue: "Cancel"))
         alert.showsSuppressionButton = true
-        alert.suppressionButton?.title = String(localized: "browser.alwaysAllowHost", defaultValue: "Always allow this host in icc")
+        alert.suppressionButton?.title = String(localized: "browser.alwaysAllowHost", defaultValue: "Always allow this host in imux")
 
         let handleResponse: (NSApplication.ModalResponse) -> Void = { [weak self, weak alert] response in
             self?.handleInsecureHTTPAlertResponse(
@@ -7425,13 +7425,13 @@ enum BrowserImportPlanRealizationError: LocalizedError {
         case .missingDestinationProfile:
             return String(
                 localized: "browser.import.error.destinationMissing",
-                defaultValue: "The selected icc browser profile no longer exists. Pick a destination profile again."
+                defaultValue: "The selected imux browser profile no longer exists. Pick a destination profile again."
             )
         case .profileCreationFailed(let name):
             return String(
                 format: String(
                     localized: "browser.import.error.destinationCreateFailed",
-                    defaultValue: "icc could not create the destination profile \"%@\"."
+                    defaultValue: "imux could not create the destination profile \"%@\"."
                 ),
                 name
             )
@@ -7551,7 +7551,7 @@ enum BrowserImportOutcomeFormatter {
                 String(
                     format: String(
                         localized: "browser.import.complete.createdProfiles",
-                        defaultValue: "Created icc profiles: %@"
+                        defaultValue: "Created imux profiles: %@"
                     ),
                     outcome.createdDestinationProfileNames.joined(separator: ", ")
                 )
@@ -8969,7 +8969,7 @@ final class BrowserDataImportCoordinator {
             )
             alert.informativeText = String(
                 localized: "browser.import.noBrowsers.message",
-                defaultValue: "icc could not find browser profiles to import from on this Mac."
+                defaultValue: "imux could not find browser profiles to import from on this Mac."
             )
             alert.addButton(withTitle: String(localized: "common.ok", defaultValue: "OK"))
             alert.runModal()
@@ -9559,7 +9559,7 @@ final class BrowserDataImportCoordinator {
             sourceProfilesHelpLabel.preferredMaxLayoutWidth = 500
             sourceProfilesHelpLabel.stringValue = String(
                 localized: "browser.import.sourceProfiles.help",
-                defaultValue: "Choose one or more source profiles. Step 3 lets you keep them separate or merge them into one icc profile."
+                defaultValue: "Choose one or more source profiles. Step 3 lets you keep them separate or merge them into one imux profile."
             )
 
             sourceProfilesContainer.orientation = .vertical
@@ -9604,7 +9604,7 @@ final class BrowserDataImportCoordinator {
             )
             mergeProfilesRadio.title = String(
                 localized: "browser.import.destinationMode.merge",
-                defaultValue: "Merge all into one icc profile"
+                defaultValue: "Merge all into one imux profile"
             )
             separateProfilesRadio.target = self
             separateProfilesRadio.action = #selector(handleDestinationModeChanged(_:))
@@ -9646,7 +9646,7 @@ final class BrowserDataImportCoordinator {
             let destinationTitleLabel = NSTextField(
                 labelWithString: String(
                     localized: "browser.import.destination.icc",
-                    defaultValue: "icc destination"
+                    defaultValue: "imux destination"
                 )
             )
             destinationTitleLabel.font = NSFont.systemFont(ofSize: 12, weight: .semibold)
@@ -9893,13 +9893,13 @@ final class BrowserDataImportCoordinator {
             if presentation.showsSeparateRows {
                 destinationHelpLabel.stringValue = String(
                     localized: "browser.import.destinationProfile.separateHelp",
-                    defaultValue: "Missing icc profiles are created when import starts."
+                    defaultValue: "Missing imux profiles are created when import starts."
                 )
                 destinationHelpLabel.isHidden = false
             } else if plan.entries.count > 1 {
                 destinationHelpLabel.stringValue = String(
                     localized: "browser.import.destinationProfile.mergeHelp",
-                    defaultValue: "All selected source profiles will be merged into the chosen icc browser profile."
+                    defaultValue: "All selected source profiles will be merged into the chosen imux browser profile."
                 )
                 destinationHelpLabel.isHidden = false
             } else {

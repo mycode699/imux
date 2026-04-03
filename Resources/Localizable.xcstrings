@@ -8,109 +8,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas"
+            "value": "imux"
           }
         }
       }
@@ -121,13 +121,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Usage: iatlas claude-teams [claude-args...]\n\nLaunch Claude Code with agent teams enabled.\n\nThis command:\n  - defaults Claude teammate mode to auto\n  - sets a tmux-like environment so Claude auto mode uses iatlas splits\n  - sets CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1\n  - prepends a private tmux shim to PATH\n  - forwards all remaining arguments to claude\n\nThe tmux shim translates supported tmux window/pane commands into iatlas\nworkspace and split operations in the current iatlas session.\n\nExamples:\n  iatlas claude-teams\n  iatlas claude-teams --continue\n  iatlas claude-teams --model sonnet"
+            "value": "Usage: imux claude-teams [claude-args...]\n\nLaunch Claude Code with agent teams enabled.\n\nThis command:\n  - defaults Claude teammate mode to auto\n  - sets a tmux-like environment so Claude auto mode uses imux splits\n  - sets CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1\n  - prepends a private tmux shim to PATH\n  - forwards all remaining arguments to claude\n\nThe tmux shim translates supported tmux window/pane commands into imux\nworkspace and split operations in the current imux session.\n\nExamples:\n  imux claude-teams\n  imux claude-teams --continue\n  imux claude-teams --model sonnet"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "使い方: iatlas claude-teams [claude-args...]\n\nエージェントチームを有効にした状態で Claude Code を起動します。\n\nこのコマンドは次を行います:\n  - Claude の teammate mode を auto に設定\n  - Claude の auto mode が iatlas の split を使うよう tmux 風の環境を設定\n  - CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 を設定\n  - 専用の tmux shim を PATH の先頭に追加\n  - 残りの引数をそのまま claude に渡す\n\ntmux shim は、対応している tmux の window/pane コマンドを、現在の iatlas セッション内の workspace と split 操作に変換します。\n\n例:\n  iatlas claude-teams\n  iatlas claude-teams --continue\n  iatlas claude-teams --model sonnet"
+            "value": "使い方: imux claude-teams [claude-args...]\n\nエージェントチームを有効にした状態で Claude Code を起動します。\n\nこのコマンドは次を行います:\n  - Claude の teammate mode を auto に設定\n  - Claude の auto mode が imux の split を使うよう tmux 風の環境を設定\n  - CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 を設定\n  - 専用の tmux shim を PATH の先頭に追加\n  - 残りの引数をそのまま claude に渡す\n\ntmux shim は、対応している tmux の window/pane コマンドを、現在の imux セッション内の workspace と split 操作に変換します。\n\n例:\n  imux claude-teams\n  imux claude-teams --continue\n  imux claude-teams --model sonnet"
           }
         }
       }
@@ -1032,25 +1032,25 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Welcome to icc!"
+            "value": "Welcome to imux!"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iccへようこそ！"
+            "value": "imuxへようこそ！"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "欢迎使用 icc"
+            "value": "欢迎使用 imux"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "歡迎使用 icc"
+            "value": "歡迎使用 imux"
           }
         }
       }
@@ -5043,13 +5043,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Created iatlas profiles: %@"
+            "value": "Created imux profiles: %@"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "作成した iatlas プロファイル: %@"
+            "value": "作成した imux プロファイル: %@"
           }
         }
       }
@@ -5315,13 +5315,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Imported data goes into the selected iatlas profile."
+            "value": "Imported data goes into the selected imux profile."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "インポートしたデータは、選択した iatlas プロファイルに保存されます。"
+            "value": "インポートしたデータは、選択した imux プロファイルに保存されます。"
           }
         }
       }
@@ -5332,13 +5332,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "All selected source profiles go into one iatlas profile."
+            "value": "All selected source profiles go into one imux profile."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "選択した元プロファイルは、1つの iatlas プロファイルにまとめて取り込まれます。"
+            "value": "選択した元プロファイルは、1つの imux プロファイルにまとめて取り込まれます。"
           }
         }
       }
@@ -5349,13 +5349,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Missing iatlas profiles are created on import."
+            "value": "Missing imux profiles are created on import."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "不足している iatlas プロファイルは、インポート時に作成されます。"
+            "value": "不足している imux プロファイルは、インポート時に作成されます。"
           }
         }
       }
@@ -5502,13 +5502,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas could not create the destination profile \"%@\"."
+            "value": "imux could not create the destination profile \"%@\"."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas は保存先プロファイル「%@」を作成できませんでした。"
+            "value": "imux は保存先プロファイル「%@」を作成できませんでした。"
           }
         }
       }
@@ -5519,13 +5519,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The selected iatlas browser profile no longer exists. Pick a destination profile again."
+            "value": "The selected imux browser profile no longer exists. Pick a destination profile again."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "選択した iatlas ブラウザープロファイルが見つかりません。保存先プロファイルを選び直してください。"
+            "value": "選択した imux ブラウザープロファイルが見つかりません。保存先プロファイルを選び直してください。"
           }
         }
       }
@@ -5587,7 +5587,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas could not find browser profiles to import from on this Mac."
+            "value": "imux could not find browser profiles to import from on this Mac."
           }
         },
         "ja": {
@@ -6363,109 +6363,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Always allow this host in iatlas"
+            "value": "Always allow this host in imux"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "このホストを iatlas で常に許可"
+            "value": "このホストを imux で常に許可"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "始终允许此主机在 iatlas 中打开"
+            "value": "始终允许此主机在 imux 中打开"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "一律允許此主機在 iatlas 中開啟"
+            "value": "一律允許此主機在 imux 中開啟"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에서 이 호스트 항상 허용"
+            "value": "imux에서 이 호스트 항상 허용"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Diesen Host immer in iatlas zulassen"
+            "value": "Diesen Host immer in imux zulassen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Permitir siempre este host en iatlas"
+            "value": "Permitir siempre este host en imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toujours autoriser cet hôte dans iatlas"
+            "value": "Toujours autoriser cet hôte dans imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Consenti sempre questo host in iatlas"
+            "value": "Consenti sempre questo host in imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tillad altid denne vært i iatlas"
+            "value": "Tillad altid denne vært i imux"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zawsze zezwalaj na ten host w iatlas"
+            "value": "Zawsze zezwalaj na ten host w imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Всегда разрешать этот хост в iatlas"
+            "value": "Всегда разрешать этот хост в imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uvijek dozvoli ovaj host u iatlas"
+            "value": "Uvijek dozvoli ovaj host u imux"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "السماح دائمًا لهذا المضيف في iatlas"
+            "value": "السماح دائمًا لهذا المضيف في imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Alltid tillat denne verten i iatlas"
+            "value": "Alltid tillat denne verten i imux"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sempre permitir este host no iatlas"
+            "value": "Sempre permitir este host no imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "อนุญาตโฮสต์นี้ใน iatlas เสมอ"
+            "value": "อนุญาตโฮสต์นี้ใน imux เสมอ"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bu ana bilgisayarı iatlas'ta her zaman izin ver"
+            "value": "Bu ana bilgisayarı imux'ta her zaman izin ver"
           }
         }
       }
@@ -7832,109 +7832,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ uses plain HTTP, so traffic can be read or modified on the network.\n\nOpen this URL in your default browser, or proceed in iatlas."
+            "value": "%@ uses plain HTTP, so traffic can be read or modified on the network.\n\nOpen this URL in your default browser, or proceed in imux."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ は HTTP 接続を使用しているため、通信内容がネットワーク上で読み取られたり改ざんされる可能性があります。\n\nデフォルトブラウザで開くか、iatlas で続行してください。"
+            "value": "%@ は HTTP 接続を使用しているため、通信内容がネットワーク上で読み取られたり改ざんされる可能性があります。\n\nデフォルトブラウザで開くか、imux で続行してください。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ 使用纯 HTTP 连接，网络上的流量可能被读取或修改。\n\n请在默认浏览器中打开此 URL，或在 iatlas 中继续访问。"
+            "value": "%@ 使用纯 HTTP 连接，网络上的流量可能被读取或修改。\n\n请在默认浏览器中打开此 URL，或在 imux 中继续访问。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ 使用未加密的 HTTP，網路上的流量可能被讀取或竄改。\n\n在您的預設瀏覽器中開啟此 URL，或在 iatlas 中繼續。"
+            "value": "%@ 使用未加密的 HTTP，網路上的流量可能被讀取或竄改。\n\n在您的預設瀏覽器中開啟此 URL，或在 imux 中繼續。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@은(는) 일반 HTTP를 사용하므로, 네트워크에서 트래픽이 읽히거나 변조될 수 있습니다.\n\n기본 브라우저에서 이 URL을 열거나, iatlas에서 계속 진행하세요."
+            "value": "%@은(는) 일반 HTTP를 사용하므로, 네트워크에서 트래픽이 읽히거나 변조될 수 있습니다.\n\n기본 브라우저에서 이 URL을 열거나, imux에서 계속 진행하세요."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ verwendet unverschlüsseltes HTTP, daher kann der Datenverkehr im Netzwerk gelesen oder verändert werden.\n\nÖffnen Sie diese URL in Ihrem Standardbrowser oder fahren Sie in iatlas fort."
+            "value": "%@ verwendet unverschlüsseltes HTTP, daher kann der Datenverkehr im Netzwerk gelesen oder verändert werden.\n\nÖffnen Sie diese URL in Ihrem Standardbrowser oder fahren Sie in imux fort."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ usa HTTP sin cifrar, por lo que el tráfico puede ser leído o modificado en la red.\n\nAbre esta URL en tu navegador predeterminado o continúa en iatlas."
+            "value": "%@ usa HTTP sin cifrar, por lo que el tráfico puede ser leído o modificado en la red.\n\nAbre esta URL en tu navegador predeterminado o continúa en imux."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ utilise le protocole HTTP non chiffré, le trafic peut donc être lu ou modifié sur le réseau.\n\nOuvrez cette URL dans votre navigateur par défaut ou continuez dans iatlas."
+            "value": "%@ utilise le protocole HTTP non chiffré, le trafic peut donc être lu ou modifié sur le réseau.\n\nOuvrez cette URL dans votre navigateur par défaut ou continuez dans imux."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ utilizza HTTP non crittografato, quindi il traffico può essere letto o modificato sulla rete.\n\nApri questo URL nel browser predefinito oppure continua in iatlas."
+            "value": "%@ utilizza HTTP non crittografato, quindi il traffico può essere letto o modificato sulla rete.\n\nApri questo URL nel browser predefinito oppure continua in imux."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ bruger almindelig HTTP, så trafikken kan læses eller ændres på netværket.\n\nÅbn denne URL i din standardbrowser, eller fortsæt i iatlas."
+            "value": "%@ bruger almindelig HTTP, så trafikken kan læses eller ændres på netværket.\n\nÅbn denne URL i din standardbrowser, eller fortsæt i imux."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ używa zwykłego HTTP, więc ruch sieciowy może być odczytany lub zmodyfikowany.\n\nOtwórz ten URL w domyślnej przeglądarce lub kontynuuj w iatlas."
+            "value": "%@ używa zwykłego HTTP, więc ruch sieciowy może być odczytany lub zmodyfikowany.\n\nOtwórz ten URL w domyślnej przeglądarce lub kontynuuj w imux."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ использует незащищенный протокол HTTP, поэтому трафик может быть перехвачен или изменен в сети.\n\nОткройте этот URL в браузере по умолчанию или продолжите в iatlas."
+            "value": "%@ использует незащищенный протокол HTTP, поэтому трафик может быть перехвачен или изменен в сети.\n\nОткройте этот URL в браузере по умолчанию или продолжите в imux."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ koristi čisti HTTP, pa se promet može čitati ili mijenjati na mreži.\n\nOtvorite ovaj URL u podrazumijevanom pregledniku ili nastavite u iatlas."
+            "value": "%@ koristi čisti HTTP, pa se promet može čitati ili mijenjati na mreži.\n\nOtvorite ovaj URL u podrazumijevanom pregledniku ili nastavite u imux."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يستخدم %@ بروتوكول HTTP غير مشفر، لذا يمكن قراءة حركة البيانات أو تعديلها على الشبكة.\n\nافتح هذا URL في متصفحك الافتراضي، أو تابع في iatlas."
+            "value": "يستخدم %@ بروتوكول HTTP غير مشفر، لذا يمكن قراءة حركة البيانات أو تعديلها على الشبكة.\n\nافتح هذا URL في متصفحك الافتراضي، أو تابع في imux."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ bruker vanlig HTTP, så trafikk kan leses eller endres på nettverket.\n\nÅpne denne URL-en i standard nettleser, eller fortsett i iatlas."
+            "value": "%@ bruker vanlig HTTP, så trafikk kan leses eller endres på nettverket.\n\nÅpne denne URL-en i standard nettleser, eller fortsett i imux."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ usa HTTP simples, então o tráfego pode ser lido ou modificado na rede.\n\nAbra esta URL no seu navegador padrão ou continue no iatlas."
+            "value": "%@ usa HTTP simples, então o tráfego pode ser lido ou modificado na rede.\n\nAbra esta URL no seu navegador padrão ou continue no imux."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ ใช้ HTTP แบบธรรมดา ดังนั้นข้อมูลอาจถูกอ่านหรือแก้ไขบนเครือข่ายได้\n\nเปิด URL นี้ในเบราว์เซอร์เริ่มต้น หรือดำเนินการต่อใน iatlas"
+            "value": "%@ ใช้ HTTP แบบธรรมดา ดังนั้นข้อมูลอาจถูกอ่านหรือแก้ไขบนเครือข่ายได้\n\nเปิด URL นี้ในเบราว์เซอร์เริ่มต้น หรือดำเนินการต่อใน imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ düz HTTP kullanıyor, bu nedenle trafik ağda okunabilir veya değiştirilebilir.\n\nBu URL'yi varsayılan tarayıcınızda açın ya da iatlas'ta devam edin."
+            "value": "%@ düz HTTP kullanıyor, bu nedenle trafik ağda okunabilir veya değiştirilebilir.\n\nBu URL'yi varsayılan tarayıcınızda açın ya da imux'ta devam edin."
           }
         }
       }
@@ -8979,109 +8979,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Proceed in iatlas"
+            "value": "Proceed in imux"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas で続行"
+            "value": "imux で続行"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 iatlas 中继续"
+            "value": "在 imux 中继续"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 iatlas 中繼續"
+            "value": "在 imux 中繼續"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에서 계속"
+            "value": "imux에서 계속"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "In iatlas fortfahren"
+            "value": "In imux fortfahren"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Continuar en iatlas"
+            "value": "Continuar en imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Continuer dans iatlas"
+            "value": "Continuer dans imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Continua in iatlas"
+            "value": "Continua in imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fortsæt i iatlas"
+            "value": "Fortsæt i imux"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kontynuuj w iatlas"
+            "value": "Kontynuuj w imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Продолжить в iatlas"
+            "value": "Продолжить в imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nastavi u iatlas"
+            "value": "Nastavi u imux"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "المتابعة في iatlas"
+            "value": "المتابعة في imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fortsett i iatlas"
+            "value": "Fortsett i imux"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Continuar no iatlas"
+            "value": "Continuar no imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ดำเนินการต่อใน iatlas"
+            "value": "ดำเนินการต่อใน imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas'ta devam et"
+            "value": "imux'ta devam et"
           }
         }
       }
@@ -9883,109 +9883,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Couldn't Install iatlas CLI"
+            "value": "Couldn't Install imux CLI"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI をインストールできませんでした"
+            "value": "imux CLI をインストールできませんでした"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "无法安装 iatlas CLI"
+            "value": "无法安装 imux CLI"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "無法安裝 iatlas CLI"
+            "value": "無法安裝 imux CLI"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI를 설치할 수 없습니다"
+            "value": "imux CLI를 설치할 수 없습니다"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI konnte nicht installiert werden"
+            "value": "imux CLI konnte nicht installiert werden"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "No se pudo instalar la CLI de iatlas"
+            "value": "No se pudo instalar la CLI de imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Impossible d'installer la CLI iatlas"
+            "value": "Impossible d'installer la CLI imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Impossibile installare la CLI di iatlas"
+            "value": "Impossibile installare la CLI di imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kunne ikke installere iatlas CLI"
+            "value": "Kunne ikke installere imux CLI"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nie udało się zainstalować CLI iatlas"
+            "value": "Nie udało się zainstalować CLI imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Не удалось установить iatlas CLI"
+            "value": "Не удалось установить imux CLI"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nije moguće instalirati iatlas CLI"
+            "value": "Nije moguće instalirati imux CLI"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تعذر تثبيت واجهة أوامر iatlas"
+            "value": "تعذر تثبيت واجهة أوامر imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kunne ikke installere iatlas CLI"
+            "value": "Kunne ikke installere imux CLI"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Não Foi Possível Instalar o CLI do iatlas"
+            "value": "Não Foi Possível Instalar o CLI do imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ไม่สามารถติดตั้ง iatlas CLI ได้"
+            "value": "ไม่สามารถติดตั้ง imux CLI ได้"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI Yüklenemedi"
+            "value": "imux CLI Yüklenemedi"
           }
         }
       }
@@ -9996,109 +9996,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI Installed"
+            "value": "imux CLI Installed"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI がインストールされました"
+            "value": "imux CLI がインストールされました"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI 已安装"
+            "value": "imux CLI 已安装"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI 已安裝"
+            "value": "imux CLI 已安裝"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI 설치 완료"
+            "value": "imux CLI 설치 완료"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI installiert"
+            "value": "imux CLI installiert"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI de iatlas instalada"
+            "value": "CLI de imux instalada"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI iatlas installée"
+            "value": "CLI imux installée"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI di iatlas installata"
+            "value": "CLI di imux installata"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI installeret"
+            "value": "imux CLI installeret"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI iatlas zainstalowane"
+            "value": "CLI imux zainstalowane"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI установлен"
+            "value": "imux CLI установлен"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI instaliran"
+            "value": "imux CLI instaliran"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم تثبيت واجهة أوامر iatlas"
+            "value": "تم تثبيت واجهة أوامر imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI installert"
+            "value": "imux CLI installert"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI do iatlas Instalado"
+            "value": "CLI do imux Instalado"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ติดตั้ง iatlas CLI แล้ว"
+            "value": "ติดตั้ง imux CLI แล้ว"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI Yüklendi"
+            "value": "imux CLI Yüklendi"
           }
         }
       }
@@ -10222,109 +10222,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No iatlas CLI symlink was found at %@."
+            "value": "No imux CLI symlink was found at %@."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@にiatlas CLIのシンボリックリンクが見つかりませんでした。"
+            "value": "%@にimux CLIのシンボリックリンクが見つかりませんでした。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 %@ 处未找到 iatlas CLI 符号链接。"
+            "value": "在 %@ 处未找到 imux CLI 符号链接。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 %@ 找不到 iatlas CLI 的符號連結。"
+            "value": "在 %@ 找不到 imux CLI 的符號連結。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@에서 iatlas CLI 심볼릭 링크를 찾을 수 없습니다."
+            "value": "%@에서 imux CLI 심볼릭 링크를 찾을 수 없습니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Es wurde keine symbolische Verknüpfung für iatlas CLI unter %@ gefunden."
+            "value": "Es wurde keine symbolische Verknüpfung für imux CLI unter %@ gefunden."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "No se encontró ningún enlace simbólico de la CLI de iatlas en %@."
+            "value": "No se encontró ningún enlace simbólico de la CLI de imux en %@."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aucun lien symbolique de la CLI iatlas n'a été trouvé à l'emplacement %@."
+            "value": "Aucun lien symbolique de la CLI imux n'a été trouvé à l'emplacement %@."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nessun collegamento simbolico della CLI di iatlas trovato in %@."
+            "value": "Nessun collegamento simbolico della CLI di imux trovato in %@."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Intet iatlas CLI symbolsk link blev fundet på %@."
+            "value": "Intet imux CLI symbolsk link blev fundet på %@."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nie znaleziono dowiązania symbolicznego CLI iatlas pod adresem %@."
+            "value": "Nie znaleziono dowiązania symbolicznego CLI imux pod adresem %@."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Символическая ссылка iatlas CLI не найдена по пути %@."
+            "value": "Символическая ссылка imux CLI не найдена по пути %@."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Simbolička veza iatlas CLI nije pronađena na %@."
+            "value": "Simbolička veza imux CLI nije pronađena na %@."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لم يتم العثور على رابط رمزي لواجهة أوامر iatlas في %@."
+            "value": "لم يتم العثور على رابط رمزي لواجهة أوامر imux في %@."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ingen iatlas CLI-symbolsk lenke ble funnet på %@."
+            "value": "Ingen imux CLI-symbolsk lenke ble funnet på %@."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nenhum link simbólico do CLI do iatlas foi encontrado em %@."
+            "value": "Nenhum link simbólico do CLI do imux foi encontrado em %@."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ไม่พบลิงก์สัญลักษณ์ iatlas CLI ที่ %@"
+            "value": "ไม่พบลิงก์สัญลักษณ์ imux CLI ที่ %@"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ konumunda iatlas CLI sembolik bağı bulunamadı."
+            "value": "%@ konumunda imux CLI sembolik bağı bulunamadı."
           }
         }
       }
@@ -10448,109 +10448,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Couldn't Uninstall iatlas CLI"
+            "value": "Couldn't Uninstall imux CLI"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI をアンインストールできませんでした"
+            "value": "imux CLI をアンインストールできませんでした"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "无法卸载 iatlas CLI"
+            "value": "无法卸载 imux CLI"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "無法解除安裝 iatlas CLI"
+            "value": "無法解除安裝 imux CLI"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI를 제거할 수 없습니다"
+            "value": "imux CLI를 제거할 수 없습니다"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI konnte nicht deinstalliert werden"
+            "value": "imux CLI konnte nicht deinstalliert werden"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "No se pudo desinstalar la CLI de iatlas"
+            "value": "No se pudo desinstalar la CLI de imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Impossible de désinstaller la CLI iatlas"
+            "value": "Impossible de désinstaller la CLI imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Impossibile disinstallare la CLI di iatlas"
+            "value": "Impossibile disinstallare la CLI di imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kunne ikke afinstallere iatlas CLI"
+            "value": "Kunne ikke afinstallere imux CLI"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nie udało się odinstalować CLI iatlas"
+            "value": "Nie udało się odinstalować CLI imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Не удалось удалить iatlas CLI"
+            "value": "Не удалось удалить imux CLI"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nije moguće deinstalirati iatlas CLI"
+            "value": "Nije moguće deinstalirati imux CLI"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تعذر إلغاء تثبيت واجهة أوامر iatlas"
+            "value": "تعذر إلغاء تثبيت واجهة أوامر imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kunne ikke avinstallere iatlas CLI"
+            "value": "Kunne ikke avinstallere imux CLI"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Não Foi Possível Desinstalar o CLI do iatlas"
+            "value": "Não Foi Possível Desinstalar o CLI do imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ไม่สามารถถอนการติดตั้ง iatlas CLI ได้"
+            "value": "ไม่สามารถถอนการติดตั้ง imux CLI ได้"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI Kaldırılamadı"
+            "value": "imux CLI Kaldırılamadı"
           }
         }
       }
@@ -10561,109 +10561,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI Uninstalled"
+            "value": "imux CLI Uninstalled"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI がアンインストールされました"
+            "value": "imux CLI がアンインストールされました"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI 已卸载"
+            "value": "imux CLI 已卸载"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI 已解除安裝"
+            "value": "imux CLI 已解除安裝"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI 제거 완료"
+            "value": "imux CLI 제거 완료"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI deinstalliert"
+            "value": "imux CLI deinstalliert"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI de iatlas desinstalada"
+            "value": "CLI de imux desinstalada"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI iatlas désinstallée"
+            "value": "CLI imux désinstallée"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI di iatlas disinstallata"
+            "value": "CLI di imux disinstallata"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI afinstalleret"
+            "value": "imux CLI afinstalleret"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI iatlas odinstalowane"
+            "value": "CLI imux odinstalowane"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI удален"
+            "value": "imux CLI удален"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI deinstaliran"
+            "value": "imux CLI deinstaliran"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم إلغاء تثبيت واجهة أوامر iatlas"
+            "value": "تم إلغاء تثبيت واجهة أوامر imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI avinstallert"
+            "value": "imux CLI avinstallert"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "CLI do iatlas Desinstalado"
+            "value": "CLI do imux Desinstalado"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ถอนการติดตั้ง iatlas CLI แล้ว"
+            "value": "ถอนการติดตั้ง imux CLI แล้ว"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas CLI Kaldırıldı"
+            "value": "imux CLI Kaldırıldı"
           }
         }
       }
@@ -14550,109 +14550,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell Command: Install 'iatlas' in PATH"
+            "value": "Shell Command: Install 'imux' in PATH"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "シェルコマンド: 'iatlas'をPATHにインストール"
+            "value": "シェルコマンド: 'imux'をPATHにインストール"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell 命令：将 'iatlas' 安装到 PATH"
+            "value": "Shell 命令：将 'imux' 安装到 PATH"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell 指令：將「iatlas」安裝至 PATH"
+            "value": "Shell 指令：將「imux」安裝至 PATH"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "셸 명령어: PATH에 'iatlas' 설치"
+            "value": "셸 명령어: PATH에 'imux' 설치"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell-Befehl: 'iatlas' im PATH installieren"
+            "value": "Shell-Befehl: 'imux' im PATH installieren"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comando de shell: Instalar 'iatlas' en PATH"
+            "value": "Comando de shell: Instalar 'imux' en PATH"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Commande Shell : installer « iatlas » dans le PATH"
+            "value": "Commande Shell : installer « imux » dans le PATH"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comando shell: installa 'iatlas' nel PATH"
+            "value": "Comando shell: installa 'imux' nel PATH"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Skalkommando: Installer 'iatlas' i PATH"
+            "value": "Skalkommando: Installer 'imux' i PATH"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Polecenie powłoki: Zainstaluj „iatlas” w PATH"
+            "value": "Polecenie powłoki: Zainstaluj „imux” w PATH"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Команда оболочки: установить «iatlas» в PATH"
+            "value": "Команда оболочки: установить «imux» в PATH"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell naredba: Instaliraj 'iatlas' u PATH"
+            "value": "Shell naredba: Instaliraj 'imux' u PATH"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أمر الصدفة: تثبيت 'iatlas' في PATH"
+            "value": "أمر الصدفة: تثبيت 'imux' في PATH"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Skallkommando: Installer «iatlas» i PATH"
+            "value": "Skallkommando: Installer «imux» i PATH"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comando Shell: Instalar 'iatlas' no PATH"
+            "value": "Comando Shell: Instalar 'imux' no PATH"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "คำสั่ง Shell: ติดตั้ง 'iatlas' ใน PATH"
+            "value": "คำสั่ง Shell: ติดตั้ง 'imux' ใน PATH"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kabuk Komutu: 'iatlas'u PATH'e Yükle"
+            "value": "Kabuk Komutu: 'imux'u PATH'e Yükle"
           }
         }
       }
@@ -21104,109 +21104,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell Command: Uninstall 'iatlas' from PATH"
+            "value": "Shell Command: Uninstall 'imux' from PATH"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "シェルコマンド: 'iatlas'をPATHからアンインストール"
+            "value": "シェルコマンド: 'imux'をPATHからアンインストール"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell 命令：从 PATH 卸载 'iatlas'"
+            "value": "Shell 命令：从 PATH 卸载 'imux'"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell 指令：從 PATH 解除安裝「iatlas」"
+            "value": "Shell 指令：從 PATH 解除安裝「imux」"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "셸 명령어: PATH에서 'iatlas' 제거"
+            "value": "셸 명령어: PATH에서 'imux' 제거"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell-Befehl: 'iatlas' aus PATH entfernen"
+            "value": "Shell-Befehl: 'imux' aus PATH entfernen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comando de shell: Desinstalar 'iatlas' de PATH"
+            "value": "Comando de shell: Desinstalar 'imux' de PATH"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Commande Shell : désinstaller « iatlas » du PATH"
+            "value": "Commande Shell : désinstaller « imux » du PATH"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comando shell: disinstalla 'iatlas' dal PATH"
+            "value": "Comando shell: disinstalla 'imux' dal PATH"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Skalkommando: Afinstaller 'iatlas' fra PATH"
+            "value": "Skalkommando: Afinstaller 'imux' fra PATH"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Polecenie powłoki: Odinstaluj „iatlas” z PATH"
+            "value": "Polecenie powłoki: Odinstaluj „imux” z PATH"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Команда оболочки: удалить «iatlas» из PATH"
+            "value": "Команда оболочки: удалить «imux» из PATH"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Shell naredba: Deinstaliraj 'iatlas' iz PATH"
+            "value": "Shell naredba: Deinstaliraj 'imux' iz PATH"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أمر الصدفة: إلغاء تثبيت 'iatlas' من PATH"
+            "value": "أمر الصدفة: إلغاء تثبيت 'imux' من PATH"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Skallkommando: Avinstaller «iatlas» fra PATH"
+            "value": "Skallkommando: Avinstaller «imux» fra PATH"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comando Shell: Desinstalar 'iatlas' do PATH"
+            "value": "Comando Shell: Desinstalar 'imux' do PATH"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "คำสั่ง Shell: ถอนการติดตั้ง 'iatlas' จาก PATH"
+            "value": "คำสั่ง Shell: ถอนการติดตั้ง 'imux' จาก PATH"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kabuk Komutu: 'iatlas'u PATH'ten Kaldır"
+            "value": "Kabuk Komutu: 'imux'u PATH'ten Kaldır"
           }
         }
       }
@@ -30258,109 +30258,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notifications are disabled for iatlas. Enable them in System Settings to see alerts."
+            "value": "Notifications are disabled for imux. Enable them in System Settings to see alerts."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlasの通知が無効になっています。アラートを表示するにはシステム設定で有効にしてください。"
+            "value": "imuxの通知が無効になっています。アラートを表示するにはシステム設定で有効にしてください。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 的通知已被禁用。请在系统设置中启用通知以接收提醒。"
+            "value": "imux 的通知已被禁用。请在系统设置中启用通知以接收提醒。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 的通知已停用。請在「系統設定」中啟用，以接收提示。"
+            "value": "imux 的通知已停用。請在「系統設定」中啟用，以接收提示。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에 대한 알림이 비활성화되어 있습니다. 알림을 보려면 시스템 설정에서 활성화하세요."
+            "value": "imux에 대한 알림이 비활성화되어 있습니다. 알림을 보려면 시스템 설정에서 활성화하세요."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Benachrichtigungen sind für iatlas deaktiviert. Aktivieren Sie sie in den Systemeinstellungen, um Hinweise zu sehen."
+            "value": "Benachrichtigungen sind für imux deaktiviert. Aktivieren Sie sie in den Systemeinstellungen, um Hinweise zu sehen."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Las notificaciones están desactivadas para iatlas. Actívalas en Ajustes del Sistema para ver alertas."
+            "value": "Las notificaciones están desactivadas para imux. Actívalas en Ajustes del Sistema para ver alertas."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les notifications sont désactivées pour iatlas. Activez-les dans les Réglages Système pour voir les alertes."
+            "value": "Les notifications sont désactivées pour imux. Activez-les dans les Réglages Système pour voir les alertes."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le notifiche sono disabilitate per iatlas. Abilitale nelle Impostazioni di Sistema per visualizzare gli avvisi."
+            "value": "Le notifiche sono disabilitate per imux. Abilitale nelle Impostazioni di Sistema per visualizzare gli avvisi."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notifikationer er deaktiveret for iatlas. Aktiver dem i Systemindstillinger for at se advarsler."
+            "value": "Notifikationer er deaktiveret for imux. Aktiver dem i Systemindstillinger for at se advarsler."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Powiadomienia są wyłączone dla iatlas. Włącz je w Ustawieniach systemowych, aby widzieć alerty."
+            "value": "Powiadomienia są wyłączone dla imux. Włącz je w Ustawieniach systemowych, aby widzieć alerty."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Уведомления для iatlas отключены. Включите их в Системных настройках, чтобы видеть оповещения."
+            "value": "Уведомления для imux отключены. Включите их в Системных настройках, чтобы видеть оповещения."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Obavještenja su onemogućena za iatlas. Omogućite ih u Postavkama sistema da biste vidjeli upozorenja."
+            "value": "Obavještenja su onemogućena za imux. Omogućite ih u Postavkama sistema da biste vidjeli upozorenja."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "الإشعارات معطلة لـ iatlas. قم بتفعيلها في إعدادات النظام لرؤية التنبيهات."
+            "value": "الإشعارات معطلة لـ imux. قم بتفعيلها في إعدادات النظام لرؤية التنبيهات."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Varsler er deaktivert for iatlas. Aktiver dem i Systeminnstillinger for å se varsler."
+            "value": "Varsler er deaktivert for imux. Aktiver dem i Systeminnstillinger for å se varsler."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "As notificações estão desativadas para o iatlas. Ative-as nos Ajustes do Sistema para ver os alertas."
+            "value": "As notificações estão desativadas para o imux. Ative-as nos Ajustes do Sistema para ver os alertas."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "การแจ้งเตือนถูกปิดใช้งานสำหรับ iatlas เปิดใช้งานในการตั้งค่าระบบเพื่อดูการแจ้งเตือน"
+            "value": "การแจ้งเตือนถูกปิดใช้งานสำหรับ imux เปิดใช้งานในการตั้งค่าระบบเพื่อดูการแจ้งเตือน"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas için bildirimler devre dışı. Uyarıları görmek için Sistem Ayarları'nda etkinleştirin."
+            "value": "imux için bildirimler devre dışı. Uyarıları görmek için Sistem Ayarları'nda etkinleştirin."
           }
         }
       }
@@ -30597,109 +30597,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enable Notifications for iatlas"
+            "value": "Enable Notifications for imux"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlasの通知を有効にする"
+            "value": "imuxの通知を有効にする"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "启用 iatlas 通知"
+            "value": "启用 imux 通知"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "為 iatlas 啟用通知"
+            "value": "為 imux 啟用通知"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 알림 활성화"
+            "value": "imux 알림 활성화"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Benachrichtigungen für iatlas aktivieren"
+            "value": "Benachrichtigungen für imux aktivieren"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Activar notificaciones para iatlas"
+            "value": "Activar notificaciones para imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Activer les notifications pour iatlas"
+            "value": "Activer les notifications pour imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abilita notifiche per iatlas"
+            "value": "Abilita notifiche per imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aktiver notifikationer for iatlas"
+            "value": "Aktiver notifikationer for imux"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Włącz powiadomienia dla iatlas"
+            "value": "Włącz powiadomienia dla imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Включить уведомления для iatlas"
+            "value": "Включить уведомления для imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Omogući obavještenja za iatlas"
+            "value": "Omogući obavještenja za imux"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تفعيل الإشعارات لـ iatlas"
+            "value": "تفعيل الإشعارات لـ imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aktiver varsler for iatlas"
+            "value": "Aktiver varsler for imux"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ativar Notificações para o iatlas"
+            "value": "Ativar Notificações para o imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เปิดใช้งานการแจ้งเตือนสำหรับ iatlas"
+            "value": "เปิดใช้งานการแจ้งเตือนสำหรับ imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas İçin Bildirimleri Etkinleştir"
+            "value": "imux İçin Bildirimleri Etkinleştir"
           }
         }
       }
@@ -30710,109 +30710,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas could not move this tab to the selected destination."
+            "value": "imux could not move this tab to the selected destination."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlasはこのタブを選択した移動先に移動できませんでした。"
+            "value": "imuxはこのタブを選択した移動先に移動できませんでした。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 无法将此标签页移动到所选目标。"
+            "value": "imux 无法将此标签页移动到所选目标。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 無法將此標籤頁移至所選的目的地。"
+            "value": "imux 無法將此標籤頁移至所選的目的地。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에서 이 탭을 선택한 대상으로 이동할 수 없습니다."
+            "value": "imux에서 이 탭을 선택한 대상으로 이동할 수 없습니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas konnte diesen Tab nicht zum ausgewählten Ziel verschieben."
+            "value": "imux konnte diesen Tab nicht zum ausgewählten Ziel verschieben."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas no pudo mover esta pestaña al destino seleccionado."
+            "value": "imux no pudo mover esta pestaña al destino seleccionado."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas n'a pas pu déplacer cet onglet vers la destination sélectionnée."
+            "value": "imux n'a pas pu déplacer cet onglet vers la destination sélectionnée."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas non è riuscito a spostare questa scheda nella destinazione selezionata."
+            "value": "imux non è riuscito a spostare questa scheda nella destinazione selezionata."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kunne ikke flytte denne fane til den valgte destination."
+            "value": "imux kunne ikke flytte denne fane til den valgte destination."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas nie mógł przenieść tej karty do wybranego miejsca docelowego."
+            "value": "imux nie mógł przenieść tej karty do wybranego miejsca docelowego."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas не удалось переместить эту вкладку в выбранное место назначения."
+            "value": "imux не удалось переместить эту вкладку в выбранное место назначения."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas nije mogao premjestiti ovaj tab na odabrano odredište."
+            "value": "imux nije mogao premjestiti ovaj tab na odabrano odredište."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لم يتمكن iatlas من نقل هذا اللسان إلى الوجهة المحددة."
+            "value": "لم يتمكن imux من نقل هذا اللسان إلى الوجهة المحددة."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kunne ikke flytte denne fanen til den valgte destinasjonen."
+            "value": "imux kunne ikke flytte denne fanen til den valgte destinasjonen."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O iatlas não conseguiu mover esta aba para o destino selecionado."
+            "value": "O imux não conseguiu mover esta aba para o destino selecionado."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas ไม่สามารถย้ายแท็บนี้ไปยังปลายทางที่เลือกได้"
+            "value": "imux ไม่สามารถย้ายแท็บนี้ไปยังปลายทางที่เลือกได้"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas bu sekmeyi seçilen hedefe taşıyamadı."
+            "value": "imux bu sekmeyi seçilen hedefe taşıyamadı."
           }
         }
       }
@@ -31727,109 +31727,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quit iatlas?"
+            "value": "Quit imux?"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas を終了しますか？"
+            "value": "imux を終了しますか？"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "退出 iatlas？"
+            "value": "退出 imux？"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "要結束 iatlas 嗎？"
+            "value": "要結束 imux 嗎？"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas를 종료하시겠습니까?"
+            "value": "imux를 종료하시겠습니까?"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas beenden?"
+            "value": "imux beenden?"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "¿Salir de iatlas?"
+            "value": "¿Salir de imux?"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quitter iatlas ?"
+            "value": "Quitter imux ?"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uscire da iatlas?"
+            "value": "Uscire da imux?"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Afslut iatlas?"
+            "value": "Afslut imux?"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zakończyć iatlas?"
+            "value": "Zakończyć imux?"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Завершить iatlas?"
+            "value": "Завершить imux?"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zatvoriti iatlas?"
+            "value": "Zatvoriti imux?"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إنهاء iatlas؟"
+            "value": "إنهاء imux؟"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Avslutte iatlas?"
+            "value": "Avslutte imux?"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Encerrar o iatlas?"
+            "value": "Encerrar o imux?"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ออกจาก iatlas หรือไม่?"
+            "value": "ออกจาก imux หรือไม่?"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas'tan çıkılsın mı?"
+            "value": "imux'tan çıkılsın mı?"
           }
         }
       }
@@ -32744,109 +32744,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "About icc"
+            "value": "About imux"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iccについて"
+            "value": "imuxについて"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "关于 icc"
+            "value": "关于 imux"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "關於 icc"
+            "value": "關於 imux"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에 관하여"
+            "value": "imux에 관하여"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Über iatlas"
+            "value": "Über imux"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Acerca de iatlas"
+            "value": "Acerca de imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "À propos de iatlas"
+            "value": "À propos de imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Informazioni su iatlas"
+            "value": "Informazioni su imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Om iatlas"
+            "value": "Om imux"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "O iatlas"
+            "value": "O imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "О программе iatlas"
+            "value": "О программе imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "O programu iatlas"
+            "value": "O programu imux"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "حول iatlas"
+            "value": "حول imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Om iatlas"
+            "value": "Om imux"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sobre o iatlas"
+            "value": "Sobre o imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เกี่ยวกับ iatlas"
+            "value": "เกี่ยวกับ imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas Hakkında"
+            "value": "imux Hakkında"
           }
         }
       }
@@ -37620,109 +37620,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quit iatlas"
+            "value": "Quit imux"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas を終了"
+            "value": "imux を終了"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "退出 iatlas"
+            "value": "退出 imux"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "結束 iatlas"
+            "value": "結束 imux"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 종료"
+            "value": "imux 종료"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas beenden"
+            "value": "imux beenden"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salir de iatlas"
+            "value": "Salir de imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quitter iatlas"
+            "value": "Quitter imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Esci da iatlas"
+            "value": "Esci da imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Afslut iatlas"
+            "value": "Afslut imux"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zakończ iatlas"
+            "value": "Zakończ imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Завершить iatlas"
+            "value": "Завершить imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zatvori iatlas"
+            "value": "Zatvori imux"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "إنهاء iatlas"
+            "value": "إنهاء imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Avslutt iatlas"
+            "value": "Avslutt imux"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Encerrar o iatlas"
+            "value": "Encerrar o imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ออกจาก iatlas"
+            "value": "ออกจาก imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas'tan Çık"
+            "value": "imux'tan Çık"
           }
         }
       }
@@ -42655,13 +42655,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Keep iatlas in the menu bar for unread notifications and quick actions."
+            "value": "Keep imux in the menu bar for unread notifications and quick actions."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "未読通知の確認やクイック操作のために、iatlasをメニューバーに表示します。"
+            "value": "未読通知の確認やクイック操作のために、imuxをメニューバーに表示します。"
           }
         }
       }
@@ -43124,109 +43124,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Restart iatlas to apply"
+            "value": "Restart imux to apply"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlasを再起動して適用"
+            "value": "imuxを再起動して適用"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "重启 iatlas 以应用"
+            "value": "重启 imux 以应用"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "重新啟動 iatlas 以套用"
+            "value": "重新啟動 imux 以套用"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "적용하려면 iatlas를 재시작하세요"
+            "value": "적용하려면 imux를 재시작하세요"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas neu starten, um Änderung zu übernehmen"
+            "value": "imux neu starten, um Änderung zu übernehmen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reinicia iatlas para aplicar"
+            "value": "Reinicia imux para aplicar"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Redémarrez iatlas pour appliquer"
+            "value": "Redémarrez imux pour appliquer"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Riavvia iatlas per applicare"
+            "value": "Riavvia imux per applicare"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Genstart iatlas for at anvende"
+            "value": "Genstart imux for at anvende"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uruchom ponownie iatlas, aby zastosować"
+            "value": "Uruchom ponownie imux, aby zastosować"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Перезапустите iatlas для применения"
+            "value": "Перезапустите imux для применения"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ponovo pokrenite iatlas za primjenu"
+            "value": "Ponovo pokrenite imux za primjenu"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "أعد تشغيل iatlas للتطبيق"
+            "value": "أعد تشغيل imux للتطبيق"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Start iatlas på nytt for å bruke"
+            "value": "Start imux på nytt for å bruke"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reinicie o iatlas para aplicar"
+            "value": "Reinicie o imux para aplicar"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "รีสตาร์ต iatlas เพื่อนำไปใช้"
+            "value": "รีสตาร์ต imux เพื่อนำไปใช้"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uygulamak için iatlas'u yeniden başlatın"
+            "value": "Uygulamak için imux'u yeniden başlatın"
           }
         }
       }
@@ -43469,13 +43469,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "When iatlas is inactive, the first click only activates the window. Click again to focus the pane."
+            "value": "When imux is inactive, the first click only activates the window. Click again to focus the pane."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlasが非アクティブのとき、最初のクリックはウインドウをアクティブにするだけです。ペインにフォーカスするにはもう一度クリックします。"
+            "value": "imuxが非アクティブのとき、最初のクリックはウインドウをアクティブにするだけです。ペインにフォーカスするにはもう一度クリックします。"
           }
         }
       }
@@ -43486,13 +43486,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "When iatlas is inactive, clicking a pane activates the window and focuses that pane in one click."
+            "value": "When imux is inactive, clicking a pane activates the window and focuses that pane in one click."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlasが非アクティブのとき、ペインをクリックすると1回でウインドウをアクティブにしてそのペインへフォーカスします。"
+            "value": "imuxが非アクティブのとき、ペインをクリックすると1回でウインドウをアクティブにしてそのペインへフォーカスします。"
           }
         }
       }
@@ -43503,109 +43503,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Sidebar PR Links in iatlas Browser"
+            "value": "Open Sidebar PR Links in imux Browser"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "サイドバーのPRリンクをiatlasブラウザで開く"
+            "value": "サイドバーのPRリンクをimuxブラウザで開く"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 iatlas 浏览器中打开侧边栏 PR 链接"
+            "value": "在 imux 浏览器中打开侧边栏 PR 链接"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 iatlas 瀏覽器中開啟側邊欄 PR 連結"
+            "value": "在 imux 瀏覽器中開啟側邊欄 PR 連結"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "사이드바 PR 링크를 iatlas 브라우저에서 열기"
+            "value": "사이드바 PR 링크를 imux 브라우저에서 열기"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seitenleisten-PR-Links im iatlas-Browser öffnen"
+            "value": "Seitenleisten-PR-Links im imux-Browser öffnen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir enlaces de PR de la barra lateral en el navegador de iatlas"
+            "value": "Abrir enlaces de PR de la barra lateral en el navegador de imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrir les liens PR de la barre latérale dans le navigateur iatlas"
+            "value": "Ouvrir les liens PR de la barre latérale dans le navigateur imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apri link PR della barra laterale nel browser iatlas"
+            "value": "Apri link PR della barra laterale nel browser imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åbn sidebjælkens PR-links i iatlas-browser"
+            "value": "Åbn sidebjælkens PR-links i imux-browser"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otwieraj linki PR z paska bocznego w przeglądarce iatlas"
+            "value": "Otwieraj linki PR z paska bocznego w przeglądarce imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Открывать ссылки PR боковой панели в браузере iatlas"
+            "value": "Открывать ссылки PR боковой панели в браузере imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otvori PR linkove iz bočne trake u iatlas pregledniku"
+            "value": "Otvori PR linkove iz bočne trake u imux pregledniku"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فتح روابط طلبات السحب في متصفح iatlas"
+            "value": "فتح روابط طلبات السحب في متصفح imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åpne sidepanel-PR-lenker i iatlas-nettleser"
+            "value": "Åpne sidepanel-PR-lenker i imux-nettleser"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir Links de PR da Barra Lateral no Navegador do iatlas"
+            "value": "Abrir Links de PR da Barra Lateral no Navegador do imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เปิดลิงก์ PR ในแถบด้านข้างด้วยเบราว์เซอร์ iatlas"
+            "value": "เปิดลิงก์ PR ในแถบด้านข้างด้วยเบราว์เซอร์ imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kenar Çubuğu PR Bağlantılarını iatlas Tarayıcısında Aç"
+            "value": "Kenar Çubuğu PR Bağlantılarını imux Tarayıcısında Aç"
           }
         }
       }
@@ -43729,109 +43729,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Clicks open inside iatlas browser."
+            "value": "Clicks open inside imux browser."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "クリックするとiatlasブラウザ内で開きます。"
+            "value": "クリックするとimuxブラウザ内で開きます。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "点击在 iatlas 浏览器中打开。"
+            "value": "点击在 imux 浏览器中打开。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "點擊會在 iatlas 瀏覽器中開啟。"
+            "value": "點擊會在 imux 瀏覽器中開啟。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "클릭하면 iatlas 브라우저에서 열립니다."
+            "value": "클릭하면 imux 브라우저에서 열립니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Klicks öffnen im iatlas-Browser."
+            "value": "Klicks öffnen im imux-Browser."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Los clics abren dentro del navegador de iatlas."
+            "value": "Los clics abren dentro del navegador de imux."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les clics ouvrent dans le navigateur iatlas."
+            "value": "Les clics ouvrent dans le navigateur imux."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "I clic aprono nel browser iatlas."
+            "value": "I clic aprono nel browser imux."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Klik åbner i iatlas-browseren."
+            "value": "Klik åbner i imux-browseren."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kliknięcia otwierają w przeglądarce iatlas."
+            "value": "Kliknięcia otwierają w przeglądarce imux."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ссылки открываются во встроенном браузере iatlas."
+            "value": "Ссылки открываются во встроенном браузере imux."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Klikovi se otvaraju unutar iatlas preglednika."
+            "value": "Klikovi se otvaraju unutar imux preglednika."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "النقرات تفتح داخل متصفح iatlas."
+            "value": "النقرات تفتح داخل متصفح imux."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Klikk åpner i iatlas-nettleseren."
+            "value": "Klikk åpner i imux-nettleseren."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cliques abrem dentro do navegador do iatlas."
+            "value": "Cliques abrem dentro do navegador do imux."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "คลิกจะเปิดในเบราว์เซอร์ iatlas"
+            "value": "คลิกจะเปิดในเบราว์เซอร์ imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tıklamalar iatlas tarayıcısında açılır."
+            "value": "Tıklamalar imux tarayıcısında açılır."
           }
         }
       }
@@ -46713,109 +46713,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Share anonymized crash and usage data to help improve iatlas."
+            "value": "Share anonymized crash and usage data to help improve imux."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlasの改善に役立てるため、匿名化されたクラッシュおよび使用状況データを共有します。"
+            "value": "imuxの改善に役立てるため、匿名化されたクラッシュおよび使用状況データを共有します。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "分享匿名的崩溃和使用数据，帮助改进 iatlas。"
+            "value": "分享匿名的崩溃和使用数据，帮助改进 imux。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "分享匿名的當機與使用資料，以協助改善 iatlas。"
+            "value": "分享匿名的當機與使用資料，以協助改善 imux。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 개선을 위해 익명화된 충돌 및 사용 데이터를 공유합니다."
+            "value": "imux 개선을 위해 익명화된 충돌 및 사용 데이터를 공유합니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Anonymisierte Absturz- und Nutzungsdaten teilen, um iatlas zu verbessern."
+            "value": "Anonymisierte Absturz- und Nutzungsdaten teilen, um imux zu verbessern."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Compartir datos anónimos de fallos y uso para ayudar a mejorar iatlas."
+            "value": "Compartir datos anónimos de fallos y uso para ayudar a mejorar imux."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Partager des données anonymisées de plantage et d'utilisation pour aider à améliorer iatlas."
+            "value": "Partager des données anonymisées de plantage et d'utilisation pour aider à améliorer imux."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Condividi dati anonimi su arresti anomali e utilizzo per migliorare iatlas."
+            "value": "Condividi dati anonimi su arresti anomali e utilizzo per migliorare imux."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Del anonymiserede nedbrud- og brugsdata for at hjælpe med at forbedre iatlas."
+            "value": "Del anonymiserede nedbrud- og brugsdata for at hjælpe med at forbedre imux."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Udostępniaj zanonimizowane dane o awariach i użyciu, aby pomóc ulepszyć iatlas."
+            "value": "Udostępniaj zanonimizowane dane o awariach i użyciu, aby pomóc ulepszyć imux."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Делиться анонимными данными о сбоях и использовании для улучшения iatlas."
+            "value": "Делиться анонимными данными о сбоях и использовании для улучшения imux."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dijelite anonimizirane podatke o padovima i korištenju kako biste pomogli u poboljšanju iatlas."
+            "value": "Dijelite anonimizirane podatke o padovima i korištenju kako biste pomogli u poboljšanju imux."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "مشاركة بيانات الأعطال والاستخدام المجهولة للمساعدة في تحسين iatlas."
+            "value": "مشاركة بيانات الأعطال والاستخدام المجهولة للمساعدة في تحسين imux."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Del anonymiserte krasj- og bruksdata for å bidra til å forbedre iatlas."
+            "value": "Del anonymiserte krasj- og bruksdata for å bidra til å forbedre imux."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Compartilhar dados anonimizados de falhas e uso para ajudar a melhorar o iatlas."
+            "value": "Compartilhar dados anonimizados de falhas e uso para ajudar a melhorar o imux."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "แชร์ข้อมูลการขัดข้องและการใช้งานแบบไม่ระบุตัวตนเพื่อช่วยปรับปรุง iatlas"
+            "value": "แชร์ข้อมูลการขัดข้องและการใช้งานแบบไม่ระบุตัวตนเพื่อช่วยปรับปรุง imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas'u iyileştirmek için anonimleştirilmiş çökme ve kullanım verilerini paylaş."
+            "value": "imux'u iyileştirmek için anonimleştirilmiş çökme ve kullanım verilerini paylaş."
           }
         }
       }
@@ -47629,13 +47629,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Briefly flash a blue outline when iatlas highlights a pane."
+            "value": "Briefly flash a blue outline when imux highlights a pane."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas がペインを強調表示するときに短い青いアウトラインを表示します。"
+            "value": "imux がペインを強調表示するときに短い青いアウトラインを表示します。"
           }
         }
       }
@@ -47810,109 +47810,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "When enabled, iatlas wraps the claude command to inject session tracking and notification hooks. Disable if you prefer to manage Claude Code hooks yourself."
+            "value": "When enabled, imux wraps the claude command to inject session tracking and notification hooks. Disable if you prefer to manage Claude Code hooks yourself."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "有効にすると、iatlasはclaudeコマンドをラップしてセッション追跡と通知フックを挿入します。Claude Codeのフックを自分で管理する場合は無効にしてください。"
+            "value": "有効にすると、imuxはclaudeコマンドをラップしてセッション追跡と通知フックを挿入します。Claude Codeのフックを自分で管理する場合は無効にしてください。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "启用后，iatlas 会包装 claude 命令以注入会话跟踪和通知钩子。如果您希望自行管理 Claude Code 钩子，请禁用此选项。"
+            "value": "启用后，imux 会包装 claude 命令以注入会话跟踪和通知钩子。如果您希望自行管理 Claude Code 钩子，请禁用此选项。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "啟用後，iatlas 會包裝 claude 指令以注入工作階段追蹤和通知掛鉤。如果您偏好自行管理 Claude Code 掛鉤，請停用此選項。"
+            "value": "啟用後，imux 會包裝 claude 指令以注入工作階段追蹤和通知掛鉤。如果您偏好自行管理 Claude Code 掛鉤，請停用此選項。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "활성화하면 iatlas가 claude 명령을 래핑하여 세션 추적 및 알림 훅을 삽입합니다. Claude Code 훅을 직접 관리하려면 비활성화하세요."
+            "value": "활성화하면 imux가 claude 명령을 래핑하여 세션 추적 및 알림 훅을 삽입합니다. Claude Code 훅을 직접 관리하려면 비활성화하세요."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wenn aktiviert, umhüllt iatlas den claude-Befehl, um Sitzungsverfolgung und Benachrichtigungs-Hooks einzufügen. Deaktivieren Sie dies, wenn Sie Claude Code-Hooks selbst verwalten möchten."
+            "value": "Wenn aktiviert, umhüllt imux den claude-Befehl, um Sitzungsverfolgung und Benachrichtigungs-Hooks einzufügen. Deaktivieren Sie dies, wenn Sie Claude Code-Hooks selbst verwalten möchten."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cuando está activado, iatlas envuelve el comando claude para inyectar seguimiento de sesión y hooks de notificación. Desactiva si prefieres gestionar los hooks de Claude Code tú mismo."
+            "value": "Cuando está activado, imux envuelve el comando claude para inyectar seguimiento de sesión y hooks de notificación. Desactiva si prefieres gestionar los hooks de Claude Code tú mismo."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lorsque cette option est activée, iatlas encapsule la commande claude pour injecter le suivi de session et les hooks de notification. Désactivez si vous préférez gérer les hooks Claude Code vous-même."
+            "value": "Lorsque cette option est activée, imux encapsule la commande claude pour injecter le suivi de session et les hooks de notification. Désactivez si vous préférez gérer les hooks Claude Code vous-même."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quando abilitato, iatlas avvolge il comando claude per iniettare il tracciamento della sessione e gli hook di notifica. Disabilita se preferisci gestire gli hook di Claude Code manualmente."
+            "value": "Quando abilitato, imux avvolge il comando claude per iniettare il tracciamento della sessione e gli hook di notifica. Disabilita se preferisci gestire gli hook di Claude Code manualmente."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Når aktiveret, wrapper iatlas claude-kommandoen for at injicere sessionssporing og notifikationshooks. Deaktiver, hvis du foretrækker at administrere Claude Code-hooks selv."
+            "value": "Når aktiveret, wrapper imux claude-kommandoen for at injicere sessionssporing og notifikationshooks. Deaktiver, hvis du foretrækker at administrere Claude Code-hooks selv."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Po włączeniu iatlas opakowuje polecenie claude, aby wstrzyknąć śledzenie sesji i hooki powiadomień. Wyłącz, jeśli wolisz samodzielnie zarządzać hookami Claude Code."
+            "value": "Po włączeniu imux opakowuje polecenie claude, aby wstrzyknąć śledzenie sesji i hooki powiadomień. Wyłącz, jeśli wolisz samodzielnie zarządzać hookami Claude Code."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "При включении iatlas оборачивает команду claude для отслеживания сеансов и уведомлений. Отключите, если предпочитаете управлять хуками Claude Code самостоятельно."
+            "value": "При включении imux оборачивает команду claude для отслеживания сеансов и уведомлений. Отключите, если предпочитаете управлять хуками Claude Code самостоятельно."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kada je omogućeno, iatlas omotava naredbu claude kako bi ubacio praćenje sesije i zakačke za obavještenja. Onemogućite ako preferirate sami upravljati Claude Code zakačkama."
+            "value": "Kada je omogućeno, imux omotava naredbu claude kako bi ubacio praćenje sesije i zakačke za obavještenja. Onemogućite ako preferirate sami upravljati Claude Code zakačkama."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عند التفعيل، يغلّف iatlas أمر claude لحقن تتبع الجلسة وخطافات الإشعارات. قم بالتعطيل إذا كنت تفضل إدارة خطافات Claude Code بنفسك."
+            "value": "عند التفعيل، يغلّف imux أمر claude لحقن تتبع الجلسة وخطافات الإشعارات. قم بالتعطيل إذا كنت تفضل إدارة خطافات Claude Code بنفسك."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Når aktivert, pakker iatlas inn claude-kommandoen for å injisere sesjonssporing og varslingsmekanismer. Deaktiver hvis du foretrekker å håndtere Claude Code-mekanismer selv."
+            "value": "Når aktivert, pakker imux inn claude-kommandoen for å injisere sesjonssporing og varslingsmekanismer. Deaktiver hvis du foretrekker å håndtere Claude Code-mekanismer selv."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quando ativado, o iatlas encapsula o comando claude para injetar rastreamento de sessão e hooks de notificação. Desative se preferir gerenciar os hooks do Claude Code você mesmo."
+            "value": "Quando ativado, o imux encapsula o comando claude para injetar rastreamento de sessão e hooks de notificação. Desative se preferir gerenciar os hooks do Claude Code você mesmo."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เมื่อเปิดใช้งาน iatlas จะห่อคำสั่ง claude เพื่อเพิ่มการติดตามเซสชันและตะขอการแจ้งเตือน ปิดใช้งานหากคุณต้องการจัดการตะขอ Claude Code ด้วยตัวเอง"
+            "value": "เมื่อเปิดใช้งาน imux จะห่อคำสั่ง claude เพื่อเพิ่มการติดตามเซสชันและตะขอการแจ้งเตือน ปิดใช้งานหากคุณต้องการจัดการตะขอ Claude Code ด้วยตัวเอง"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Etkinleştirildiğinde, iatlas oturum izleme ve bildirim kancaları eklemek için claude komutunu sarar. Claude Code kancalarını kendiniz yönetmeyi tercih ediyorsanız devre dışı bırakın."
+            "value": "Etkinleştirildiğinde, imux oturum izleme ve bildirim kancaları eklemek için claude komutunu sarar. Claude Code kancalarını kendiniz yönetmeyi tercih ediyorsanız devre dışı bırakın."
           }
         }
       }
@@ -47923,109 +47923,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code runs without iatlas integration."
+            "value": "Claude Code runs without imux integration."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Codeはiatlas連携なしで実行されます。"
+            "value": "Claude Codeはimux連携なしで実行されます。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code 在没有 iatlas 集成的情况下运行。"
+            "value": "Claude Code 在没有 imux 集成的情况下运行。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code 在不使用 iatlas 整合的情況下運行。"
+            "value": "Claude Code 在不使用 imux 整合的情況下運行。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code가 iatlas 연동 없이 실행됩니다."
+            "value": "Claude Code가 imux 연동 없이 실행됩니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code wird ohne iatlas-Integration ausgeführt."
+            "value": "Claude Code wird ohne imux-Integration ausgeführt."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code se ejecuta sin integración con iatlas."
+            "value": "Claude Code se ejecuta sin integración con imux."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code s'exécute sans intégration iatlas."
+            "value": "Claude Code s'exécute sans intégration imux."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code viene eseguito senza integrazione iatlas."
+            "value": "Claude Code viene eseguito senza integrazione imux."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code kører uden iatlas-integration."
+            "value": "Claude Code kører uden imux-integration."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code działa bez integracji z iatlas."
+            "value": "Claude Code działa bez integracji z imux."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code работает без интеграции с iatlas."
+            "value": "Claude Code работает без интеграции с imux."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code radi bez iatlas integracije."
+            "value": "Claude Code radi bez imux integracije."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يعمل Claude Code بدون تكامل iatlas."
+            "value": "يعمل Claude Code بدون تكامل imux."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code kjører uten iatlas-integrering."
+            "value": "Claude Code kjører uten imux-integrering."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O Claude Code é executado sem integração com o iatlas."
+            "value": "O Claude Code é executado sem integração com o imux."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code ทำงานโดยไม่มีการผสานรวม iatlas"
+            "value": "Claude Code ทำงานโดยไม่มีการผสานรวม imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code iatlas entegrasyonu olmadan çalışır."
+            "value": "Claude Code imux entegrasyonu olmadan çalışır."
           }
         }
       }
@@ -52709,109 +52709,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Applies to terminal link clicks and intercepted `open https://...` calls. Only these hosts open in iatlas. Others open in your default browser. One host or wildcard per line (for example: example.com, *.internal.example). Leave empty to open all hosts in iatlas."
+            "value": "Applies to terminal link clicks and intercepted `open https://...` calls. Only these hosts open in imux. Others open in your default browser. One host or wildcard per line (for example: example.com, *.internal.example). Leave empty to open all hosts in imux."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ターミナルのリンククリックおよびインターセプトされた`open https://...`呼び出しに適用されます。これらのホストのみiatlasで開きます。その他はデフォルトブラウザで開きます。1行に1つのホストまたはワイルドカード（例: example.com, *.internal.example）。空欄にするとすべてのホストをiatlasで開きます。"
+            "value": "ターミナルのリンククリックおよびインターセプトされた`open https://...`呼び出しに適用されます。これらのホストのみimuxで開きます。その他はデフォルトブラウザで開きます。1行に1つのホストまたはワイルドカード（例: example.com, *.internal.example）。空欄にするとすべてのホストをimuxで開きます。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "适用于终端中的链接点击和拦截的 `open https://...` 调用。仅这些主机在 iatlas 中打开，其他主机在默认浏览器中打开。每行一个主机或通配符（例如：example.com、*.internal.example）。留空则在 iatlas 中打开所有主机。"
+            "value": "适用于终端中的链接点击和拦截的 `open https://...` 调用。仅这些主机在 imux 中打开，其他主机在默认浏览器中打开。每行一个主机或通配符（例如：example.com、*.internal.example）。留空则在 imux 中打开所有主机。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "套用於終端機連結點擊和攔截的 `open https://...` 呼叫。僅這些主機會在 iatlas 中開啟，其他主機會在您的預設瀏覽器中開啟。每行一個主機或萬用字元（例如：example.com、*.internal.example）。留空則在 iatlas 中開啟所有主機。"
+            "value": "套用於終端機連結點擊和攔截的 `open https://...` 呼叫。僅這些主機會在 imux 中開啟，其他主機會在您的預設瀏覽器中開啟。每行一個主機或萬用字元（例如：example.com、*.internal.example）。留空則在 imux 中開啟所有主機。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "터미널 링크 클릭 및 인터셉트된 `open https://...` 호출에 적용됩니다. 이 호스트만 iatlas에서 열립니다. 나머지는 기본 브라우저에서 열립니다. 한 줄에 하나의 호스트 또는 와일드카드 (예: example.com, *.internal.example). 비워두면 모든 호스트가 iatlas에서 열립니다."
+            "value": "터미널 링크 클릭 및 인터셉트된 `open https://...` 호출에 적용됩니다. 이 호스트만 imux에서 열립니다. 나머지는 기본 브라우저에서 열립니다. 한 줄에 하나의 호스트 또는 와일드카드 (예: example.com, *.internal.example). 비워두면 모든 호스트가 imux에서 열립니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gilt für Klicks auf Terminal-Links und abgefangene `open https://...`-Aufrufe. Nur diese Hosts werden in iatlas geöffnet. Andere werden in Ihrem Standardbrowser geöffnet. Ein Host oder Platzhalter pro Zeile (zum Beispiel: example.com, *.internal.example). Leer lassen, um alle Hosts in iatlas zu öffnen."
+            "value": "Gilt für Klicks auf Terminal-Links und abgefangene `open https://...`-Aufrufe. Nur diese Hosts werden in imux geöffnet. Andere werden in Ihrem Standardbrowser geöffnet. Ein Host oder Platzhalter pro Zeile (zum Beispiel: example.com, *.internal.example). Leer lassen, um alle Hosts in imux zu öffnen."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Se aplica a clics en enlaces del terminal y llamadas interceptadas de `open https://...`. Solo estos hosts se abren en iatlas. Los demás se abren en tu navegador predeterminado. Un host o comodín por línea (por ejemplo: example.com, *.internal.example). Déjalo vacío para abrir todos los hosts en iatlas."
+            "value": "Se aplica a clics en enlaces del terminal y llamadas interceptadas de `open https://...`. Solo estos hosts se abren en imux. Los demás se abren en tu navegador predeterminado. Un host o comodín por línea (por ejemplo: example.com, *.internal.example). Déjalo vacío para abrir todos los hosts en imux."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "S'applique aux clics sur les liens du terminal et aux appels `open https://...` interceptés. Seuls ces hôtes s'ouvrent dans iatlas. Les autres s'ouvrent dans votre navigateur par défaut. Un hôte ou caractère générique par ligne (par exemple : example.com, *.internal.example). Laissez vide pour ouvrir tous les hôtes dans iatlas."
+            "value": "S'applique aux clics sur les liens du terminal et aux appels `open https://...` interceptés. Seuls ces hôtes s'ouvrent dans imux. Les autres s'ouvrent dans votre navigateur par défaut. Un hôte ou caractère générique par ligne (par exemple : example.com, *.internal.example). Laissez vide pour ouvrir tous les hôtes dans imux."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Si applica ai clic sui link nel terminale e alle chiamate intercettate `open https://...`. Solo questi host si aprono in iatlas. Gli altri si aprono nel browser predefinito. Un host o wildcard per riga (ad esempio: example.com, *.internal.example). Lascia vuoto per aprire tutti gli host in iatlas."
+            "value": "Si applica ai clic sui link nel terminale e alle chiamate intercettate `open https://...`. Solo questi host si aprono in imux. Gli altri si aprono nel browser predefinito. Un host o wildcard per riga (ad esempio: example.com, *.internal.example). Lascia vuoto per aprire tutti gli host in imux."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gælder for terminallinksklik og opfangede `open https://...`-kald. Kun disse værter åbnes i iatlas. Andre åbnes i din standardbrowser. Én vært eller wildcard pr. linje (f.eks.: example.com, *.internal.example). Lad stå tomt for at åbne alle værter i iatlas."
+            "value": "Gælder for terminallinksklik og opfangede `open https://...`-kald. Kun disse værter åbnes i imux. Andre åbnes i din standardbrowser. Én vært eller wildcard pr. linje (f.eks.: example.com, *.internal.example). Lad stå tomt for at åbne alle værter i imux."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dotyczy kliknięć linków w terminalu i przechwyconych wywołań `open https://...`. Tylko te hosty otwierają się w iatlas. Pozostałe otwierają się w domyślnej przeglądarce. Jeden host lub wzorzec na wiersz (na przykład: example.com, *.internal.example). Pozostaw puste, aby otwierać wszystkie hosty w iatlas."
+            "value": "Dotyczy kliknięć linków w terminalu i przechwyconych wywołań `open https://...`. Tylko te hosty otwierają się w imux. Pozostałe otwierają się w domyślnej przeglądarce. Jeden host lub wzorzec na wiersz (na przykład: example.com, *.internal.example). Pozostaw puste, aby otwierać wszystkie hosty w imux."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Применяется к нажатиям на ссылки в терминале и перехваченным вызовам `open https://...`. Только эти хосты открываются в iatlas. Остальные открываются в браузере по умолчанию. Один хост или шаблон на строку (например: example.com, *.internal.example). Оставьте пустым, чтобы открывать все хосты в iatlas."
+            "value": "Применяется к нажатиям на ссылки в терминале и перехваченным вызовам `open https://...`. Только эти хосты открываются в imux. Остальные открываются в браузере по умолчанию. Один хост или шаблон на строку (например: example.com, *.internal.example). Оставьте пустым, чтобы открывать все хосты в imux."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Primjenjuje se na klikove linkova u terminalu i presretnute `open https://...` pozive. Samo se ovi hostovi otvaraju u iatlas. Ostali se otvaraju u podrazumijevanom pregledniku. Jedan host ili zamjenski znak po redu (na primjer: example.com, *.internal.example). Ostavite prazno da otvorite sve hostove u iatlas."
+            "value": "Primjenjuje se na klikove linkova u terminalu i presretnute `open https://...` pozive. Samo se ovi hostovi otvaraju u imux. Ostali se otvaraju u podrazumijevanom pregledniku. Jedan host ili zamjenski znak po redu (na primjer: example.com, *.internal.example). Ostavite prazno da otvorite sve hostove u imux."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "ينطبق على نقرات الروابط في الطرفية واستدعاءات `open https://...` المعترضة. فقط هؤلاء المضيفون يفتحون في iatlas. البقية تفتح في متصفحك الافتراضي. مضيف واحد أو حرف بدل لكل سطر (مثال: example.com, *.internal.example). اتركه فارغًا لفتح جميع المضيفين في iatlas."
+            "value": "ينطبق على نقرات الروابط في الطرفية واستدعاءات `open https://...` المعترضة. فقط هؤلاء المضيفون يفتحون في imux. البقية تفتح في متصفحك الافتراضي. مضيف واحد أو حرف بدل لكل سطر (مثال: example.com, *.internal.example). اتركه فارغًا لفتح جميع المضيفين في imux."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gjelder for terminallenkeklikk og avlyttede `open https://...`-kall. Bare disse vertene åpnes i iatlas. Andre åpnes i standard nettleser. Én vert eller jokertegn per linje (for eksempel: example.com, *.internal.example). La stå tom for å åpne alle verter i iatlas."
+            "value": "Gjelder for terminallenkeklikk og avlyttede `open https://...`-kall. Bare disse vertene åpnes i imux. Andre åpnes i standard nettleser. Én vert eller jokertegn per linje (for eksempel: example.com, *.internal.example). La stå tom for å åpne alle verter i imux."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aplica-se a cliques em links do terminal e chamadas interceptadas de `open https://...`. Apenas estes hosts abrem no iatlas. Outros abrem no seu navegador padrão. Um host ou curinga por linha (por exemplo: example.com, *.internal.example). Deixe vazio para abrir todos os hosts no iatlas."
+            "value": "Aplica-se a cliques em links do terminal e chamadas interceptadas de `open https://...`. Apenas estes hosts abrem no imux. Outros abrem no seu navegador padrão. Um host ou curinga por linha (por exemplo: example.com, *.internal.example). Deixe vazio para abrir todos os hosts no imux."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ใช้กับการคลิกลิงก์ในเทอร์มินัลและการดักจับคำสั่ง `open https://...` เฉพาะโฮสต์เหล่านี้เท่านั้นที่จะเปิดใน iatlas โฮสต์อื่นจะเปิดในเบราว์เซอร์เริ่มต้นของคุณ โฮสต์หรือ wildcard หนึ่งรายการต่อบรรทัด (ตัวอย่าง: example.com, *.internal.example) เว้นว่างเพื่อเปิดโฮสต์ทั้งหมดใน iatlas"
+            "value": "ใช้กับการคลิกลิงก์ในเทอร์มินัลและการดักจับคำสั่ง `open https://...` เฉพาะโฮสต์เหล่านี้เท่านั้นที่จะเปิดใน imux โฮสต์อื่นจะเปิดในเบราว์เซอร์เริ่มต้นของคุณ โฮสต์หรือ wildcard หนึ่งรายการต่อบรรทัด (ตัวอย่าง: example.com, *.internal.example) เว้นว่างเพื่อเปิดโฮสต์ทั้งหมดใน imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Terminal bağlantı tıklamalarına ve yakalanan `open https://...` çağrılarına uygulanır. Yalnızca bu ana bilgisayarlar iatlas'ta açılır. Diğerleri varsayılan tarayıcınızda açılır. Satır başına bir ana bilgisayar veya joker karakter (örneğin: example.com, *.internal.example). Tüm ana bilgisayarları iatlas'ta açmak için boş bırakın."
+            "value": "Terminal bağlantı tıklamalarına ve yakalanan `open https://...` çağrılarına uygulanır. Yalnızca bu ana bilgisayarlar imux'ta açılır. Diğerleri varsayılan tarayıcınızda açılır. Satır başına bir ana bilgisayar veya joker karakter (örneğin: example.com, *.internal.example). Tüm ana bilgisayarları imux'ta açmak için boş bırakın."
           }
         }
       }
@@ -52935,109 +52935,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Controls which HTTP (non-HTTPS) hosts can open in iatlas without a warning prompt. Defaults include localhost, 127.0.0.1, ::1, 0.0.0.0, and *.localtest.me."
+            "value": "Controls which HTTP (non-HTTPS) hosts can open in imux without a warning prompt. Defaults include localhost, 127.0.0.1, ::1, 0.0.0.0, and *.localtest.me."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "警告プロンプトなしでiatlasで開けるHTTP（非HTTPS）ホストを制御します。デフォルトにはlocalhost、127.0.0.1、::1、0.0.0.0、*.localtest.meが含まれます。"
+            "value": "警告プロンプトなしでimuxで開けるHTTP（非HTTPS）ホストを制御します。デフォルトにはlocalhost、127.0.0.1、::1、0.0.0.0、*.localtest.meが含まれます。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "控制哪些 HTTP（非 HTTPS）主机可以在 iatlas 中打开而不显示警告提示。默认包括 localhost、127.0.0.1、::1、0.0.0.0 和 *.localtest.me。"
+            "value": "控制哪些 HTTP（非 HTTPS）主机可以在 imux 中打开而不显示警告提示。默认包括 localhost、127.0.0.1、::1、0.0.0.0 和 *.localtest.me。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "控制哪些 HTTP（非 HTTPS）主機可以在 iatlas 中開啟而不顯示警告提示。預設包含 localhost、127.0.0.1、::1、0.0.0.0 和 *.localtest.me。"
+            "value": "控制哪些 HTTP（非 HTTPS）主機可以在 imux 中開啟而不顯示警告提示。預設包含 localhost、127.0.0.1、::1、0.0.0.0 和 *.localtest.me。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에서 경고 없이 열 수 있는 HTTP(비HTTPS) 호스트를 제어합니다. 기본값에는 localhost, 127.0.0.1, ::1, 0.0.0.0 및 *.localtest.me가 포함됩니다."
+            "value": "imux에서 경고 없이 열 수 있는 HTTP(비HTTPS) 호스트를 제어합니다. 기본값에는 localhost, 127.0.0.1, ::1, 0.0.0.0 및 *.localtest.me가 포함됩니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Steuert, welche HTTP-Hosts (nicht HTTPS) ohne Warnhinweis in iatlas geöffnet werden können. Standardmäßig enthalten: localhost, 127.0.0.1, ::1, 0.0.0.0 und *.localtest.me."
+            "value": "Steuert, welche HTTP-Hosts (nicht HTTPS) ohne Warnhinweis in imux geöffnet werden können. Standardmäßig enthalten: localhost, 127.0.0.1, ::1, 0.0.0.0 und *.localtest.me."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Controla qué hosts HTTP (no HTTPS) pueden abrirse en iatlas sin un mensaje de advertencia. Los valores predeterminados incluyen localhost, 127.0.0.1, ::1, 0.0.0.0 y *.localtest.me."
+            "value": "Controla qué hosts HTTP (no HTTPS) pueden abrirse en imux sin un mensaje de advertencia. Los valores predeterminados incluyen localhost, 127.0.0.1, ::1, 0.0.0.0 y *.localtest.me."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Contrôle quels hôtes HTTP (non HTTPS) peuvent s'ouvrir dans iatlas sans avertissement. Les valeurs par défaut incluent localhost, 127.0.0.1, ::1, 0.0.0.0 et *.localtest.me."
+            "value": "Contrôle quels hôtes HTTP (non HTTPS) peuvent s'ouvrir dans imux sans avertissement. Les valeurs par défaut incluent localhost, 127.0.0.1, ::1, 0.0.0.0 et *.localtest.me."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Controlla quali host HTTP (non HTTPS) possono aprirsi in iatlas senza un avviso. I valori predefiniti includono localhost, 127.0.0.1, ::1, 0.0.0.0 e *.localtest.me."
+            "value": "Controlla quali host HTTP (non HTTPS) possono aprirsi in imux senza un avviso. I valori predefiniti includono localhost, 127.0.0.1, ::1, 0.0.0.0 e *.localtest.me."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Styrer hvilke HTTP-værter (ikke-HTTPS) der kan åbnes i iatlas uden advarselsmeddelelse. Standardindstillinger inkluderer localhost, 127.0.0.1, ::1, 0.0.0.0 og *.localtest.me."
+            "value": "Styrer hvilke HTTP-værter (ikke-HTTPS) der kan åbnes i imux uden advarselsmeddelelse. Standardindstillinger inkluderer localhost, 127.0.0.1, ::1, 0.0.0.0 og *.localtest.me."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Określa, które hosty HTTP (inne niż HTTPS) mogą być otwierane w iatlas bez ostrzeżenia. Domyślnie uwzględniono localhost, 127.0.0.1, ::1, 0.0.0.0 i *.localtest.me."
+            "value": "Określa, które hosty HTTP (inne niż HTTPS) mogą być otwierane w imux bez ostrzeżenia. Domyślnie uwzględniono localhost, 127.0.0.1, ::1, 0.0.0.0 i *.localtest.me."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Определяет, какие HTTP (не HTTPS) хосты могут открываться в iatlas без предупреждения. По умолчанию включены localhost, 127.0.0.1, ::1, 0.0.0.0 и *.localtest.me."
+            "value": "Определяет, какие HTTP (не HTTPS) хосты могут открываться в imux без предупреждения. По умолчанию включены localhost, 127.0.0.1, ::1, 0.0.0.0 и *.localtest.me."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kontroliše koji HTTP (ne-HTTPS) hostovi mogu biti otvoreni u iatlas bez upozorenja. Podrazumijevani uključuju localhost, 127.0.0.1, ::1, 0.0.0.0 i *.localtest.me."
+            "value": "Kontroliše koji HTTP (ne-HTTPS) hostovi mogu biti otvoreni u imux bez upozorenja. Podrazumijevani uključuju localhost, 127.0.0.1, ::1, 0.0.0.0 i *.localtest.me."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يتحكم في مضيفي HTTP (غير HTTPS) الذين يمكنهم الفتح في iatlas بدون رسالة تحذير. الافتراضيات تشمل localhost و 127.0.0.1 و ::1 و 0.0.0.0 و *.localtest.me."
+            "value": "يتحكم في مضيفي HTTP (غير HTTPS) الذين يمكنهم الفتح في imux بدون رسالة تحذير. الافتراضيات تشمل localhost و 127.0.0.1 و ::1 و 0.0.0.0 و *.localtest.me."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Styrer hvilke HTTP-verter (ikke HTTPS) som kan åpnes i iatlas uten advarselsmelding. Standardverdier inkluderer localhost, 127.0.0.1, ::1, 0.0.0.0 og *.localtest.me."
+            "value": "Styrer hvilke HTTP-verter (ikke HTTPS) som kan åpnes i imux uten advarselsmelding. Standardverdier inkluderer localhost, 127.0.0.1, ::1, 0.0.0.0 og *.localtest.me."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Controla quais hosts HTTP (não HTTPS) podem abrir no iatlas sem um aviso. Os padrões incluem localhost, 127.0.0.1, ::1, 0.0.0.0 e *.localtest.me."
+            "value": "Controla quais hosts HTTP (não HTTPS) podem abrir no imux sem um aviso. Os padrões incluem localhost, 127.0.0.1, ::1, 0.0.0.0 e *.localtest.me."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ควบคุมว่าโฮสต์ HTTP (ไม่ใช่ HTTPS) ใดที่สามารถเปิดใน iatlas โดยไม่ต้องแสดงคำเตือน ค่าเริ่มต้นรวมถึง localhost, 127.0.0.1, ::1, 0.0.0.0 และ *.localtest.me"
+            "value": "ควบคุมว่าโฮสต์ HTTP (ไม่ใช่ HTTPS) ใดที่สามารถเปิดใน imux โดยไม่ต้องแสดงคำเตือน ค่าเริ่มต้นรวมถึง localhost, 127.0.0.1, ::1, 0.0.0.0 และ *.localtest.me"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hangi HTTP (HTTPS olmayan) ana bilgisayarlarının iatlas'ta uyarı istemi olmadan açılabileceğini kontrol eder. Varsayılanlar localhost, 127.0.0.1, ::1, 0.0.0.0 ve *.localtest.me içerir."
+            "value": "Hangi HTTP (HTTPS olmayan) ana bilgisayarlarının imux'ta uyarı istemi olmadan açılabileceğini kontrol eder. Varsayılanlar localhost, 127.0.0.1, ::1, 0.0.0.0 ve *.localtest.me içerir."
           }
         }
       }
@@ -53500,109 +53500,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Terminal Links in iatlas Browser"
+            "value": "Open Terminal Links in imux Browser"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ターミナルのリンクをiatlasブラウザで開く"
+            "value": "ターミナルのリンクをimuxブラウザで開く"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 iatlas 浏览器中打开终端链接"
+            "value": "在 imux 浏览器中打开终端链接"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 iatlas 瀏覽器中開啟終端機連結"
+            "value": "在 imux 瀏覽器中開啟終端機連結"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "터미널 링크를 iatlas 브라우저에서 열기"
+            "value": "터미널 링크를 imux 브라우저에서 열기"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Terminal-Links im iatlas-Browser öffnen"
+            "value": "Terminal-Links im imux-Browser öffnen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir enlaces del terminal en el navegador de iatlas"
+            "value": "Abrir enlaces del terminal en el navegador de imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrir les liens du terminal dans le navigateur iatlas"
+            "value": "Ouvrir les liens du terminal dans le navigateur imux"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apri link del terminale nel browser iatlas"
+            "value": "Apri link del terminale nel browser imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åbn terminallinks i iatlas-browser"
+            "value": "Åbn terminallinks i imux-browser"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otwieraj linki terminala w przeglądarce iatlas"
+            "value": "Otwieraj linki terminala w przeglądarce imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Открывать ссылки из терминала в браузере iatlas"
+            "value": "Открывать ссылки из терминала в браузере imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otvori linkove terminala u iatlas pregledniku"
+            "value": "Otvori linkove terminala u imux pregledniku"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فتح روابط الطرفية في متصفح iatlas"
+            "value": "فتح روابط الطرفية في متصفح imux"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åpne terminallenker i iatlas-nettleser"
+            "value": "Åpne terminallenker i imux-nettleser"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir Links do Terminal no Navegador do iatlas"
+            "value": "Abrir Links do Terminal no Navegador do imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เปิดลิงก์เทอร์มินัลในเบราว์เซอร์ iatlas"
+            "value": "เปิดลิงก์เทอร์มินัลในเบราว์เซอร์ imux"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Terminal Bağlantılarını iatlas Tarayıcısında Aç"
+            "value": "Terminal Bağlantılarını imux Tarayıcısında Aç"
           }
         }
       }
@@ -65219,109 +65219,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Only processes started inside iatlas terminals can send commands."
+            "value": "Only processes started inside imux terminals can send commands."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas ターミナル内で起動したプロセスのみがコマンドを送信できます。"
+            "value": "imux ターミナル内で起動したプロセスのみがコマンドを送信できます。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "仅允许在 iatlas 终端内启动的进程发送命令。"
+            "value": "仅允许在 imux 终端内启动的进程发送命令。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "僅在 iatlas 終端機內啟動的程序可以傳送指令。"
+            "value": "僅在 imux 終端機內啟動的程序可以傳送指令。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 터미널 내에서 시작된 프로세스만 명령을 보낼 수 있습니다."
+            "value": "imux 터미널 내에서 시작된 프로세스만 명령을 보낼 수 있습니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nur Prozesse, die in iatlas-Terminals gestartet wurden, können Befehle senden."
+            "value": "Nur Prozesse, die in imux-Terminals gestartet wurden, können Befehle senden."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Solo los procesos iniciados dentro de terminales de iatlas pueden enviar comandos."
+            "value": "Solo los procesos iniciados dentro de terminales de imux pueden enviar comandos."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seuls les processus lancés dans les terminaux iatlas peuvent envoyer des commandes."
+            "value": "Seuls les processus lancés dans les terminaux imux peuvent envoyer des commandes."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Solo i processi avviati nei terminali iatlas possono inviare comandi."
+            "value": "Solo i processi avviati nei terminali imux possono inviare comandi."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kun processer startet i iatlas-terminaler kan sende kommandoer."
+            "value": "Kun processer startet i imux-terminaler kan sende kommandoer."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tylko procesy uruchomione wewnątrz terminali iatlas mogą wysyłać polecenia."
+            "value": "Tylko procesy uruchomione wewnątrz terminali imux mogą wysyłać polecenia."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Только процессы, запущенные в терминалах iatlas, могут отправлять команды."
+            "value": "Только процессы, запущенные в терминалах imux, могут отправлять команды."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Samo procesi pokrenuti unutar iatlas terminala mogu slati naredbe."
+            "value": "Samo procesi pokrenuti unutar imux terminala mogu slati naredbe."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فقط العمليات التي بدأت داخل طرفيات iatlas يمكنها إرسال الأوامر."
+            "value": "فقط العمليات التي بدأت داخل طرفيات imux يمكنها إرسال الأوامر."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bare prosesser startet innenfor iatlas-terminaler kan sende kommandoer."
+            "value": "Bare prosesser startet innenfor imux-terminaler kan sende kommandoer."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apenas processos iniciados dentro de terminais do iatlas podem enviar comandos."
+            "value": "Apenas processos iniciados dentro de terminais do imux podem enviar comandos."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เฉพาะกระบวนการที่เริ่มต้นภายในเทอร์มินัล iatlas เท่านั้นที่สามารถส่งคำสั่งได้"
+            "value": "เฉพาะกระบวนการที่เริ่มต้นภายในเทอร์มินัล imux เท่านั้นที่สามารถส่งคำสั่งได้"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yalnızca iatlas terminalleri içinden başlatılan işlemler komut gönderebilir."
+            "value": "Yalnızca imux terminalleri içinden başlatılan işlemler komut gönderebilir."
           }
         }
       }
@@ -65332,109 +65332,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas processes only"
+            "value": "imux processes only"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas プロセスのみ"
+            "value": "imux プロセスのみ"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "仅限 iatlas 进程"
+            "value": "仅限 imux 进程"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "僅限 iatlas 程序"
+            "value": "僅限 imux 程序"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 프로세스만"
+            "value": "imux 프로세스만"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nur iatlas-Prozesse"
+            "value": "Nur imux-Prozesse"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Solo procesos de iatlas"
+            "value": "Solo procesos de imux"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Processus iatlas uniquement"
+            "value": "Processus imux uniquement"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Solo processi iatlas"
+            "value": "Solo processi imux"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kun iatlas-processer"
+            "value": "Kun imux-processer"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tylko procesy iatlas"
+            "value": "Tylko procesy imux"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Только процессы iatlas"
+            "value": "Только процессы imux"
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Samo iatlas procesi"
+            "value": "Samo imux procesi"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عمليات iatlas فقط"
+            "value": "عمليات imux فقط"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kun iatlas-prosesser"
+            "value": "Kun imux-prosesser"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apenas processos do iatlas"
+            "value": "Apenas processos do imux"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "กระบวนการ iatlas เท่านั้น"
+            "value": "กระบวนการ imux เท่านั้น"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yalnızca iatlas işlemleri"
+            "value": "Yalnızca imux işlemleri"
           }
         }
       }
@@ -69677,109 +69677,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas couldn't download the update feed. Check your connection and try again."
+            "value": "imux couldn't download the update feed. Check your connection and try again."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas はアップデートフィードをダウンロードできませんでした。接続を確認してもう一度お試しください。"
+            "value": "imux はアップデートフィードをダウンロードできませんでした。接続を確認してもう一度お試しください。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 无法下载更新源。请检查网络连接后重试。"
+            "value": "imux 无法下载更新源。请检查网络连接后重试。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 無法下載更新來源。請檢查您的連線後再試一次。"
+            "value": "imux 無法下載更新來源。請檢查您的連線後再試一次。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에서 업데이트 피드를 다운로드할 수 없습니다. 연결을 확인하고 다시 시도하세요."
+            "value": "imux에서 업데이트 피드를 다운로드할 수 없습니다. 연결을 확인하고 다시 시도하세요."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas konnte den Update-Feed nicht herunterladen. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+            "value": "imux konnte den Update-Feed nicht herunterladen. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas no pudo descargar la fuente de actualizaciones. Comprueba tu conexión e inténtalo de nuevo."
+            "value": "imux no pudo descargar la fuente de actualizaciones. Comprueba tu conexión e inténtalo de nuevo."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas n'a pas pu télécharger le flux de mises à jour. Vérifiez votre connexion et réessayez."
+            "value": "imux n'a pas pu télécharger le flux de mises à jour. Vérifiez votre connexion et réessayez."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas non è riuscito a scaricare il feed degli aggiornamenti. Controlla la connessione e riprova."
+            "value": "imux non è riuscito a scaricare il feed degli aggiornamenti. Controlla la connessione e riprova."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kunne ikke downloade opdateringsfeedet. Kontroller din forbindelse, og prøv igen."
+            "value": "imux kunne ikke downloade opdateringsfeedet. Kontroller din forbindelse, og prøv igen."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas nie mógł pobrać kanału aktualizacji. Sprawdź połączenie i spróbuj ponownie."
+            "value": "imux nie mógł pobrać kanału aktualizacji. Sprawdź połączenie i spróbuj ponownie."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas не удалось загрузить канал обновлений. Проверьте подключение и повторите попытку."
+            "value": "imux не удалось загрузить канал обновлений. Проверьте подключение и повторите попытку."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas nije mogao preuzeti feed ažuriranja. Provjerite vezu i pokušajte ponovo."
+            "value": "imux nije mogao preuzeti feed ažuriranja. Provjerite vezu i pokušajte ponovo."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تعذر على iatlas تنزيل موجز التحديثات. تحقق من اتصالك وحاول مجددًا."
+            "value": "تعذر على imux تنزيل موجز التحديثات. تحقق من اتصالك وحاول مجددًا."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kunne ikke laste ned oppdateringsfeeden. Kontroller tilkoblingen og prøv igjen."
+            "value": "imux kunne ikke laste ned oppdateringsfeeden. Kontroller tilkoblingen og prøv igjen."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O iatlas não conseguiu baixar o feed de atualização. Verifique sua conexão e tente novamente."
+            "value": "O imux não conseguiu baixar o feed de atualização. Verifique sua conexão e tente novamente."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas ไม่สามารถดาวน์โหลดฟีดอัปเดตได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+            "value": "imux ไม่สามารถดาวน์โหลดฟีดอัปเดตได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas güncelleme akışını indiremedi. Bağlantınızı kontrol edip tekrar deneyin."
+            "value": "imux güncelleme akışını indiremedi. Bağlantınızı kontrol edip tekrar deneyin."
           }
         }
       }
@@ -70468,109 +70468,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas can't reach the update server. Check your internet connection and try again."
+            "value": "imux can't reach the update server. Check your internet connection and try again."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas はアップデートサーバーに接続できません。インターネット接続を確認してもう一度お試しください。"
+            "value": "imux はアップデートサーバーに接続できません。インターネット接続を確認してもう一度お試しください。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 无法连接到更新服务器。请检查互联网连接后重试。"
+            "value": "imux 无法连接到更新服务器。请检查互联网连接后重试。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 無法連線至更新伺服器。請檢查您的網際網路連線後再試一次。"
+            "value": "imux 無法連線至更新伺服器。請檢查您的網際網路連線後再試一次。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에서 업데이트 서버에 연결할 수 없습니다. 인터넷 연결을 확인하고 다시 시도하세요."
+            "value": "imux에서 업데이트 서버에 연결할 수 없습니다. 인터넷 연결을 확인하고 다시 시도하세요."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kann den Update-Server nicht erreichen. Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut."
+            "value": "imux kann den Update-Server nicht erreichen. Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas no puede acceder al servidor de actualizaciones. Comprueba tu conexión a internet e inténtalo de nuevo."
+            "value": "imux no puede acceder al servidor de actualizaciones. Comprueba tu conexión a internet e inténtalo de nuevo."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas ne peut pas atteindre le serveur de mises à jour. Vérifiez votre connexion Internet et réessayez."
+            "value": "imux ne peut pas atteindre le serveur de mises à jour. Vérifiez votre connexion Internet et réessayez."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas non riesce a raggiungere il server degli aggiornamenti. Controlla la connessione a internet e riprova."
+            "value": "imux non riesce a raggiungere il server degli aggiornamenti. Controlla la connessione a internet e riprova."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kan ikke nå opdateringsserveren. Kontroller din internetforbindelse, og prøv igen."
+            "value": "imux kan ikke nå opdateringsserveren. Kontroller din internetforbindelse, og prøv igen."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas nie może połączyć się z serwerem aktualizacji. Sprawdź połączenie z internetem i spróbuj ponownie."
+            "value": "imux nie może połączyć się z serwerem aktualizacji. Sprawdź połączenie z internetem i spróbuj ponownie."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas не может связаться с сервером обновлений. Проверьте подключение к интернету и повторите попытку."
+            "value": "imux не может связаться с сервером обновлений. Проверьте подключение к интернету и повторите попытку."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas ne može dosegnuti server za ažuriranje. Provjerite internetsku vezu i pokušajte ponovo."
+            "value": "imux ne može dosegnuti server za ažuriranje. Provjerite internetsku vezu i pokušajte ponovo."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لا يمكن لـ iatlas الوصول إلى خادم التحديثات. تحقق من اتصال الإنترنت وحاول مجددًا."
+            "value": "لا يمكن لـ imux الوصول إلى خادم التحديثات. تحقق من اتصال الإنترنت وحاول مجددًا."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kan ikke nå oppdateringsserveren. Kontroller internettforbindelsen og prøv igjen."
+            "value": "imux kan ikke nå oppdateringsserveren. Kontroller internettforbindelsen og prøv igjen."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O iatlas não consegue acessar o servidor de atualização. Verifique sua conexão com a internet e tente novamente."
+            "value": "O imux não consegue acessar o servidor de atualização. Verifique sua conexão com a internet e tente novamente."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas ไม่สามารถเข้าถึงเซิร์ฟเวอร์อัปเดตได้ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง"
+            "value": "imux ไม่สามารถเข้าถึงเซิร์ฟเวอร์อัปเดตได้ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas güncelleme sunucusuna ulaşamıyor. İnternet bağlantınızı kontrol edip tekrar deneyin."
+            "value": "imux güncelleme sunucusuna ulaşamıyor. İnternet bağlantınızı kontrol edip tekrar deneyin."
           }
         }
       }
@@ -70694,109 +70694,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Move iatlas into Applications and relaunch to enable updates."
+            "value": "Move imux into Applications and relaunch to enable updates."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "アップデートを有効にするには、iatlas を「アプリケーション」に移動して再起動してください。"
+            "value": "アップデートを有効にするには、imux を「アプリケーション」に移動して再起動してください。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "请将 iatlas 移到「应用程序」文件夹中，然后重新启动以启用更新。"
+            "value": "请将 imux 移到「应用程序」文件夹中，然后重新启动以启用更新。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "請將 iatlas 移至「應用程式」資料夾並重新啟動，以啟用更新。"
+            "value": "請將 imux 移至「應用程式」資料夾並重新啟動，以啟用更新。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas를 응용 프로그램 폴더로 이동하고 재실행하여 업데이트를 활성화하세요."
+            "value": "imux를 응용 프로그램 폴더로 이동하고 재실행하여 업데이트를 활성화하세요."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Verschieben Sie iatlas in den Ordner 'Programme' und starten Sie die App neu, um Updates zu aktivieren."
+            "value": "Verschieben Sie imux in den Ordner 'Programme' und starten Sie die App neu, um Updates zu aktivieren."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mueve iatlas a Aplicaciones y vuelve a iniciarlo para activar las actualizaciones."
+            "value": "Mueve imux a Aplicaciones y vuelve a iniciarlo para activar las actualizaciones."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Déplacez iatlas dans Applications et relancez pour activer les mises à jour."
+            "value": "Déplacez imux dans Applications et relancez pour activer les mises à jour."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sposta iatlas nella cartella Applicazioni e riavvia per abilitare gli aggiornamenti."
+            "value": "Sposta imux nella cartella Applicazioni e riavvia per abilitare gli aggiornamenti."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Flyt iatlas til Programmer, og genstart for at aktivere opdateringer."
+            "value": "Flyt imux til Programmer, og genstart for at aktivere opdateringer."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Przenieś iatlas do folderu Aplikacje i uruchom ponownie, aby włączyć aktualizacje."
+            "value": "Przenieś imux do folderu Aplikacje i uruchom ponownie, aby włączyć aktualizacje."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Переместите iatlas в папку «Программы» и перезапустите для включения обновлений."
+            "value": "Переместите imux в папку «Программы» и перезапустите для включения обновлений."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Premjestite iatlas u Applications i ponovo pokrenite da biste omogućili ažuriranja."
+            "value": "Premjestite imux u Applications i ponovo pokrenite da biste omogućili ažuriranja."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "انقل iatlas إلى مجلد التطبيقات وأعد التشغيل لتفعيل التحديثات."
+            "value": "انقل imux إلى مجلد التطبيقات وأعد التشغيل لتفعيل التحديثات."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Flytt iatlas til Programmer og start på nytt for å aktivere oppdateringer."
+            "value": "Flytt imux til Programmer og start på nytt for å aktivere oppdateringer."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mova o iatlas para Aplicativos e reinicie para ativar as atualizações."
+            "value": "Mova o imux para Aplicativos e reinicie para ativar as atualizações."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ย้าย iatlas ไปที่โฟลเดอร์ Applications แล้วเปิดใหม่เพื่อเปิดใช้งานการอัปเดต"
+            "value": "ย้าย imux ไปที่โฟลเดอร์ Applications แล้วเปิดใหม่เพื่อเปิดใช้งานการอัปเดต"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Güncellemeleri etkinleştirmek için iatlas'u Uygulamalar klasörüne taşıyıp yeniden başlatın."
+            "value": "Güncellemeleri etkinleştirmek için imux'u Uygulamalar klasörüne taşıyıp yeniden başlatın."
           }
         }
       }
@@ -71372,109 +71372,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas couldn't connect to the update server. Check your connection or try again later."
+            "value": "imux couldn't connect to the update server. Check your connection or try again later."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas はアップデートサーバーに接続できませんでした。接続を確認するか、後でもう一度お試しください。"
+            "value": "imux はアップデートサーバーに接続できませんでした。接続を確認するか、後でもう一度お試しください。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 无法连接到更新服务器。请检查网络连接或稍后重试。"
+            "value": "imux 无法连接到更新服务器。请检查网络连接或稍后重试。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 無法連線至更新伺服器。請檢查您的連線或稍後再試。"
+            "value": "imux 無法連線至更新伺服器。請檢查您的連線或稍後再試。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas에서 업데이트 서버에 연결할 수 없습니다. 연결을 확인하거나 나중에 다시 시도하세요."
+            "value": "imux에서 업데이트 서버에 연결할 수 없습니다. 연결을 확인하거나 나중에 다시 시도하세요."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas konnte keine Verbindung zum Update-Server herstellen. Überprüfen Sie Ihre Verbindung oder versuchen Sie es später erneut."
+            "value": "imux konnte keine Verbindung zum Update-Server herstellen. Überprüfen Sie Ihre Verbindung oder versuchen Sie es später erneut."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas no pudo conectar con el servidor de actualizaciones. Comprueba tu conexión o inténtalo de nuevo más tarde."
+            "value": "imux no pudo conectar con el servidor de actualizaciones. Comprueba tu conexión o inténtalo de nuevo más tarde."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas n'a pas pu se connecter au serveur de mises à jour. Vérifiez votre connexion ou réessayez plus tard."
+            "value": "imux n'a pas pu se connecter au serveur de mises à jour. Vérifiez votre connexion ou réessayez plus tard."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas non è riuscito a connettersi al server degli aggiornamenti. Controlla la connessione o riprova più tardi."
+            "value": "imux non è riuscito a connettersi al server degli aggiornamenti. Controlla la connessione o riprova più tardi."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kunne ikke oprette forbindelse til opdateringsserveren. Kontroller din forbindelse, eller prøv igen senere."
+            "value": "imux kunne ikke oprette forbindelse til opdateringsserveren. Kontroller din forbindelse, eller prøv igen senere."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas nie mógł połączyć się z serwerem aktualizacji. Sprawdź połączenie lub spróbuj ponownie później."
+            "value": "imux nie mógł połączyć się z serwerem aktualizacji. Sprawdź połączenie lub spróbuj ponownie później."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas не удалось подключиться к серверу обновлений. Проверьте подключение или повторите попытку позже."
+            "value": "imux не удалось подключиться к серверу обновлений. Проверьте подключение или повторите попытку позже."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas se nije mogao povezati na server za ažuriranje. Provjerite vezu ili pokušajte ponovo kasnije."
+            "value": "imux se nije mogao povezati na server za ažuriranje. Provjerite vezu ili pokušajte ponovo kasnije."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تعذر على iatlas الاتصال بخادم التحديثات. تحقق من اتصالك أو حاول لاحقًا."
+            "value": "تعذر على imux الاتصال بخادم التحديثات. تحقق من اتصالك أو حاول لاحقًا."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kunne ikke koble til oppdateringsserveren. Kontroller tilkoblingen eller prøv igjen senere."
+            "value": "imux kunne ikke koble til oppdateringsserveren. Kontroller tilkoblingen eller prøv igjen senere."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O iatlas não conseguiu se conectar ao servidor de atualização. Verifique sua conexão ou tente novamente mais tarde."
+            "value": "O imux não conseguiu se conectar ao servidor de atualização. Verifique sua conexão ou tente novamente mais tarde."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์อัปเดตได้ ตรวจสอบการเชื่อมต่อหรือลองอีกครั้งในภายหลัง"
+            "value": "imux ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์อัปเดตได้ ตรวจสอบการเชื่อมต่อหรือลองอีกครั้งในภายหลัง"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas güncelleme sunucusuna bağlanamadı. Bağlantınızı kontrol edin veya daha sonra tekrar deneyin."
+            "value": "imux güncelleme sunucusuna bağlanamadı. Bağlantınızı kontrol edin veya daha sonra tekrar deneyin."
           }
         }
       }
@@ -72954,109 +72954,109 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas can automatically check for updates in the background."
+            "value": "imux can automatically check for updates in the background."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas はバックグラウンドで自動的にアップデートを確認できます。"
+            "value": "imux はバックグラウンドで自動的にアップデートを確認できます。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 可以在后台自动检查更新。"
+            "value": "imux 可以在后台自动检查更新。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas 可以在背景自動檢查更新。"
+            "value": "imux 可以在背景自動檢查更新。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas가 백그라운드에서 자동으로 업데이트를 확인할 수 있습니다."
+            "value": "imux가 백그라운드에서 자동으로 업데이트를 확인할 수 있습니다."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kann automatisch im Hintergrund nach Updates suchen."
+            "value": "imux kann automatisch im Hintergrund nach Updates suchen."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas puede buscar actualizaciones automáticamente en segundo plano."
+            "value": "imux puede buscar actualizaciones automáticamente en segundo plano."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas peut rechercher automatiquement les mises à jour en arrière-plan."
+            "value": "imux peut rechercher automatiquement les mises à jour en arrière-plan."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas può verificare automaticamente la disponibilità di aggiornamenti in background."
+            "value": "imux può verificare automaticamente la disponibilità di aggiornamenti in background."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kan automatisk søge efter opdateringer i baggrunden."
+            "value": "imux kan automatisk søge efter opdateringer i baggrunden."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas może automatycznie sprawdzać aktualizacje w tle."
+            "value": "imux może automatycznie sprawdzać aktualizacje w tle."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas может автоматически проверять наличие обновлений в фоновом режиме."
+            "value": "imux может автоматически проверять наличие обновлений в фоновом режиме."
           }
         },
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas može automatski provjeravati ažuriranja u pozadini."
+            "value": "imux može automatski provjeravati ažuriranja u pozadini."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يمكن لـ iatlas التحقق تلقائيًا من التحديثات في الخلفية."
+            "value": "يمكن لـ imux التحقق تلقائيًا من التحديثات في الخلفية."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas kan automatisk se etter oppdateringer i bakgrunnen."
+            "value": "imux kan automatisk se etter oppdateringer i bakgrunnen."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O iatlas pode verificar automaticamente se há atualizações em segundo plano."
+            "value": "O imux pode verificar automaticamente se há atualizações em segundo plano."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas สามารถตรวจหาอัปเดตอัตโนมัติในเบื้องหลังได้"
+            "value": "imux สามารถตรวจหาอัปเดตอัตโนมัติในเบื้องหลังได้"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "iatlas arka planda otomatik olarak güncellemeleri denetleyebilir."
+            "value": "imux arka planda otomatik olarak güncellemeleri denetleyebilir."
           }
         }
       }

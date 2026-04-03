@@ -1,8 +1,8 @@
-# icc
+# imux
 
 > AI Command Center for macOS
 
-`icc` is a native macOS command center for serious AI work. It brings Ghostty-grade terminal rendering, local and remote explorers, in-app file editing, browser-assisted execution, and a supervisor layer into one focused workspace so you can move from idea to execution without losing context.
+`imux` is a native macOS command center for serious AI work. It brings Ghostty-grade terminal rendering, local and remote explorers, in-app file editing, browser-assisted execution, and a supervisor layer into one focused workspace so you can move from idea to execution without losing context.
 
 Repository: <https://github.com/mycode699/imux>
 
@@ -10,7 +10,7 @@ Language docs: English | [简体中文](README.zh-CN.md) | [繁體中文](README
 
 Brand guide: [docs/brand-guidelines.md](docs/brand-guidelines.md)
 
-## Why icc lands differently
+## Why imux lands differently
 
 - One cockpit for terminal execution, files, remote hosts, browser workflows, and supervision.
 - Native macOS feel, low-latency rendering, and a layout built for long working sessions.
@@ -26,9 +26,9 @@ Brand guide: [docs/brand-guidelines.md](docs/brand-guidelines.md)
 
 ## Positioning
 
-`icc` is for operators, founders, engineers, and power users who are already running multiple tools to get AI-assisted work done and want one sharper control surface instead of more window sprawl.
+`imux` is for operators, founders, engineers, and power users who are already running multiple tools to get AI-assisted work done and want one sharper control surface instead of more window sprawl.
 
-## What icc ships today
+## What imux ships today
 
 - Native Swift/AppKit macOS app built on `libghostty`, with low-latency terminal rendering and Ghostty-compatible theme and font behavior.
 - Workspace-first UI with a compact left rail and the main work surface centered on terminal conversations and split panes.
@@ -45,7 +45,7 @@ Brand guide: [docs/brand-guidelines.md](docs/brand-guidelines.md)
 
 ### Release builds
 
-Release artifacts are distributed through the official ICC release surface:
+Release artifacts are distributed through the official imux release surface:
 
 <https://www.iccjk.com/changelog>
 
@@ -81,14 +81,14 @@ Build and launch the release app:
 
 ## Quick start
 
-1. Launch `icc`.
+1. Launch `imux`.
 2. Open a local folder from the window toolbar or the file explorer action.
 3. Open the remote explorer to import hosts from `~/.ssh/config`.
 4. Connect to a host, then browse and edit remote files in the right-side panel.
 5. Open Settings and configure Automation if you want supervisor and LLM-assisted orchestration.
-6. Install the bundled CLI into `PATH` from the in-app shell command action if you want `icc` commands in Terminal.
+6. Install the bundled CLI into `PATH` from the in-app shell command action if you want `imux` commands in Terminal.
 
-## Why teams evaluate icc
+## Why teams evaluate imux
 
 - Replace the usual split between terminal app, SFTP client, scratch notes, and remote SSH helper with one workspace.
 - Keep execution context visible while an agent or operator is working.
@@ -97,28 +97,28 @@ Build and launch the release app:
 
 ## CLI notes
 
-The bundled executable is `icc`.
+The bundled executable is `imux`.
 
 Common examples:
 
 ```bash
-icc --help
-icc notify --title "Build complete" --body "Tests passed"
-icc list-notifications
-icc clear-notifications
+imux --help
+imux notify --title "Build complete" --body "Tests passed"
+imux list-notifications
+imux clear-notifications
 ```
 
 Compatibility note:
 
 - Some internal protocol names, environment variables, sockets, and daemon binaries still use legacy `icc` or `ICC_*` names. That is intentional for compatibility during the transition.
-- The user-facing app name and shipped CLI name are `icc`.
+- The user-facing app name and shipped CLI name are `imux`.
 
 ## Remote workflow
 
-`icc` supports two complementary remote paths:
+`imux` supports two complementary remote paths:
 
 - UI-driven remote explorer: reads OpenSSH and VS Code-compatible host entries from `~/.ssh/config`, prompts for missing credentials, stores passwords in the local macOS Keychain, and reveals the remote file tree after connection.
-- CLI-driven SSH workspaces: `icc ssh ...` creates a managed remote workspace, bootstraps the remote helper, and reconnects browser and terminal state through the app.
+- CLI-driven SSH workspaces: `imux ssh ...` creates a managed remote workspace, bootstraps the remote helper, and reconnects browser and terminal state through the app.
 
 Remote compatibility details:
 
@@ -147,7 +147,7 @@ Open Settings → Automation to configure:
 
 - [CONTRIBUTING.md](CONTRIBUTING.md): local development workflow
 - [CHANGELOG.md](CHANGELOG.md): release history and rename note
-- [docs/brand-guidelines.md](docs/brand-guidelines.md): ICC naming, positioning, and voice
+- [docs/brand-guidelines.md](docs/brand-guidelines.md): IMUX naming, positioning, and voice
 - [docs/notifications.md](docs/notifications.md): notification hooks and CLI usage
 - [docs/remote-daemon-spec.md](docs/remote-daemon-spec.md): managed SSH architecture and status
 - [docs/agent-browser-port-spec.md](docs/agent-browser-port-spec.md): browser automation contract
@@ -157,10 +157,10 @@ Open Settings → Automation to configure:
 
 ## Development notes
 
-- The repository name is now `icc`, and the product being released is `icc`.
+- The repository name is now `imux`, and the product being released is `imux`.
 - Some Xcode target names, scripts, package identifiers, and helper binaries still use legacy `icc` naming. Do not mass-rename those blindly; several are still part of the working build and protocol surface.
 - The Homebrew tap submodule is still legacy-named and should be treated as migration work, not the primary install path for this release.
 
 ## License
 
-`icc` is licensed under `AGPL-3.0-or-later`. See [LICENSE](LICENSE).
+`imux` is licensed under `AGPL-3.0-or-later`. See [LICENSE](LICENSE).

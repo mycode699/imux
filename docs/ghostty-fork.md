@@ -1,6 +1,6 @@
 # Ghostty Fork Notes
 
-This repository ships `icc`, but it still carries a Ghostty fork for changes that have not been fully removed or upstreamed.
+This repository ships `imux`, but it still carries a Ghostty fork for changes that have not been fully removed or upstreamed.
 
 Current submodule remote:
 
@@ -10,7 +10,7 @@ Current submodule remote:
 
 - track fork-only behavior required by the app
 - document high-conflict files for rebases
-- keep product docs honest about where `icc` diverges from upstream Ghostty
+- keep product docs honest about where `imux` diverges from upstream Ghostty
 
 ## Active fork areas
 
@@ -31,4 +31,4 @@ At the time of this release prep, the fork is primarily used for:
 
 ## Important caution
 
-Even though the product name is now `icc`, this document should continue to use the real upstream and fork names where accuracy matters. Do not rename Ghostty fork references just for branding.
+Even though the product name is now `imux`, this document should continue to use the real upstream and fork names where accuracy matters. Do not rename Ghostty fork references just for branding.

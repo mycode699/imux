@@ -104,8 +104,8 @@ fi
 
 TAG_ID="$(sanitize_bundle "$TAG")"
 TAG_SLUG="$(sanitize_path "$TAG")"
-APP="$HOME/Library/Developer/Xcode/DerivedData/icc-${TAG_SLUG}/Build/Products/Debug/icc DEV ${TAG}.app"
-BID="com.icc.app.debug.${TAG_ID}"
+APP="$HOME/Library/Developer/Xcode/DerivedData/icc-${TAG_SLUG}/Build/Products/Debug/imux DEV ${TAG}.app"
+BID="com.imux.app.debug.${TAG_ID}"
 SOCK="/tmp/icc-debug-${TAG_SLUG}.sock"
 DSOCK="$HOME/Library/Application Support/icc/iccd-dev-${TAG_SLUG}.sock"
 LOG="/tmp/icc-debug-${TAG_SLUG}.log"
@@ -117,7 +117,7 @@ fi
 
 /usr/bin/osascript -e "tell application id \"${BID}\" to quit" >/dev/null 2>&1 || true
 sleep 0.5
-pkill -f "icc DEV ${TAG}.app/Contents/MacOS/icc DEV" || true
+pkill -f "imux DEV ${TAG}.app/Contents/MacOS/imux DEV" || true
 rm -f "$SOCK" "$DSOCK"
 sleep 0.5
 

@@ -1,6 +1,6 @@
 # Release And Update Rules
 
-This file is the operator guide for future `icc` releases and upgrades.
+This file is the operator guide for future `imux` releases and upgrades.
 
 ## Source of truth
 
@@ -51,26 +51,26 @@ Compatibility note:
 
 Stable release assets:
 
-- `icc-v1.0.6-macos.dmg`
+- `imux-v1.0.6-macos.dmg`
 - `appcast.xml`
 - `latest.json`
 
 Website-hosted archive copies:
 
-- `downloads/archive/v1.0.6/icc-v1.0.6-macos.dmg`
+- `downloads/archive/v1.0.6/imux-v1.0.6-macos.dmg`
 - `downloads/archive/v1.0.6/appcast.xml`
 
 Website-hosted latest aliases:
 
-- `downloads/icc-v1.0.6-macos.dmg`
-- `downloads/icc-macos.dmg`
+- `downloads/imux-v1.0.6-macos.dmg`
+- `downloads/imux-macos.dmg`
 - `downloads/appcast.xml`
 - `downloads/latest.json`
 
 Nightly release assets:
 
-- `icc-nightly-macos.dmg`
-- `icc-nightly-macos-<build>.dmg`
+- `imux-nightly-macos.dmg`
+- `imux-nightly-macos-<build>.dmg`
 - `appcast.xml`
 - `appcast-universal.xml`
 
@@ -134,7 +134,7 @@ Helpful variants:
 
 ```bash
 ./scripts/deploy-website-vps.sh --dry-run
-./scripts/deploy-website-vps.sh --env-file ~/.secrets/icc-site.env
+./scripts/deploy-website-vps.sh --env-file ~/.secrets/imux-site.env
 ```
 
 Behavior:
@@ -147,4 +147,4 @@ Behavior:
 
 ## Important migration note
 
-Older internal builds used different repository identities and in some cases higher pre-release version strings. If a machine is already running one of those older internal builds, do one manual reinstall onto the first public `icc` release. After that, Sparkle can follow the new `icc` feed normally.
+Older internal builds used different repository identities and in some cases higher pre-release version strings. If a machine is already running one of those older internal builds, do one manual reinstall onto the first public `imux` release. After that, Sparkle can follow the new `imux` feed normally.

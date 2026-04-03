@@ -128,7 +128,7 @@ struct SSHConfigHostEntry: Identifiable, Equatable {
             .trimmingCharacters(in: CharacterSet(charactersIn: "-_"))
         let fallbackAlias = sanitizedAlias.isEmpty ? "remote" : sanitizedAlias
         let uniqueSuffix = UUID().uuidString.replacingOccurrences(of: "-", with: "").prefix(10)
-        return "/tmp/iatlas-\(fallbackAlias)-\(uniqueSuffix).sock"
+        return "/tmp/imux-\(fallbackAlias)-\(uniqueSuffix).sock"
     }
 
     private static func shellSingleQuoted(_ value: String) -> String {
@@ -137,7 +137,7 @@ struct SSHConfigHostEntry: Identifiable, Equatable {
 }
 
 enum RemoteHostPasswordStore {
-    static let serviceName = "com.icc.app.remote-ssh"
+    static let serviceName = "com.imux.app.remote-ssh"
 
     static func loadPassword(for account: String) -> String? {
 #if canImport(Security)
@@ -1947,7 +1947,7 @@ struct RemoteHostsSidebar: View {
                     Section("密码") {
                         LiveSecureFieldRepresentable(placeholder: "密码", text: $credentialDraft)
                             .frame(height: 22)
-                        Text("密码仅保存在当前 Mac 的本地钥匙串中，icc 会在后续连接时复用它。")
+                        Text("密码仅保存在当前 Mac 的本地钥匙串中，imux 会在后续连接时复用它。")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         if let credentialStatusMessage {

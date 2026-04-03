@@ -55,19 +55,19 @@ export default function ApiPage() {
           <tr>
             <td>{t("release")}</td>
             <td>
-              <code>/tmp/icc.sock</code>
+              <code>/tmp/imux.sock</code>
             </td>
           </tr>
           <tr>
             <td>{t("debug")}</td>
             <td>
-              <code>/tmp/icc-debug.sock</code>
+              <code>/tmp/imux-debug.sock</code>
             </td>
           </tr>
           <tr>
             <td>{t("taggedDebug")}</td>
             <td>
-              <code>/tmp/icc-debug-&lt;tag&gt;.sock</code>
+              <code>/tmp/imux-debug-&lt;tag&gt;.sock</code>
             </td>
           </tr>
         </tbody>
@@ -101,7 +101,7 @@ export default function ApiPage() {
           </tr>
           <tr>
             <td>
-              <strong>icc processes only</strong>
+              <strong>imux processes only</strong>
             </td>
             <td>{t("iccOnlyMode")}</td>
             <td>{t("iccOnlyEnable")}</td>
@@ -172,33 +172,33 @@ export default function ApiPage() {
       <Cmd
         name="list-workspaces"
         desc={t("listWorkspacesDesc")}
-        cli={`icc list-workspaces
-icc list-workspaces --json`}
+        cli={`imux list-workspaces
+imux list-workspaces --json`}
         socket={`{"id":"ws-list","method":"workspace.list","params":{}}`}
       />
       <Cmd
         name="new-workspace"
         desc={t("newWorkspaceDesc")}
-        cli={`icc new-workspace`}
+        cli={`imux new-workspace`}
         socket={`{"id":"ws-new","method":"workspace.create","params":{}}`}
       />
       <Cmd
         name="select-workspace"
         desc={t("selectWorkspaceDesc")}
-        cli={`icc select-workspace --workspace <id>`}
+        cli={`imux select-workspace --workspace <id>`}
         socket={`{"id":"ws-select","method":"workspace.select","params":{"workspace_id":"<id>"}}`}
       />
       <Cmd
         name="current-workspace"
         desc={t("currentWorkspaceDesc")}
-        cli={`icc current-workspace
-icc current-workspace --json`}
+        cli={`imux current-workspace
+imux current-workspace --json`}
         socket={`{"id":"ws-current","method":"workspace.current","params":{}}`}
       />
       <Cmd
         name="close-workspace"
         desc={t("closeWorkspaceDesc")}
-        cli={`icc close-workspace --workspace <id>`}
+        cli={`imux close-workspace --workspace <id>`}
         socket={`{"id":"ws-close","method":"workspace.close","params":{"workspace_id":"<id>"}}`}
       />
 
@@ -207,21 +207,21 @@ icc current-workspace --json`}
       <Cmd
         name="new-split"
         desc={t("newSplitDesc")}
-        cli={`icc new-split right
-icc new-split down`}
+        cli={`imux new-split right
+imux new-split down`}
         socket={`{"id":"split-new","method":"surface.split","params":{"direction":"right"}}`}
       />
       <Cmd
         name="list-surfaces"
         desc={t("listSurfacesDesc")}
-        cli={`icc list-surfaces
-icc list-surfaces --json`}
+        cli={`imux list-surfaces
+imux list-surfaces --json`}
         socket={`{"id":"surface-list","method":"surface.list","params":{}}`}
       />
       <Cmd
         name="focus-surface"
         desc={t("focusSurfaceDesc")}
-        cli={`icc focus-surface --surface <id>`}
+        cli={`imux focus-surface --surface <id>`}
         socket={`{"id":"surface-focus","method":"surface.focus","params":{"surface_id":"<id>"}}`}
       />
 
@@ -230,26 +230,26 @@ icc list-surfaces --json`}
       <Cmd
         name="send"
         desc={t("sendDesc")}
-        cli={`icc send "echo hello"
-icc send "ls -la\\n"`}
+        cli={`imux send "echo hello"
+imux send "ls -la\\n"`}
         socket={`{"id":"send-text","method":"surface.send_text","params":{"text":"echo hello\\n"}}`}
       />
       <Cmd
         name="send-key"
         desc={t("sendKeyDesc")}
-        cli={`icc send-key enter`}
+        cli={`imux send-key enter`}
         socket={`{"id":"send-key","method":"surface.send_key","params":{"key":"enter"}}`}
       />
       <Cmd
         name="send-surface"
         desc={t("sendSurfaceDesc")}
-        cli={`icc send-surface --surface <id> "command"`}
+        cli={`imux send-surface --surface <id> "command"`}
         socket={`{"id":"send-surface","method":"surface.send_text","params":{"surface_id":"<id>","text":"command"}}`}
       />
       <Cmd
         name="send-key-surface"
         desc={t("sendKeySurfaceDesc")}
-        cli={`icc send-key-surface --surface <id> enter`}
+        cli={`imux send-key-surface --surface <id> enter`}
         socket={`{"id":"send-key-surface","method":"surface.send_key","params":{"surface_id":"<id>","key":"enter"}}`}
       />
 
@@ -258,21 +258,21 @@ icc send "ls -la\\n"`}
       <Cmd
         name="notify"
         desc={t("notifyDesc")}
-        cli={`icc notify --title "Title" --body "Body"
-icc notify --title "T" --subtitle "S" --body "B"`}
+        cli={`imux notify --title "Title" --body "Body"
+imux notify --title "T" --subtitle "S" --body "B"`}
         socket={`{"id":"notify","method":"notification.create","params":{"title":"Title","subtitle":"S","body":"Body"}}`}
       />
       <Cmd
         name="list-notifications"
         desc={t("listNotificationsDesc")}
-        cli={`icc list-notifications
-icc list-notifications --json`}
+        cli={`imux list-notifications
+imux list-notifications --json`}
         socket={`{"id":"notif-list","method":"notification.list","params":{}}`}
       />
       <Cmd
         name="clear-notifications"
         desc={t("clearNotificationsDesc")}
-        cli={`icc clear-notifications`}
+        cli={`imux clear-notifications`}
         socket={`{"id":"notif-clear","method":"notification.clear","params":{}}`}
       />
 
@@ -282,61 +282,61 @@ icc list-notifications --json`}
       <Cmd
         name="set-status"
         desc={t("setStatusDesc")}
-        cli={`icc set-status build "compiling" --icon hammer --color "#ff9500"
-icc set-status deploy "v1.2.3" --workspace workspace:2`}
+        cli={`imux set-status build "compiling" --icon hammer --color "#ff9500"
+imux set-status deploy "v1.2.3" --workspace workspace:2`}
         socket={`set_status build compiling --icon=hammer --color=#ff9500 --tab=<workspace-uuid>`}
       />
       <Cmd
         name="clear-status"
         desc={t("clearStatusDesc")}
-        cli={`icc clear-status build`}
+        cli={`imux clear-status build`}
         socket={`clear_status build --tab=<workspace-uuid>`}
       />
       <Cmd
         name="list-status"
         desc={t("listStatusDesc")}
-        cli={`icc list-status`}
+        cli={`imux list-status`}
         socket={`list_status --tab=<workspace-uuid>`}
       />
       <Cmd
         name="set-progress"
         desc={t("setProgressDesc")}
-        cli={`icc set-progress 0.5 --label "Building..."
-icc set-progress 1.0 --label "Done"`}
+        cli={`imux set-progress 0.5 --label "Building..."
+imux set-progress 1.0 --label "Done"`}
         socket={`set_progress 0.5 --label=Building... --tab=<workspace-uuid>`}
       />
       <Cmd
         name="clear-progress"
         desc={t("clearProgressDesc")}
-        cli={`icc clear-progress`}
+        cli={`imux clear-progress`}
         socket={`clear_progress --tab=<workspace-uuid>`}
       />
       <Cmd
         name="log"
         desc={t("logDesc")}
-        cli={`icc log "Build started"
-icc log --level error --source build "Compilation failed"
-icc log --level success -- "All 42 tests passed"`}
+        cli={`imux log "Build started"
+imux log --level error --source build "Compilation failed"
+imux log --level success -- "All 42 tests passed"`}
         socket={`log --level=error --source=build --tab=<workspace-uuid> -- Compilation failed`}
       />
       <Cmd
         name="clear-log"
         desc={t("clearLogDesc")}
-        cli={`icc clear-log`}
+        cli={`imux clear-log`}
         socket={`clear_log --tab=<workspace-uuid>`}
       />
       <Cmd
         name="list-log"
         desc={t("listLogDesc")}
-        cli={`icc list-log
-icc list-log --limit 5`}
+        cli={`imux list-log
+imux list-log --limit 5`}
         socket={`list_log --limit=5 --tab=<workspace-uuid>`}
       />
       <Cmd
         name="sidebar-state"
         desc={t("sidebarStateDesc")}
-        cli={`icc sidebar-state
-icc sidebar-state --workspace workspace:2`}
+        cli={`imux sidebar-state
+imux sidebar-state --workspace workspace:2`}
         socket={`sidebar_state --tab=<workspace-uuid>`}
       />
 
@@ -345,22 +345,22 @@ icc sidebar-state --workspace workspace:2`}
       <Cmd
         name="ping"
         desc={t("pingDesc")}
-        cli={`icc ping`}
+        cli={`imux ping`}
         socket={`{"id":"ping","method":"system.ping","params":{}}
 // Response: {"id":"ping","ok":true,"result":{"pong":true}}`}
       />
       <Cmd
         name="capabilities"
         desc={t("capabilitiesDesc")}
-        cli={`icc capabilities
-icc capabilities --json`}
+        cli={`imux capabilities
+imux capabilities --json`}
         socket={`{"id":"caps","method":"system.capabilities","params":{}}`}
       />
       <Cmd
         name="identify"
         desc={t("identifyDesc")}
-        cli={`icc identify
-icc identify --json`}
+        cli={`imux identify
+imux identify --json`}
         socket={`{"id":"identify","method":"system.identify","params":{}}`}
       />
 
@@ -423,17 +423,17 @@ icc identify --json`}
 
       <h2>{t("detectingIcc")}</h2>
       <CodeBlock title="bash" lang="bash">{`# Prefer explicit socket path if set
-SOCK="\${ICC_SOCKET_PATH:-/tmp/icc.sock}"
+SOCK="\${ICC_SOCKET_PATH:-/tmp/imux.sock}"
 [ -S "$SOCK" ] && echo "Socket available"
 
 # Check for the CLI
-command -v icc &>/dev/null && echo "icc available"
+command -v imux &>/dev/null && echo "imux available"
 
-# In icc-managed terminals these are auto-set
-[ -n "\${ICC_WORKSPACE_ID:-}" ] && [ -n "\${ICC_SURFACE_ID:-}" ] && echo "Inside icc surface"
+# In imux-managed terminals these are auto-set
+[ -n "\${ICC_WORKSPACE_ID:-}" ] && [ -n "\${ICC_SURFACE_ID:-}" ] && echo "Inside imux surface"
 
 # Distinguish from regular Ghostty
-[ "$TERM_PROGRAM" = "ghostty" ] && [ -n "\${ICC_WORKSPACE_ID:-}" ] && echo "In icc"`}</CodeBlock>
+[ "$TERM_PROGRAM" = "ghostty" ] && [ -n "\${ICC_WORKSPACE_ID:-}" ] && echo "In imux"`}</CodeBlock>
 
       <h2>{t("examples")}</h2>
 
@@ -442,7 +442,7 @@ command -v icc &>/dev/null && echo "icc available"
 import os
 import socket
 
-SOCKET_PATH = os.environ.get("ICC_SOCKET_PATH", "/tmp/icc.sock")
+SOCKET_PATH = os.environ.get("ICC_SOCKET_PATH", "/tmp/imux.sock")
 
 def rpc(method, params=None, req_id=1):
     payload = {"id": req_id, "method": method, "params": params or {}}
@@ -463,7 +463,7 @@ print(rpc(
 
       <h3>{t("shellScript")}</h3>
       <CodeBlock title="bash" lang="bash">{`#!/bin/bash
-SOCK="\${ICC_SOCKET_PATH:-/tmp/icc.sock}"
+SOCK="\${ICC_SOCKET_PATH:-/tmp/imux.sock}"
 
 icc_cmd() {
     printf "%s\\n" "$1" | nc -U "$SOCK"
@@ -476,9 +476,9 @@ icc_cmd '{"id":"notify","method":"notification.create","params":{"title":"Done",
       <CodeBlock title="bash" lang="bash">{`#!/bin/bash
 npm run build
 if [ $? -eq 0 ]; then
-    icc notify --title "✓ Build Success" --body "Ready to deploy"
+    imux notify --title "✓ Build Success" --body "Ready to deploy"
 else
-    icc notify --title "✗ Build Failed" --body "Check the logs"
+    imux notify --title "✗ Build Failed" --body "Check the logs"
 fi`}</CodeBlock>
     </>
   );

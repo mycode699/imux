@@ -263,24 +263,24 @@ class UpdateViewModel: ObservableObject {
         if let compatibilityError = error as? UpdateCompatibilityError {
             switch compatibilityError {
             case .runningFromDiskImage:
-                return String(localized: "update.error.runningFromDiskImage.message", defaultValue: "icc is running from a mounted disk image. Drag icc into Applications, relaunch that installed copy, and try again.")
+                return String(localized: "update.error.runningFromDiskImage.message", defaultValue: "imux is running from a mounted disk image. Drag imux into Applications, relaunch that installed copy, and try again.")
             case .runningTranslocated:
-                return String(localized: "update.error.runningTranslocated.message", defaultValue: "macOS is running icc from a translocated quarantine location. Move icc into Applications, relaunch it from there, and try again.")
+                return String(localized: "update.error.runningTranslocated.message", defaultValue: "macOS is running imux from a translocated quarantine location. Move imux into Applications, relaunch it from there, and try again.")
             case .unsupportedInstallLocation:
-                return String(localized: "update.error.unsupportedInstallLocation.message", defaultValue: "icc must be installed in /Applications or ~/Applications for updates to work reliably. Move it there, relaunch, and try again.")
+                return String(localized: "update.error.unsupportedInstallLocation.message", defaultValue: "imux must be installed in /Applications or ~/Applications for updates to work reliably. Move it there, relaunch, and try again.")
             }
         }
         let nsError = error as NSError
         if let networkError = networkError(from: nsError) {
             switch networkError.code {
             case NSURLErrorNotConnectedToInternet:
-                return String(localized: "update.error.noInternet.message", defaultValue: "icc can’t reach the update server. Check your internet connection and try again.")
+                return String(localized: "update.error.noInternet.message", defaultValue: "imux can’t reach the update server. Check your internet connection and try again.")
             case NSURLErrorTimedOut:
                 return String(localized: "update.error.timedOut.message", defaultValue: "The update server took too long to respond. Try again in a moment.")
             case NSURLErrorCannotFindHost:
                 return String(localized: "update.error.serverNotFound.message", defaultValue: "The update server can’t be found. Check your connection or try again later.")
             case NSURLErrorCannotConnectToHost:
-                return String(localized: "update.error.serverUnreachable.message", defaultValue: "icc couldn’t connect to the update server. Check your connection or try again later.")
+                return String(localized: "update.error.serverUnreachable.message", defaultValue: "imux couldn’t connect to the update server. Check your connection or try again later.")
             case NSURLErrorNetworkConnectionLost:
                 return String(localized: "update.error.connectionLost.message", defaultValue: "The network connection was lost while checking for updates. Try again.")
             case NSURLErrorSecureConnectionFailed,
@@ -296,7 +296,7 @@ class UpdateViewModel: ObservableObject {
         if nsError.domain == SUSparkleErrorDomain {
             switch nsError.code {
             case 2001:
-                return String(localized: "update.error.feedDownload.message", defaultValue: "icc couldn't download the update feed. Check your connection and try again.")
+                return String(localized: "update.error.feedDownload.message", defaultValue: "imux couldn't download the update feed. Check your connection and try again.")
             case 1000, 1002:
                 return String(localized: "update.error.feedRead.message", defaultValue: "The update feed could not be read. Please try again later.")
             case 4:
@@ -306,7 +306,7 @@ class UpdateViewModel: ObservableObject {
             case 1, 2, 3001, 3002:
                 return String(localized: "update.error.signatureError.message", defaultValue: "The update's signature could not be verified. Please try again later.")
             case 1003, 1005, 4005:
-                return String(localized: "update.error.permissionError.message", defaultValue: "Move icc into Applications and relaunch to enable updates.")
+                return String(localized: "update.error.permissionError.message", defaultValue: "Move imux into Applications and relaunch to enable updates.")
             default:
                 break
             }

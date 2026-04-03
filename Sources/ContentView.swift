@@ -1811,6 +1811,12 @@ enum WorkspaceMountPolicy {
             ordered.removeSubrange(clampedMax...)
         }
 
+        if ordered.isEmpty, let fallbackId = orderedTabIds.first {
+            // Keep one workspace mounted even if selection briefly drops to nil.
+            // This avoids rendering a transient empty frame while selection recovers.
+            ordered = [fallbackId]
+        }
+
         return ordered
     }
 
@@ -1960,6 +1966,7 @@ struct ContentView: View {
     private var commandPaletteRenameSelectAllOnFocus = CommandPaletteRenameSelectionSettings.defaultSelectAllOnFocus
     @AppStorage(CommandPaletteSwitcherSearchSettings.searchAllSurfacesKey)
     private var commandPaletteSearchAllSurfaces = CommandPaletteSwitcherSearchSettings.defaultSearchAllSurfaces
+    @AppStorage(SocketControlSettings.appStorageKey) private var socketControlMode = SocketControlSettings.defaultMode.rawValue
     @AppStorage(BrowserLinkOpenSettings.openSidebarPullRequestLinksInIccBrowserKey)
     private var openSidebarPullRequestLinksInIccBrowser = BrowserLinkOpenSettings.defaultOpenSidebarPullRequestLinksInIccBrowser
     @FocusState private var isCommandPaletteSearchFocused: Bool
@@ -3264,8 +3271,12 @@ struct ContentView: View {
     private var terminalContent: some View {
         let mountedWorkspaceIdSet = Set(mountedWorkspaceIds)
         let mountedWorkspaces = tabManager.tabs.filter { mountedWorkspaceIdSet.contains($0.id) }
-        let selectedWorkspaceId = tabManager.selectedTabId
         let retiringWorkspaceId = self.retiringWorkspaceId
+        let selectedWorkspaceId =
+            tabManager.selectedTabId
+            ?? retiringWorkspaceId
+            ?? mountedWorkspaces.first?.id
+            ?? tabManager.tabs.first?.id
 
         return ZStack {
             ZStack {
@@ -3579,6 +3590,310 @@ struct ContentView: View {
         return dir.isEmpty ? nil : dir
     }
 
+    private struct GlobalChromeRemoteSummary {
+        let value: String
+        let systemName: String
+        let tint: Color
+    }
+
+    private var globalChromeWorkspaceSubtitle: String {
+        guard let workspace = tabManager.selectedWorkspace else {
+            return "No active workspace"
+        }
+        let position = currentWorkspacePositionText
+        let name = workspaceDisplayName(workspace)
+        if let target = workspace.remoteDisplayTarget {
+            return "\(position) • \(name) • \(target)"
+        }
+        return "\(position) • \(name)"
+    }
+
+    private var currentWorkspacePositionText: String {
+        guard let selectedId = tabManager.selectedTabId,
+              let index = tabManager.tabs.firstIndex(where: { $0.id == selectedId }) else {
+            return "Workspace --"
+        }
+        return "Workspace \(index + 1)/\(max(tabManager.tabs.count, 1))"
+    }
+
+    private var selectedWorkspaceSurfaceCount: Int {
+        tabManager.selectedWorkspace?.panels.count ?? 0
+    }
+
+    private var selectedWorkspacePaneCount: Int {
+        tabManager.selectedWorkspace?.bonsplitController.allPaneIds.count ?? 0
+    }
+
+    private var selectedWorkspaceBranchText: String? {
+        guard let workspace = tabManager.selectedWorkspace else { return nil }
+        if let branch = workspace.gitBranch?.branch {
+            return branch + (workspace.gitBranch?.isDirty == true ? " *" : "")
+        }
+        guard let branch = workspace.sidebarGitBranchesInDisplayOrder().first else { return nil }
+        return branch.branch + (branch.isDirty ? " *" : "")
+    }
+
+    private var socketControlModeStatusText: String {
+        switch SocketControlSettings.migrateMode(socketControlMode) {
+        case .off:
+            return "Off"
+        case .iccOnly:
+            return "Managed"
+        case .automation:
+            return "Automation"
+        case .password:
+            return "Password"
+        case .allowAll:
+            return "Open"
+        }
+    }
+
+    private var globalChromeRemoteSummary: GlobalChromeRemoteSummary {
+        guard let workspace = tabManager.selectedWorkspace else {
+            return GlobalChromeRemoteSummary(value: "Idle", systemName: "desktopcomputer", tint: .secondary)
+        }
+        guard workspace.isRemoteWorkspace else {
+            return GlobalChromeRemoteSummary(value: "Local", systemName: "desktopcomputer", tint: .secondary)
+        }
+
+        switch workspace.remoteConnectionState {
+        case .connected:
+            switch workspace.remoteDaemonStatus.state {
+            case .ready:
+                return GlobalChromeRemoteSummary(
+                    value: "Ready",
+                    systemName: "dot.radiowaves.left.and.right",
+                    tint: ICCChrome.secondaryAccent(for: colorScheme)
+                )
+            case .bootstrapping:
+                return GlobalChromeRemoteSummary(
+                    value: "Bootstrapping",
+                    systemName: "ellipsis.circle",
+                    tint: ICCChrome.accent(for: colorScheme)
+                )
+            case .error:
+                return GlobalChromeRemoteSummary(
+                    value: "Daemon Error",
+                    systemName: "exclamationmark.triangle.fill",
+                    tint: .orange
+                )
+            case .unavailable:
+                return GlobalChromeRemoteSummary(
+                    value: "Connected",
+                    systemName: "network",
+                    tint: ICCChrome.accent(for: colorScheme)
+                )
+            }
+        case .connecting:
+            return GlobalChromeRemoteSummary(
+                value: "Connecting",
+                systemName: "network",
+                tint: ICCChrome.accent(for: colorScheme)
+            )
+        case .error:
+            return GlobalChromeRemoteSummary(
+                value: "Connection Error",
+                systemName: "wifi.exclamationmark",
+                tint: .orange
+            )
+        case .disconnected:
+            return GlobalChromeRemoteSummary(
+                value: "Disconnected",
+                systemName: "network.slash",
+                tint: .secondary
+            )
+        }
+    }
+
+    private var globalTopBar: some View {
+        HStack(spacing: 12) {
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    ICCChrome.accent(for: colorScheme),
+                                    ICCChrome.secondaryAccent(for: colorScheme)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    Text("IM")
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                }
+                .frame(width: 30, height: 24)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("imux")
+                        .font(.system(size: 13, weight: .semibold))
+                    Text(globalChromeWorkspaceSubtitle)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary.opacity(ICCChrome.secondaryTextOpacity(for: colorScheme)))
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer(minLength: 12)
+
+            Button(action: openCommandPaletteCommands) {
+                HStack(spacing: 8) {
+                    Image(systemName: "command.square")
+                        .font(.system(size: 12, weight: .semibold))
+                    Text("Command Palette")
+                        .font(.system(size: 12, weight: .semibold))
+                }
+                .foregroundStyle(isCommandPalettePresented ? ICCChrome.accent(for: colorScheme) : Color.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(
+                            isCommandPalettePresented
+                                ? ICCChrome.listSelectionFill(for: colorScheme)
+                                : ICCChrome.mutedFill(for: colorScheme)
+                        )
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(
+                            isCommandPalettePresented
+                                ? ICCChrome.accent(for: colorScheme).opacity(colorScheme == .dark ? 0.35 : 0.22)
+                                : ICCChrome.borderColor(for: colorScheme, emphasis: 0.9),
+                            lineWidth: 1
+                        )
+                }
+            }
+            .buttonStyle(.plain)
+            .safeHelp("Open the global command palette")
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            ZStack {
+                ICCChrome.panelGradient(for: colorScheme)
+                ICCChrome.headerFill(for: colorScheme)
+            }
+        )
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(ICCChrome.borderColor(for: colorScheme, emphasis: 0.95))
+                .frame(height: 1)
+        }
+    }
+
+    private var globalBottomBar: some View {
+        let remoteSummary = globalChromeRemoteSummary
+
+        return HStack(spacing: 10) {
+            globalStatusItem(
+                label: "Workspace",
+                value: currentWorkspacePositionText.replacingOccurrences(of: "Workspace ", with: ""),
+                systemName: "square.stack.3d.up"
+            )
+            globalStatusDivider
+            globalStatusItem(
+                label: "Surfaces",
+                value: String(selectedWorkspaceSurfaceCount),
+                systemName: "rectangle.on.rectangle"
+            )
+            globalStatusDivider
+            globalStatusItem(
+                label: "Splits",
+                value: String(selectedWorkspacePaneCount),
+                systemName: "square.split.2x1"
+            )
+
+            if let selectedWorkspaceBranchText {
+                globalStatusDivider
+                globalStatusItem(
+                    label: "Git",
+                    value: selectedWorkspaceBranchText,
+                    systemName: "arrow.triangle.branch"
+                )
+            }
+
+            globalStatusDivider
+            globalStatusItem(
+                label: "Remote",
+                value: remoteSummary.value,
+                systemName: remoteSummary.systemName,
+                tint: remoteSummary.tint
+            )
+            globalStatusDivider
+            globalStatusItem(
+                label: "Unread",
+                value: String(notificationStore.unreadCount),
+                systemName: "bell.badge"
+            )
+            globalStatusDivider
+            globalStatusItem(
+                label: "Socket",
+                value: socketControlModeStatusText,
+                systemName: "bolt.horizontal.circle"
+            )
+
+            Spacer(minLength: 12)
+
+            if let focusedDirectory {
+                HStack(spacing: 6) {
+                    Image(systemName: "folder")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                    Text(focusedDirectory)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary.opacity(ICCChrome.secondaryTextOpacity(for: colorScheme)))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(
+            ZStack {
+                ICCChrome.panelGradient(for: colorScheme)
+                ICCChrome.headerFill(for: colorScheme)
+            }
+        )
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(ICCChrome.borderColor(for: colorScheme, emphasis: 0.95))
+                .frame(height: 1)
+        }
+    }
+
+    private var globalStatusDivider: some View {
+        Rectangle()
+            .fill(ICCChrome.borderColor(for: colorScheme, emphasis: 0.85))
+            .frame(width: 1, height: 12)
+    }
+
+    private func globalStatusItem(
+        label: String,
+        value: String,
+        systemName: String,
+        tint: Color = .secondary
+    ) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: systemName)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(tint)
+
+            Text(label)
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundStyle(.secondary.opacity(ICCChrome.secondaryTextOpacity(for: colorScheme)))
+
+            Text(value)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+                .monospacedDigit()
+        }
+    }
+
     private var contentAndSidebarLayout: AnyView {
         let layout: AnyView
         if sidebarBlendMode == SidebarBlendModeOption.withinWindow.rawValue {
@@ -3638,17 +3953,26 @@ struct ContentView: View {
 
     var body: some View {
         var view = AnyView(
-            contentAndSidebarLayout
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .overlay(alignment: .topLeading) {
-                    if isFullScreen && sidebarState.isVisible && !isMinimalMode {
-                        fullscreenControls
-                            .padding(.leading, 10)
-                            .padding(.top, 4)
+            VStack(spacing: 0) {
+                globalTopBar
+
+                contentAndSidebarLayout
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .overlay(alignment: .topLeading) {
+                        if isFullScreen && sidebarState.isVisible && !isMinimalMode {
+                            fullscreenControls
+                                .padding(.leading, 10)
+                                .padding(.top, 4)
+                        }
                     }
-                }
-                .frame(minWidth: CGFloat(SessionPersistencePolicy.minimumWindowWidth), minHeight: CGFloat(SessionPersistencePolicy.minimumWindowHeight))
-                .background(Color.clear)
+                globalBottomBar
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .frame(
+                minWidth: CGFloat(SessionPersistencePolicy.minimumWindowWidth),
+                minHeight: CGFloat(SessionPersistencePolicy.minimumWindowHeight)
+            )
+            .background(Color.clear)
         )
 
         view = AnyView(view.onAppear {
@@ -6363,7 +6687,7 @@ struct ContentView: View {
         contributions.append(
             CommandPaletteCommandContribution(
                 commandId: "palette.installCLI",
-                title: constant(String(localized: "command.installCLI.title", defaultValue: "Shell Command: Install 'icc' in PATH")),
+                title: constant(String(localized: "command.installCLI.title", defaultValue: "Shell Command: Install 'imux' in PATH")),
                 subtitle: constant(String(localized: "command.installCLI.subtitle", defaultValue: "CLI")),
                 keywords: ["install", "cli", "path", "shell", "command", "symlink"],
                 when: { !$0.bool(CommandPaletteContextKeys.cliInstalledInPATH) }
@@ -6372,7 +6696,7 @@ struct ContentView: View {
         contributions.append(
             CommandPaletteCommandContribution(
                 commandId: "palette.uninstallCLI",
-                title: constant(String(localized: "command.uninstallCLI.title", defaultValue: "Shell Command: Uninstall 'icc' from PATH")),
+                title: constant(String(localized: "command.uninstallCLI.title", defaultValue: "Shell Command: Uninstall 'imux' from PATH")),
                 subtitle: constant(String(localized: "command.uninstallCLI.subtitle", defaultValue: "CLI")),
                 keywords: ["uninstall", "remove", "cli", "path", "shell", "command", "symlink"],
                 when: { $0.bool(CommandPaletteContextKeys.cliInstalledInPATH) }
@@ -11542,10 +11866,10 @@ private enum AgentCollaborationLauncher {
             "clear",
             "printf 'AI Command Center · \(tool.displayName)\\n\\n'",
             "printf 'Bridge commands:\\n'",
-            "printf '  icc list-panes\\n'",
-            "printf '  icc read-screen --surface <surface-id> --scrollback --lines 80\\n'",
-            "printf '  icc send --surface <surface-id> \"prompt here\\\\n\"\\n'",
-            "printf '  icc send-key --surface <surface-id> enter\\n\\n'",
+            "printf '  imux list-panes\\n'",
+            "printf '  imux read-screen --surface <surface-id> --scrollback --lines 80\\n'",
+            "printf '  imux send --surface <surface-id> \"prompt here\\\\n\"\\n'",
+            "printf '  imux send-key --surface <surface-id> enter\\n\\n'",
             tool.launchCommand,
             "exec ${SHELL:-/bin/zsh} -l"
         ].joined(separator: "\n")
@@ -12001,7 +12325,7 @@ private struct SourceControlSidebarPaneView: View {
                 }
 
                 if showsSupplementaryText {
-                    Text("参考 smux 的跨模型协作思路，但直接使用 icc 自己的 pane read/send/send-key 能力。你可以为当前工作区一键添加 Claude、Codex，或创建双模型协作布局。")
+                    Text("参考 smux 的跨模型协作思路，但直接使用 imux 自己的 pane read/send/send-key 能力。你可以为当前工作区一键添加 Claude、Codex，或创建双模型协作布局。")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(sidebarTextWidthClass.isCompact ? 1 : 2)
@@ -12376,16 +12700,16 @@ private struct SourceControlSidebarPaneView: View {
     private func copyAgentBridgeCheatSheet() {
         let lines = [
             "# AI Command Center bridge",
-            "icc list-panes",
-            "icc read-screen --surface <surface-id> --scrollback --lines 80",
-            "icc send --surface <surface-id> \"review Sources/AppDelegate.swift\\n\"",
-            "icc send-key --surface <surface-id> enter"
+            "imux list-panes",
+            "imux read-screen --surface <surface-id> --scrollback --lines 80",
+            "imux send --surface <surface-id> \"review Sources/AppDelegate.swift\\n\"",
+            "imux send-key --surface <surface-id> enter"
         ]
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(lines.joined(separator: "\n"), forType: .string)
         actionStatusIsError = false
-        actionStatusMessage = "icc bridge commands copied."
+        actionStatusMessage = "imux bridge commands copied."
     }
 
     private func performDeferredSidebarAction(_ operation: @escaping () -> Void) {
@@ -13166,7 +13490,7 @@ private struct SidebarFeedbackComposerSheet: View {
             Text(
                 String(
                     localized: "sidebar.help.feedback.successBody",
-                    defaultValue: "You can also reach us on the icc issue tracker."
+                    defaultValue: "You can also reach us on the imux issue tracker."
                 )
             )
             .font(.system(size: 12))
@@ -13188,7 +13512,7 @@ private struct SidebarFeedbackComposerSheet: View {
             Text(
                 String(
                     localized: "sidebar.help.feedback.note",
-                    defaultValue: "A human will read this. You can also reach us on the icc issue tracker."
+                    defaultValue: "A human will read this. You can also reach us on the imux issue tracker."
                 )
             )
             .font(.system(size: 12))
@@ -13666,7 +13990,7 @@ private struct SidebarHelpMenuButton: View {
     private var helpPopover: some View {
         VStack(alignment: .leading, spacing: 2) {
             helpOptionButton(
-                title: String(localized: "sidebar.help.welcome", defaultValue: "Welcome to icc!"),
+                title: String(localized: "sidebar.help.welcome", defaultValue: "Welcome to imux!"),
                 action: .welcome,
                 accessibilityIdentifier: "SidebarHelpMenuOptionWelcome",
                 isExternalLink: false,

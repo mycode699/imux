@@ -16,7 +16,7 @@ export async function generateMetadata({
       default: t("layoutTitle"),
     },
     openGraph: {
-      siteName: "icc",
+      siteName: "imux",
       type: "article" as const,
     },
     alternates: {

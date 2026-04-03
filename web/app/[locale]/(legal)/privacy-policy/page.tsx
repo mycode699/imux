@@ -5,8 +5,8 @@ const supportEmail = "support@iccjk.com";
 const siteUrl = "https://www.iccjk.com";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — icc",
-  description: "Privacy policy for icc",
+  title: "Privacy Policy — imux",
+  description: "Privacy policy for imux",
   alternates: { canonical: "./" },
 };
 
@@ -17,7 +17,7 @@ export default function PrivacyPolicyPage() {
       <p>Last updated: March 18, 2026</p>
 
       <p>
-        ICC (the &ldquo;Company&rdquo;) is committed to maintaining robust
+        IMUX (the &ldquo;Company&rdquo;) is committed to maintaining robust
         privacy protections for its users. This Privacy Policy is designed to
         help you understand how we collect, use and safeguard the information you
         provide to us.
@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
         For purposes of this policy, &ldquo;Site&rdquo; refers to the
         Company&rsquo;s website at{" "}
         <a href={siteUrl}>{siteUrl}</a>.
-        &ldquo;Application&rdquo; refers to the icc desktop application for
+        &ldquo;Application&rdquo; refers to the imux desktop application for
         macOS. &ldquo;Service&rdquo; refers to the Site and Application
         collectively. The terms &ldquo;we,&rdquo; &ldquo;us,&rdquo; and
         &ldquo;our&rdquo; refer to the Company. &ldquo;You&rdquo; refers to

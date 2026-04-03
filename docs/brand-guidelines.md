@@ -1,20 +1,20 @@
-# ICC Brand Guidelines
+# IMUX Brand Guidelines
 
-This file defines the user-facing identity for `icc`.
+This file defines the user-facing identity for `imux`.
 
 ## Canonical identity
 
-- Product name: `icc`
+- Product name: `imux`
 - Repository: `mycode699/imux`
-- App label: `icc`
-- CLI name: `icc`
+- App label: `imux`
+- CLI name: `imux`
 - Short descriptor: `AI Command Center for macOS`
 
-Use `icc` in lowercase for product mentions unless a platform surface forces another style.
+Use `imux` in lowercase for product mentions unless a platform surface forces another style.
 
 ## Product positioning
 
-`icc` is a native macOS command center for AI work. It combines:
+`imux` is a native macOS command center for AI work. It combines:
 
 - Ghostty-grade terminal rendering
 - local and remote file exploration
@@ -30,7 +30,7 @@ The product promise is simple:
 
 ## Desired impression
 
-User-facing copy should make `icc` feel:
+User-facing copy should make `imux` feel:
 
 - fast
 - serious
@@ -42,7 +42,7 @@ The emotional target is not playful experimentation. It is confidence, control, 
 
 ## Messaging pillars
 
-When describing `icc`, emphasize these ideas:
+When describing `imux`, emphasize these ideas:
 
 1. Native macOS workspace, not a web wrapper.
 2. Terminal-first, but not terminal-only.
@@ -51,8 +51,8 @@ When describing `icc`, emphasize these ideas:
 
 ## Naming rules
 
-- Use `icc` for all user-facing product references.
-- Use `icc` for the shipped CLI, release notes, screenshots, onboarding copy, and support text.
+- Use `imux` for all user-facing product references.
+- Use `imux` for the shipped CLI, release notes, screenshots, onboarding copy, and support text.
 - Only mention legacy `icc` names when accuracy or compatibility requires it.
 - Keep `Ghostty`, `libghostty`, and upstream repository names accurate when discussing the rendering stack or fork history.
 
@@ -60,7 +60,7 @@ When describing `icc`, emphasize these ideas:
 
 - Prefer direct, operational language.
 - Emphasize speed, visibility, control, and execution.
-- Avoid describing `icc` as only a terminal emulator or only a Ghostty fork.
+- Avoid describing `imux` as only a terminal emulator or only a Ghostty fork.
 - Avoid mixing old and new product names in the same user-facing paragraph unless the paragraph is explicitly about migration or compatibility.
 
 ## Approved marketing language
@@ -90,6 +90,6 @@ The product can sound strong without sounding fake.
 Before shipping a public release:
 
 - update [README.md](../README.md) and the localized README landing pages
-- keep install and upgrade URLs pointed at `https://www.iccjk.com` or the official ICC repository
-- verify that screenshots, issue templates, and support links use `icc`
+- keep install and upgrade URLs pointed at `https://www.iccjk.com` or the official imux repository
+- verify that screenshots, issue templates, and support links use `imux`
 - document any legacy `icc` references as compatibility notes rather than product naming

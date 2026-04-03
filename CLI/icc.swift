@@ -17,6 +17,39 @@ struct CLIError: Error, CustomStringConvertible {
     var description: String { message }
 }
 
+private enum CLIBranding {
+    static let appName = "imux"
+    static let legacyAppName = "icc"
+    static let cliName = "imux"
+    static let socketPathEnvKeys = ["IMUX_SOCKET_PATH", "ICC_SOCKET_PATH", "ICC_SOCKET"]
+    static let socketPasswordEnvKeys = ["IMUX_SOCKET_PASSWORD", "ICC_SOCKET_PASSWORD"]
+    static let workspaceEnvKeys = ["IMUX_WORKSPACE_ID", "ICC_WORKSPACE_ID"]
+    static let surfaceEnvKeys = ["IMUX_SURFACE_ID", "ICC_SURFACE_ID"]
+    static let bundledCLIPathEnvKeys = ["IMUX_BUNDLED_CLI_PATH", "ICC_BUNDLED_CLI_PATH"]
+    static let bundleIDEnvKeys = ["IMUX_BUNDLE_ID", "ICC_BUNDLE_ID"]
+    static let socketEnableEnvKeys = ["IMUX_SOCKET_ENABLE", "ICC_SOCKET_ENABLE"]
+    static let socketModeEnvKeys = ["IMUX_SOCKET_MODE", "ICC_SOCKET_MODE"]
+    static let socketOverrideEnvKeys = ["IMUX_ALLOW_SOCKET_OVERRIDE", "ICC_ALLOW_SOCKET_OVERRIDE"]
+    static let tagEnvKeys = ["IMUX_TAG", "ICC_TAG"]
+    static let claudeHookStatePathEnvKeys = ["IMUX_CLAUDE_HOOK_STATE_PATH", "ICC_CLAUDE_HOOK_STATE_PATH"]
+    static let debugLastSocketHintPaths = ["/tmp/imux-last-socket-path", "/tmp/icc-last-socket-path"]
+
+    static func firstEnvironmentValue(_ keys: [String], in environment: [String: String]) -> String? {
+        for key in keys {
+            guard let raw = environment[key] else { continue }
+            let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty {
+                return trimmed
+            }
+        }
+        return nil
+    }
+
+    static func isSocketCandidateName(_ name: String) -> Bool {
+        (name.hasPrefix("imux") || name.hasPrefix("icc")) && name.hasSuffix(".sock")
+    }
+}
+
 private final class CLISocketSentryTelemetry {
     private let command: String
     private let subcommand: String
@@ -132,9 +165,9 @@ private final class CLISocketSentryTelemetry {
         self.command = command.lowercased()
         self.subcommand = commandArgs.first?.lowercased() ?? "help"
         self.socketPath = socketPath
-        self.envSocketPath = processEnv["ICC_SOCKET_PATH"] ?? processEnv["ICC_SOCKET"]
-        self.workspaceId = processEnv["ICC_WORKSPACE_ID"]
-        self.surfaceId = processEnv["ICC_SURFACE_ID"]
+        self.envSocketPath = CLIBranding.firstEnvironmentValue(CLIBranding.socketPathEnvKeys, in: processEnv)
+        self.workspaceId = CLIBranding.firstEnvironmentValue(CLIBranding.workspaceEnvKeys, in: processEnv)
+        self.surfaceId = CLIBranding.firstEnvironmentValue(CLIBranding.surfaceEnvKeys, in: processEnv)
         self.disabledByEnv =
             processEnv["ICC_CLI_SENTRY_DISABLED"] == "1" ||
             processEnv["ICC_CLAUDE_HOOK_SENTRY_DISABLED"] == "1"
@@ -221,13 +254,13 @@ private final class CLISocketSentryTelemetry {
 
         let tmpSockets = Self.discoverSockets(in: "/tmp", limit: 10)
         if !tmpSockets.isEmpty {
-            context["tmp_icc_sockets"] = tmpSockets
+            context["tmp_socket_candidates"] = tmpSockets
         }
         let taggedSockets = tmpSockets.filter { $0 != CLISocketPathResolver.legacyDefaultSocketPath }
         if CLISocketPathResolver.isImplicitDefaultPath(socketPath),
            (envSocketPath?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true),
            !taggedSockets.isEmpty {
-            context["possible_root_cause"] = "ICC_SOCKET_PATH/ICC_SOCKET missing while tagged sockets exist"
+            context["possible_root_cause"] = "IMUX_SOCKET_PATH/ICC_SOCKET_PATH/ICC_SOCKET missing while tagged sockets exist"
         }
 
         return context
@@ -254,7 +287,7 @@ private final class CLISocketSentryTelemetry {
         }
         var sockets: [String] = []
         for name in entries.sorted() {
-            guard name.hasPrefix("icc"), name.hasSuffix(".sock") else { continue }
+            guard CLIBranding.isSocketCandidateName(name) else { continue }
             let fullPath = URL(fileURLWithPath: directory)
                 .appendingPathComponent(name, isDirectory: false)
                 .path
@@ -336,7 +369,7 @@ private struct ClaudeHookSessionStoreFile: Codable {
 }
 
 private final class ClaudeHookSessionStore {
-    private static let defaultStatePath = "~/.icc/claude-hook-sessions.json"
+    private static let defaultStatePath = "~/.imux/claude-hook-sessions.json"
     private static let maxStateAgeSeconds: TimeInterval = 60 * 60 * 24 * 7
 
     private let statePath: String
@@ -348,7 +381,7 @@ private final class ClaudeHookSessionStore {
         processEnv: [String: String] = ProcessInfo.processInfo.environment,
         fileManager: FileManager = .default
     ) {
-        if let overridePath = processEnv["ICC_CLAUDE_HOOK_STATE_PATH"]?.trimmingCharacters(in: .whitespacesAndNewlines),
+        if let overridePath = CLIBranding.firstEnvironmentValue(CLIBranding.claudeHookStatePathEnvKeys, in: processEnv),
            !overridePath.isEmpty {
             self.statePath = NSString(string: overridePath).expandingTildeInPath
         } else {
@@ -529,16 +562,19 @@ enum CLIIDFormat: String {
 }
 
 enum SocketPasswordResolver {
-    private static let service = "com.icc.app.socket-control"
+    private static let service = "com.imux.app.socket-control"
+    private static let legacyService = "com.icc.app.socket-control"
     private static let account = "local-socket-password"
-    private static let directoryName = "icc"
+    private static let directoryName = "imux"
     private static let fileName = "socket-control-password"
 
     static func resolve(explicit: String?, socketPath: String) -> String? {
         if let explicit = normalized(explicit) {
             return explicit
         }
-        if let env = normalized(ProcessInfo.processInfo.environment["ICC_SOCKET_PASSWORD"]) {
+        if let env = normalized(
+            CLIBranding.firstEnvironmentValue(CLIBranding.socketPasswordEnvKeys, in: ProcessInfo.processInfo.environment)
+        ) {
             return env
         }
         if let filePassword = loadFromFile() {
@@ -557,16 +593,20 @@ enum SocketPasswordResolver {
         guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
-        let passwordURL = appSupport
-            .appendingPathComponent(directoryName, isDirectory: true)
-            .appendingPathComponent(fileName, isDirectory: false)
-        guard let data = try? Data(contentsOf: passwordURL) else {
-            return nil
+        let candidates = [
+            appSupport.appendingPathComponent(directoryName, isDirectory: true).appendingPathComponent(fileName, isDirectory: false),
+            appSupport.appendingPathComponent("icc", isDirectory: true).appendingPathComponent(fileName, isDirectory: false),
+            appSupport.appendingPathComponent("imux", isDirectory: true).appendingPathComponent(fileName, isDirectory: false),
+        ]
+        for passwordURL in candidates {
+            guard let data = try? Data(contentsOf: passwordURL),
+                  let value = String(data: data, encoding: .utf8),
+                  let normalizedValue = normalized(value) else {
+                continue
+            }
+            return normalizedValue
         }
-        guard let value = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-        return normalized(value)
+        return nil
     }
 
     static func keychainServices(
@@ -574,16 +614,16 @@ enum SocketPasswordResolver {
         environment: [String: String] = ProcessInfo.processInfo.environment
     ) -> [String] {
         guard let scope = keychainScope(socketPath: socketPath, environment: environment) else {
-            return [service]
+            return [service, legacyService]
         }
-        return ["\(service).\(scope)", service]
+        return ["\(service).\(scope)", service, "\(legacyService).\(scope)", legacyService]
     }
 
     private static func keychainScope(
         socketPath: String,
         environment: [String: String] = ProcessInfo.processInfo.environment
     ) -> String? {
-        if let tag = normalized(environment["ICC_TAG"]) {
+        if let tag = normalized(CLIBranding.firstEnvironmentValue(CLIBranding.tagEnvKeys, in: environment)) {
             let scoped = sanitizeScope(tag)
             if !scoped.isEmpty {
                 return scoped
@@ -591,7 +631,7 @@ enum SocketPasswordResolver {
         }
 
         let candidate = URL(fileURLWithPath: socketPath).lastPathComponent
-        let prefixes = ["icc-debug-", "icc-"]
+        let prefixes = ["imux-debug-", "imux-", "icc-debug-", "icc-"]
         for prefix in prefixes {
             guard candidate.hasPrefix(prefix), candidate.hasSuffix(".sock") else { continue }
             let start = candidate.index(candidate.startIndex, offsetBy: prefix.count)
@@ -660,23 +700,29 @@ private enum CLISocketPathSource {
 }
 
 private enum CLISocketPathResolver {
-    private static let appSupportDirectoryName = "icc"
-    private static let stableSocketFileName = "icc.sock"
+    private static let appSupportDirectoryName = "imux"
+    private static let stableSocketFileName = "imux.sock"
     private static let lastSocketPathFileName = "last-socket-path"
+    static let defaultSocketFallbackPath = "/tmp/imux.sock"
     static let legacyDefaultSocketPath = "/tmp/icc.sock"
-    private static let fallbackSocketPath = "/tmp/icc-debug.sock"
-    private static let stagingSocketPath = "/tmp/icc-staging.sock"
+    private static let fallbackSocketPath = "/tmp/imux-debug.sock"
+    private static let legacyFallbackSocketPath = "/tmp/icc-debug.sock"
+    private static let stagingSocketPath = "/tmp/imux-staging.sock"
+    private static let legacyStagingSocketPath = "/tmp/icc-staging.sock"
+    private static let lastSocketHintPath = "/tmp/imux-last-socket-path"
     private static let legacyLastSocketPathFile = "/tmp/icc-last-socket-path"
 
     static var defaultSocketPath: String {
         let stablePath: String? = stableSocketDirectoryURL()?
             .appendingPathComponent(stableSocketFileName, isDirectory: false)
             .path
-        return stablePath ?? legacyDefaultSocketPath
+        return stablePath ?? defaultSocketFallbackPath
     }
 
     static func isImplicitDefaultPath(_ path: String) -> Bool {
-        path == defaultSocketPath || path == legacyDefaultSocketPath
+        path == defaultSocketPath
+            || path == defaultSocketFallbackPath
+            || path == legacyDefaultSocketPath
     }
 
     static func resolve(
@@ -706,17 +752,22 @@ private enum CLISocketPathResolver {
     private static func candidatePaths(requestedPath: String, environment: [String: String]) -> [String] {
         var candidates: [String] = []
 
-        if let tag = normalized(environment["ICC_TAG"]) {
+        if let tag = normalized(CLIBranding.firstEnvironmentValue(CLIBranding.tagEnvKeys, in: environment)) {
             let slug = sanitizeTagSlug(tag)
+            candidates.append("/tmp/imux-debug-\(slug).sock")
+            candidates.append("/tmp/imux-\(slug).sock")
             candidates.append("/tmp/icc-debug-\(slug).sock")
             candidates.append("/tmp/icc-\(slug).sock")
         }
 
         candidates.append(requestedPath)
         candidates.append(defaultSocketPath)
+        candidates.append(defaultSocketFallbackPath)
         candidates.append(legacyDefaultSocketPath)
         candidates.append(fallbackSocketPath)
+        candidates.append(legacyFallbackSocketPath)
         candidates.append(stagingSocketPath)
+        candidates.append(legacyStagingSocketPath)
         candidates.append(contentsOf: discoverTaggedSockets(limit: 12))
         if let last = readLastSocketPath() {
             candidates.append(last)
@@ -728,7 +779,11 @@ private enum CLISocketPathResolver {
         let primaryCandidate: String? = stableSocketDirectoryURL()?
             .appendingPathComponent(lastSocketPathFileName, isDirectory: false)
             .path
-        let candidates = [primaryCandidate, legacyLastSocketPathFile].compactMap { $0 }
+        let legacyCandidates = legacyStableSocketDirectoryURLs().map {
+            $0.appendingPathComponent(lastSocketPathFileName, isDirectory: false).path
+        }
+        let candidates = [primaryCandidate, lastSocketHintPath, legacyLastSocketPathFile]
+            .compactMap { $0 } + legacyCandidates
 
         for candidate in candidates {
             guard let data = try? String(contentsOfFile: candidate, encoding: .utf8) else {
@@ -748,14 +803,20 @@ private enum CLISocketPathResolver {
                 continue
             }
             discovered.reserveCapacity(min(limit, discovered.count + entries.count))
-            for name in entries where name.hasPrefix("icc") && name.hasSuffix(".sock") {
+            for name in entries where CLIBranding.isSocketCandidateName(name) {
                 let path = URL(fileURLWithPath: directory)
                     .appendingPathComponent(name, isDirectory: false)
                     .path
                 var st = stat()
                 guard lstat(path, &st) == 0 else { continue }
                 guard (st.st_mode & mode_t(S_IFMT)) == mode_t(S_IFSOCK) else { continue }
-                if path == defaultSocketPath || path == legacyDefaultSocketPath || path == fallbackSocketPath || path == stagingSocketPath {
+                if path == defaultSocketPath
+                    || path == defaultSocketFallbackPath
+                    || path == legacyDefaultSocketPath
+                    || path == fallbackSocketPath
+                    || path == legacyFallbackSocketPath
+                    || path == stagingSocketPath
+                    || path == legacyStagingSocketPath {
                     continue
                 }
                 let modified = TimeInterval(st.st_mtimespec.tv_sec) + TimeInterval(st.st_mtimespec.tv_nsec) / 1_000_000_000
@@ -818,12 +879,21 @@ private enum CLISocketPathResolver {
         return appSupportDirectory.appendingPathComponent(appSupportDirectoryName, isDirectory: true)
     }
 
+    private static func legacyStableSocketDirectoryURLs() -> [URL] {
+        guard let appSupportDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+            return []
+        }
+        return [
+            appSupportDirectory.appendingPathComponent("icc", isDirectory: true),
+            appSupportDirectory.appendingPathComponent("imux", isDirectory: true),
+        ]
+    }
+
     private static func socketDiscoveryDirectories() -> [String] {
-        let appSupportSocketDirectory: String = stableSocketDirectoryURL()?.path ?? ""
-        return dedupe([
-            "/tmp",
-            appSupportSocketDirectory,
-        ])
+        let appSupportSocketDirectories = ([stableSocketDirectoryURL()?.path]
+            + legacyStableSocketDirectoryURLs().map(\.path))
+            .compactMap { $0 }
+        return dedupe(["/tmp"] + appSupportSocketDirectories)
     }
 
     private static func dedupe(_ paths: [String]) -> [String] {
@@ -995,14 +1065,14 @@ final class SocketClient {
         }
 
         guard let watchDirectory = existingWatchDirectory(forPath: path) else {
-            throw CLIError(message: "icc app did not start in time (socket not found at \(path))")
+            throw CLIError(message: "imux app did not start in time (socket not found at \(path))")
         }
         let watchFD = open(watchDirectory, O_EVTONLY)
         guard watchFD >= 0 else {
-            throw CLIError(message: "icc app did not start in time (socket not found at \(path))")
+            throw CLIError(message: "imux app did not start in time (socket not found at \(path))")
         }
 
-        let queue = DispatchQueue(label: "com.icc.cli.socket-watch.\(UUID().uuidString)")
+        let queue = DispatchQueue(label: "com.imux.cli.socket-watch.\(UUID().uuidString)")
         let semaphore = DispatchSemaphore(value: 0)
         var connected = false
         let source = DispatchSource.makeFileSystemObjectSource(
@@ -1033,7 +1103,7 @@ final class SocketClient {
         guard semaphore.wait(timeout: .now() + timeout) == .success else {
             source.cancel()
             client.close()
-            throw CLIError(message: "icc app did not start in time (socket not found at \(path))")
+            throw CLIError(message: "imux app did not start in time (socket not found at \(path))")
         }
 
         source.cancel()
@@ -1251,8 +1321,6 @@ enum CLIProcessRunner {
 struct ICCCLI {
     let args: [String]
 
-    private static let debugLastSocketHintPath = "/tmp/icc-last-socket-path"
-
     private static func normalizedEnvValue(_ value: String?) -> String? {
         guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines),
               !trimmed.isEmpty else {
@@ -1269,47 +1337,41 @@ struct ICCCLI {
 
     private static func debugSocketPathFromHintFile() -> String? {
 #if DEBUG
-        guard let raw = try? String(contentsOfFile: debugLastSocketHintPath, encoding: .utf8) else {
-            return nil
+        for hintPath in CLIBranding.debugLastSocketHintPaths {
+            guard let raw = try? String(contentsOfFile: hintPath, encoding: .utf8),
+                  let hinted = normalizedEnvValue(raw),
+                  (hinted.hasPrefix("/tmp/imux-debug") || hinted.hasPrefix("/tmp/icc-debug")),
+                  hinted.hasSuffix(".sock"),
+                  pathIsSocket(hinted) else {
+                continue
+            }
+            return hinted
         }
-        guard let hinted = normalizedEnvValue(raw),
-              hinted.hasPrefix("/tmp/icc-debug"),
-              hinted.hasSuffix(".sock"),
-              pathIsSocket(hinted) else {
-            return nil
-        }
-        return hinted
+        return nil
 #else
         return nil
 #endif
     }
 
     private static func defaultSocketPath(environment: [String: String]) -> String {
-        if let explicit = normalizedEnvValue(environment["ICC_SOCKET_PATH"]) {
+        if let explicit = normalizedEnvValue(
+            CLIBranding.firstEnvironmentValue(CLIBranding.socketPathEnvKeys, in: environment)
+        ) {
             return explicit
         }
 #if DEBUG
         if let hinted = debugSocketPathFromHintFile() {
             return hinted
         }
-        return "/tmp/icc-debug.sock"
+        return "/tmp/imux-debug.sock"
 #else
-        return "/tmp/icc.sock"
+        return "/tmp/imux.sock"
 #endif
     }
 
     func run() throws {
         let processEnv = ProcessInfo.processInfo.environment
-        let envSocketPath: String? = {
-            for key in ["ICC_SOCKET_PATH", "ICC_SOCKET"] {
-                guard let raw = processEnv[key] else { continue }
-                let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-                if !trimmed.isEmpty {
-                    return trimmed
-                }
-            }
-            return nil
-        }()
+        let envSocketPath = CLIBranding.firstEnvironmentValue(CLIBranding.socketPathEnvKeys, in: processEnv)
         var socketPath = envSocketPath ?? CLISocketPathResolver.defaultSocketPath
         var socketPathSource: CLISocketPathSource
         if let envSocketPath {
@@ -1410,14 +1472,14 @@ struct ICCCLI {
         }
 
         // Check for --help/-h on subcommands before connecting to the socket,
-        // so help text is available even when icc is not running.
+        // so help text is available even when imux is not running.
         if command != "__tmux-compat",
            command != "claude-teams",
            (commandArgs.contains("--help") || commandArgs.contains("-h")) {
             if dispatchSubcommandHelp(command: command, commandArgs: commandArgs) {
                 return
             }
-            print("Unknown command '\(command)'. Run 'icc help' to see available commands.")
+            print("Unknown command '\(command)'. Run 'imux help' to see available commands.")
             return
         }
 
@@ -2420,31 +2482,31 @@ struct ICCCLI {
             if let first = args.first, first.hasPrefix("-") {
                 throw CLIError(
                     message:
-                        "markdown open: unknown flag '\(first)'. Usage: icc markdown open <path> [--workspace <id|ref|index>] [--surface <id|ref|index>] [--window <id|ref|index>] [--direction right|down|left|up]"
+                        "markdown open: unknown flag '\(first)'. Usage: imux markdown open <path> [--workspace <id|ref|index>] [--surface <id|ref|index>] [--window <id|ref|index>] [--direction right|down|left|up]"
                 )
             } else if let first = args.first, looksLikePath(first) || first.contains(".") {
                 subArgs = args
             } else if let first = args.first {
-                throw CLIError(message: "Unknown markdown subcommand: \(first). Usage: icc markdown open <path>")
+                throw CLIError(message: "Unknown markdown subcommand: \(first). Usage: imux markdown open <path>")
             } else {
                 subArgs = []
             }
         }
 
         guard let rawPath = subArgs.first, !rawPath.isEmpty else {
-            throw CLIError(message: "markdown open requires a file path. Usage: icc markdown open <path>")
+            throw CLIError(message: "markdown open requires a file path. Usage: imux markdown open <path>")
         }
         let trailingArgs = Array(subArgs.dropFirst())
         if let unknownFlag = trailingArgs.first(where: { $0.hasPrefix("-") }) {
             throw CLIError(
                 message:
-                    "markdown open: unknown flag '\(unknownFlag)'. Usage: icc markdown open <path> [--workspace <id|ref|index>] [--surface <id|ref|index>] [--window <id|ref|index>] [--direction right|down|left|up]"
+                    "markdown open: unknown flag '\(unknownFlag)'. Usage: imux markdown open <path> [--workspace <id|ref|index>] [--surface <id|ref|index>] [--window <id|ref|index>] [--direction right|down|left|up]"
             )
         }
         if let extraArg = trailingArgs.first {
             throw CLIError(
                 message:
-                    "markdown open: unexpected argument '\(extraArg)'. Usage: icc markdown open <path> [--workspace <id|ref|index>] [--surface <id|ref|index>] [--window <id|ref|index>] [--direction right|down|left|up]"
+                    "markdown open: unexpected argument '\(extraArg)'. Usage: imux markdown open <path> [--workspace <id|ref|index>] [--surface <id|ref|index>] [--window <id|ref|index>] [--direction right|down|left|up]"
             )
         }
 
@@ -2674,7 +2736,7 @@ struct ICCCLI {
     private func launchApp() throws {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-        process.arguments = ["-a", "icc"]
+        process.arguments = ["-a", "imux"]
         try process.run()
         process.waitUntilExit()
     }
@@ -2682,7 +2744,7 @@ struct ICCCLI {
     private func activateApp() throws {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-        process.arguments = ["-a", "icc"]
+        process.arguments = ["-a", "imux"]
         try process.run()
         process.waitUntilExit()
     }
@@ -3820,7 +3882,7 @@ struct ICCCLI {
         }
 
         guard let destination else {
-            throw CLIError(message: "ssh requires a destination (example: icc ssh user@host)")
+            throw CLIError(message: "ssh requires a destination (example: imux ssh user@host)")
         }
         return SSHCommandOptions(
             destination: destination,
@@ -3912,7 +3974,7 @@ struct ICCCLI {
 
     private func runtimeEncodedRemoteBootstrapCommandShell(base64Placeholder: String) -> String {
         return [
-            "icc_tmp=$(mktemp \"${TMPDIR:-/tmp}/icc-ssh-bootstrap.XXXXXX\") || exit 1",
+            "icc_tmp=$(mktemp \"${TMPDIR:-/tmp}/imux-ssh-bootstrap.XXXXXX\") || exit 1",
             "(printf %s '\(base64Placeholder)' | base64 -d 2>/dev/null || printf %s '\(base64Placeholder)' | base64 -D 2>/dev/null) > \"$icc_tmp\" || { rm -f \"$icc_tmp\"; exit 1; }",
             "chmod 700 \"$icc_tmp\" >/dev/null 2>&1 || true",
             "/bin/sh \"$icc_tmp\"",
@@ -3942,10 +4004,10 @@ struct ICCCLI {
             "if [ -n '__ICC_SURFACE_ID__' ]; then export ICC_SURFACE_ID='__ICC_SURFACE_ID__'; fi",
         ]
         let relaySocket = remoteRelayPort > 0 ? "127.0.0.1:\(remoteRelayPort)" : nil
-        let shellStateDir = "$HOME/.icc/relay/\(max(remoteRelayPort, 0)).shell"
+        let shellStateDir = "$HOME/.imux/relay/\(max(remoteRelayPort, 0)).shell"
         var commonShellLines = remoteTerminalLines
         commonShellLines.append(contentsOf: remoteEnvExportLines)
-        commonShellLines.append("export PATH=\"$HOME/.icc/bin:$PATH\"")
+        commonShellLines.append("export PATH=\"$HOME/.imux/bin:$PATH\"")
         if let relaySocket {
             commonShellLines.append("export ICC_SOCKET_PATH=\(relaySocket)")
         }
@@ -3969,7 +4031,7 @@ struct ICCCLI {
             "ICC_LOGIN_SHELL=\"${SHELL:-/bin/zsh}\"",
             "case \"${ICC_LOGIN_SHELL##*/}\" in",
             "  zsh)",
-            "    mkdir -p \"$HOME/.icc/relay\"",
+            "    mkdir -p \"$HOME/.imux/relay\"",
             "    icc_shell_dir=\"\(shellStateDir)\"",
             "    mkdir -p \"$icc_shell_dir\"",
             "    cat > \"$icc_shell_dir/.zshenv\" <<'ICCZSHENV'",
@@ -4001,7 +4063,7 @@ struct ICCCLI {
             "    exec \"$ICC_LOGIN_SHELL\" -il",
             "    ;;",
             "  bash)",
-            "    mkdir -p \"$HOME/.icc/relay\"",
+            "    mkdir -p \"$HOME/.imux/relay\"",
             "    icc_shell_dir=\"\(shellStateDir)\"",
             "    mkdir -p \"$icc_shell_dir\"",
             "    cat > \"$icc_shell_dir/.bashrc\" <<'ICCBASHRC'",
@@ -4175,7 +4237,7 @@ struct ICCCLI {
         let encodedScript = Data(remoteBootstrapScript.utf8).base64EncodedString()
         let encodedLiteral = shellQuote(encodedScript)
         return [
-            "icc_tmp=$(mktemp \"${TMPDIR:-/tmp}/icc-ssh-bootstrap.XXXXXX\") || exit 1",
+            "icc_tmp=$(mktemp \"${TMPDIR:-/tmp}/imux-ssh-bootstrap.XXXXXX\") || exit 1",
             "(printf %s \(encodedLiteral) | base64 -d 2>/dev/null || printf %s \(encodedLiteral) | base64 -D 2>/dev/null) > \"$icc_tmp\" || { rm -f \"$icc_tmp\"; exit 1; }",
             "chmod 700 \"$icc_tmp\" >/dev/null 2>&1 || true",
             "/bin/sh \"$icc_tmp\"",
@@ -4227,7 +4289,7 @@ struct ICCCLI {
     private func writeSSHStartupScript(_ scriptBody: String, remoteRelayPort: Int) throws -> String {
         let tempDir = FileManager.default.temporaryDirectory
         let scriptURL = tempDir.appendingPathComponent(
-            "icc-ssh-startup-\(remoteRelayPort)-\(UUID().uuidString.lowercased()).sh"
+            "imux-ssh-startup-\(remoteRelayPort)-\(UUID().uuidString.lowercased()).sh"
         )
         let script = "#!/bin/sh\n\(scriptBody)\n"
         try script.write(to: scriptURL, atomically: true, encoding: .utf8)
@@ -4243,10 +4305,10 @@ struct ICCCLI {
             "&& [ -n \"${ICC_WORKSPACE_ID:-}\" ]",
             "&& [ -n \"${ICC_SURFACE_ID:-}\" ]; then",
             "\"${ICC_BUNDLED_CLI_PATH}\" --socket \"${ICC_SOCKET_PATH}\" ssh-session-end --relay-port \(remoteRelayPort) --workspace \"${ICC_WORKSPACE_ID}\" --surface \"${ICC_SURFACE_ID}\" >/dev/null 2>&1 || true;",
-            "elif command -v icc >/dev/null 2>&1",
+            "elif command -v imux >/dev/null 2>&1",
             "&& [ -n \"${ICC_WORKSPACE_ID:-}\" ]",
             "&& [ -n \"${ICC_SURFACE_ID:-}\" ]; then",
-            "icc ssh-session-end --relay-port \(remoteRelayPort) --workspace \"${ICC_WORKSPACE_ID}\" --surface \"${ICC_SURFACE_ID}\" >/dev/null 2>&1 || true;",
+            "imux ssh-session-end --relay-port \(remoteRelayPort) --workspace \"${ICC_WORKSPACE_ID}\" --surface \"${ICC_SURFACE_ID}\" >/dev/null 2>&1 || true;",
             "fi",
         ].joined(separator: " ")
     }
@@ -4292,13 +4354,13 @@ struct ICCCLI {
         let downloadURL = entry?.downloadURL ?? "unknown"
         let checksumsAssetName = manifest?.checksumsAssetName ?? "unknown"
         let checksumsURL = manifest?.checksumsURL ?? "unknown"
-        let downloadCommand = "gh release download \(releaseTag) --repo manaflow-ai/icc --pattern \(assetName)"
-        let downloadChecksumsCommand = "gh release download \(releaseTag) --repo manaflow-ai/icc --pattern \(checksumsAssetName)"
+        let downloadCommand = "gh release download \(releaseTag) --repo mycode699/imux --pattern \(assetName)"
+        let downloadChecksumsCommand = "gh release download \(releaseTag) --repo mycode699/imux --pattern \(checksumsAssetName)"
         let checksumVerifyCommand = "shasum -a 256 -c \(checksumsAssetName) --ignore-missing"
         let signerWorkflow = releaseTag == "nightly"
-            ? "manaflow-ai/icc/.github/workflows/nightly.yml"
-            : "manaflow-ai/icc/.github/workflows/release.yml"
-        let verifyCommand = "gh attestation verify ./\(assetName) --repo manaflow-ai/icc --signer-workflow \(signerWorkflow)"
+            ? "mycode699/imux/.github/workflows/nightly.yml"
+            : "mycode699/imux/.github/workflows/release.yml"
+        let verifyCommand = "gh attestation verify ./\(assetName) --repo mycode699/imux --signer-workflow \(signerWorkflow)"
 
         let payload: [String: Any] = [
             "app_version": remoteDaemonVersionString(from: info),
@@ -4422,13 +4484,13 @@ struct ICCCLI {
             )
         } catch {
             return URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-                .appendingPathComponent("icc-remote-daemons", isDirectory: true)
+                .appendingPathComponent("imux-remote-daemons", isDirectory: true)
                 .appendingPathComponent(version, isDirectory: true)
                 .appendingPathComponent("\(goOS)-\(goArch)", isDirectory: true)
                 .appendingPathComponent("iccd-remote", isDirectory: false)
         }
         return root
-            .appendingPathComponent("icc", isDirectory: true)
+            .appendingPathComponent("imux", isDirectory: true)
             .appendingPathComponent("remote-daemons", isDirectory: true)
             .appendingPathComponent(version, isDirectory: true)
             .appendingPathComponent("\(goOS)-\(goArch)", isDirectory: true)
@@ -4456,9 +4518,9 @@ struct ICCCLI {
 
     private func defaultSSHControlPathTemplate(remoteRelayPort: Int? = nil) -> String {
         if let remoteRelayPort, remoteRelayPort > 0 {
-            return "/tmp/icc-ssh-\(getuid())-\(remoteRelayPort)-%C"
+            return "/tmp/imux-ssh-\(getuid())-\(remoteRelayPort)-%C"
         }
-        return "/tmp/icc-ssh-\(getuid())-%C"
+        return "/tmp/imux-ssh-\(getuid())-%C"
     }
 
     private func normalizedSSHIdentityPath(_ rawPath: String?) -> String? {
@@ -4504,7 +4566,7 @@ struct ICCCLI {
             if let trimmedExplicit, !trimmedExplicit.isEmpty {
                 return trimmedExplicit
             }
-            guard let marker = try? String(contentsOfFile: "/tmp/icc-last-debug-log-path", encoding: .utf8) else {
+            guard let marker = try? String(contentsOfFile: "/tmp/imux-last-debug-log-path", encoding: .utf8) else {
                 return nil
             }
             let trimmedMarker = marker.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -4512,7 +4574,7 @@ struct ICCCLI {
         }()
         guard let path else { return }
         let timestamp = ISO8601DateFormatter().string(from: Date())
-        let line = "\(timestamp) [icc-cli] \(message())\n"
+        let line = "\(timestamp) [imux-cli] \(message())\n"
         guard let data = line.data(using: .utf8) else { return }
         if !FileManager.default.fileExists(atPath: path) {
             FileManager.default.createFile(atPath: path, contents: nil)
@@ -4637,7 +4699,7 @@ struct ICCCLI {
                 lines.append("ready_state: \(readyState)")
             }
             if url.isEmpty || url == "about:blank" {
-                lines.append("hint: run 'icc browser <surface> get url' to verify navigation")
+                lines.append("hint: run 'imux browser <surface> get url' to verify navigation")
             }
 
             return lines.joined(separator: "\n")
@@ -5172,7 +5234,7 @@ struct ICCCLI {
                 syncScreenshotLocationFields()
                 if !hasText(screenshotPath) && !hasText(screenshotURL) {
                     let outputDir = FileManager.default.temporaryDirectory
-                        .appendingPathComponent("icc-browser-screenshots-cli", isDirectory: true)
+                        .appendingPathComponent("imux-browser-screenshots-cli", isDirectory: true)
                     if (try? FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)) != nil {
                         bestEffortPruneTemporaryFiles(in: outputDir)
                         let timestampMs = Int(Date().timeIntervalSince1970 * 1000)
@@ -5976,39 +6038,39 @@ struct ICCCLI {
         switch command {
         case "ping":
             return """
-            Usage: icc ping
+            Usage: imux ping
 
-            Check connectivity to the icc socket server.
+            Check connectivity to the imux socket server.
             """
         case "capabilities":
             return """
-            Usage: icc capabilities
+            Usage: imux capabilities
 
             Print server capabilities as JSON.
             """
         case "help":
             return """
-            Usage: icc help
+            Usage: imux help
 
             Show top-level CLI usage and command list.
             """
         case "welcome":
             return """
-            Usage: icc welcome
+            Usage: imux welcome
 
-            Show the icc welcome screen with current shortcuts and brand links.
+            Show the imux welcome screen with current shortcuts and brand links.
             Auto-runs once on first launch.
             """
         case "shortcuts":
             return """
-            Usage: icc shortcuts
+            Usage: imux shortcuts
 
             Open the Settings window to Keyboard Shortcuts.
             """
         case "feedback":
             return """
-            Usage: icc feedback
-                   icc feedback --email <email> --body <text> [--image <path> ...]
+            Usage: imux feedback
+                   imux feedback --email <email> --body <text> [--image <path> ...]
 
             Without args, open the Send Feedback modal in the running app.
 
@@ -6025,17 +6087,17 @@ struct ICCCLI {
             """
         case "themes":
             return """
-            Usage: icc themes
-                   icc themes list
-                   icc themes set <theme>
-                   icc themes set --light <theme> [--dark <theme>]
-                   icc themes set --dark <theme> [--light <theme>]
-                   icc themes clear
+            Usage: imux themes
+                   imux themes list
+                   imux themes set <theme>
+                   imux themes set --light <theme> [--dark <theme>]
+                   imux themes set --dark <theme> [--light <theme>]
+                   imux themes clear
 
-            When run in a TTY, `icc themes` opens an interactive theme picker with
-            live app preview. Use `icc themes list` for a plain listing.
+            When run in a TTY, `imux themes` opens an interactive theme picker with
+            live app preview. Use `imux themes list` for a plain listing.
 
-            The picker previews the selected theme across the running icc app and
+            The picker previews the selected theme across the running imux app and
             lets you apply it to the light theme, dark theme, or both defaults.
 
             Commands:
@@ -6043,39 +6105,39 @@ struct ICCCLI {
               set <theme>               Set the same theme for both light and dark appearance
               set --light <theme>       Set the light appearance theme
               set --dark <theme>        Set the dark appearance theme
-              clear                     Remove the icc theme override and fall back to other config
+              clear                     Remove the imux theme override and fall back to other config
 
             Examples:
-              icc themes
-              icc themes list
-              icc themes set "Catppuccin Mocha"
-              icc themes set --light "Catppuccin Latte" --dark "Catppuccin Mocha"
-              icc themes clear
+              imux themes
+              imux themes list
+              imux themes set "Catppuccin Mocha"
+              imux themes set --light "Catppuccin Latte" --dark "Catppuccin Mocha"
+              imux themes clear
             """
         case "claude-teams":
             return String(localized: "cli.claude-teams.usage", defaultValue: """
-            Usage: icc claude-teams [claude-args...]
+            Usage: imux claude-teams [claude-args...]
 
             Launch Claude Code with agent teams enabled.
 
             This command:
               - defaults Claude teammate mode to auto
-              - sets a tmux-like environment so Claude auto mode uses icc splits
+              - sets a tmux-like environment so Claude auto mode uses imux splits
               - sets CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
               - prepends a private tmux shim to PATH
               - forwards all remaining arguments to claude
 
-            The tmux shim translates supported tmux window/pane commands into icc
-            workspace and split operations in the current icc session.
+            The tmux shim translates supported tmux window/pane commands into imux
+            workspace and split operations in the current imux session.
 
             Examples:
-              icc claude-teams
-              icc claude-teams --continue
-              icc claude-teams --model sonnet
+              imux claude-teams
+              imux claude-teams --continue
+              imux claude-teams --model sonnet
             """)
         case "identify":
             return """
-            Usage: icc identify [--workspace <id|ref|index>] [--surface <id|ref|index>] [--no-caller]
+            Usage: imux identify [--workspace <id|ref|index>] [--surface <id|ref|index>] [--no-caller]
 
             Print server identity and caller context details.
 
@@ -6086,28 +6148,28 @@ struct ICCCLI {
             """
         case "list-windows":
             return """
-            Usage: icc list-windows
+            Usage: imux list-windows
 
             List open windows.
             """
         case "current-window":
             return """
-            Usage: icc current-window
+            Usage: imux current-window
 
             Print the currently selected window ID.
             """
         case "new-window":
             return """
-            Usage: icc new-window
+            Usage: imux new-window
 
             Create a new window.
 
             Example:
-              icc new-window
+              imux new-window
             """
         case "focus-window":
             return """
-            Usage: icc focus-window --window <id|ref|index>
+            Usage: imux focus-window --window <id|ref|index>
 
             Focus (bring to front) the specified window.
 
@@ -6115,12 +6177,12 @@ struct ICCCLI {
               --window <id|ref|index>   Window to focus (required)
 
             Example:
-              icc focus-window --window 0
-              icc focus-window --window window:1
+              imux focus-window --window 0
+              imux focus-window --window window:1
             """
         case "close-window":
             return """
-            Usage: icc close-window --window <id|ref|index>
+            Usage: imux close-window --window <id|ref|index>
 
             Close the specified window.
 
@@ -6128,12 +6190,12 @@ struct ICCCLI {
               --window <id|ref|index>   Window to close (required)
 
             Example:
-              icc close-window --window 0
-              icc close-window --window window:1
+              imux close-window --window 0
+              imux close-window --window window:1
             """
         case "move-workspace-to-window":
             return """
-            Usage: icc move-workspace-to-window --workspace <id|ref|index> --window <id|ref|index>
+            Usage: imux move-workspace-to-window --workspace <id|ref|index> --window <id|ref|index>
 
             Move a workspace to a different window.
 
@@ -6142,11 +6204,11 @@ struct ICCCLI {
               --window <id|ref|index>      Target window (required)
 
             Example:
-              icc move-workspace-to-window --workspace workspace:2 --window window:1
+              imux move-workspace-to-window --workspace workspace:2 --window window:1
             """
         case "move-surface":
             return """
-            Usage: icc move-surface [--surface <id|ref|index> | <id|ref|index>] [flags]
+            Usage: imux move-surface [--surface <id|ref|index> | <id|ref|index>] [flags]
 
             Move a surface to a different pane, workspace, or window.
 
@@ -6165,12 +6227,12 @@ struct ICCCLI {
               --focus <true|false>       Focus the surface after moving
 
             Example:
-              icc move-surface --surface surface:1 --workspace workspace:2
-              icc move-surface surface:1 --pane pane:2 --index 0
+              imux move-surface --surface surface:1 --workspace workspace:2
+              imux move-surface surface:1 --pane pane:2 --index 0
             """
         case "reorder-surface":
             return """
-            Usage: icc reorder-surface [--surface <id|ref|index> | <id|ref|index>] [flags]
+            Usage: imux reorder-surface [--surface <id|ref|index> | <id|ref|index>] [flags]
 
             Reorder a surface within its pane.
 
@@ -6186,12 +6248,12 @@ struct ICCCLI {
               --index <n>                Place at this index
 
             Example:
-              icc reorder-surface --surface surface:1 --index 0
-              icc reorder-surface --surface surface:3 --after surface:1
+              imux reorder-surface --surface surface:1 --index 0
+              imux reorder-surface --surface surface:3 --after surface:1
             """
         case "reorder-workspace":
             return """
-            Usage: icc reorder-workspace [--workspace <id|ref|index> | <id|ref|index>] [flags]
+            Usage: imux reorder-workspace [--workspace <id|ref|index> | <id|ref|index>] [flags]
 
             Reorder a workspace within its window.
 
@@ -6207,12 +6269,12 @@ struct ICCCLI {
               --window <id|ref|index>      Window context
 
             Example:
-              icc reorder-workspace --workspace workspace:2 --index 0
-              icc reorder-workspace --workspace workspace:3 --after workspace:1
+              imux reorder-workspace --workspace workspace:2 --index 0
+              imux reorder-workspace --workspace workspace:3 --after workspace:1
             """
         case "workspace-action":
             return """
-            Usage: icc workspace-action --action <name> [flags]
+            Usage: imux workspace-action --action <name> [flags]
 
             Perform workspace context-menu actions from CLI/socket.
 
@@ -6231,15 +6293,15 @@ struct ICCCLI {
               --color <#hex|name>          Color for set-color (e.g. '#C0392B' or 'Red')
 
             Example:
-              icc workspace-action --workspace workspace:2 --action pin
-              icc workspace-action --action rename --title "infra"
-              icc workspace-action close-others
-              icc workspace-action --action set-color --workspace workspace:1 --color '#C0392B'
-              icc workspace-action --action clear-color --workspace workspace:1
+              imux workspace-action --workspace workspace:2 --action pin
+              imux workspace-action --action rename --title "infra"
+              imux workspace-action close-others
+              imux workspace-action --action set-color --workspace workspace:1 --color '#C0392B'
+              imux workspace-action --action clear-color --workspace workspace:1
             """
         case "tab-action":
             return """
-            Usage: icc tab-action --action <name> [flags]
+            Usage: imux tab-action --action <name> [flags]
 
             Perform horizontal tab context-menu actions from CLI/socket.
 
@@ -6260,13 +6322,13 @@ struct ICCCLI {
               --url <url>                  Optional URL for new-browser-right
 
             Example:
-              icc tab-action --tab tab:3 --action pin
-              icc tab-action --action close-right
-              icc tab-action --tab tab:2 --action rename --title "build logs"
+              imux tab-action --tab tab:3 --action pin
+              imux tab-action --action close-right
+              imux tab-action --tab tab:2 --action rename --title "build logs"
             """
         case "rename-tab":
             return """
-            Usage: icc rename-tab [--workspace <id|ref>] [--tab <id|ref>] [--surface <id|ref>] [--] <title>
+            Usage: imux rename-tab [--workspace <id|ref>] [--tab <id|ref>] [--surface <id|ref>] [--] <title>
 
             Compatibility alias for tab-action rename.
 
@@ -6283,13 +6345,13 @@ struct ICCCLI {
               --title <text>         Explicit title (or use trailing positional title)
 
             Examples:
-              icc rename-tab "build logs"
-              icc rename-tab --tab tab:3 "staging server"
-              icc rename-tab --workspace workspace:2 --surface surface:5 --title "agent run"
+              imux rename-tab "build logs"
+              imux rename-tab --tab tab:3 "staging server"
+              imux rename-tab --workspace workspace:2 --surface surface:5 --title "agent run"
             """
         case "new-workspace":
             return """
-            Usage: icc new-workspace [--cwd <path>] [--command <text>]
+            Usage: imux new-workspace [--cwd <path>] [--command <text>]
 
             Create a new workspace in the current window.
 
@@ -6298,25 +6360,25 @@ struct ICCCLI {
               --command <text>   Send text+Enter to the new workspace after creation
 
             Example:
-              icc new-workspace
-              icc new-workspace --cwd ~/projects/myapp
-              icc new-workspace --cwd . --command "npm test"
+              imux new-workspace
+              imux new-workspace --cwd ~/projects/myapp
+              imux new-workspace --cwd . --command "npm test"
             """
         case "list-workspaces":
             return """
-            Usage: icc list-workspaces
+            Usage: imux list-workspaces
 
             List workspaces in the current window.
 
             Example:
-              icc list-workspaces
+              imux list-workspaces
             """
         case "ssh":
             return """
-            Usage: icc ssh <destination> [flags] [-- <remote-command-args>]
+            Usage: imux ssh <destination> [flags] [-- <remote-command-args>]
 
             Create a new workspace, mark it as remote-SSH, and start an SSH session in that workspace.
-            icc will also establish a local SSH proxy endpoint so browser traffic can egress from the remote host.
+            imux will also establish a local SSH proxy endpoint so browser traffic can egress from the remote host.
 
             Flags:
               --name <title>          Optional workspace title
@@ -6325,24 +6387,24 @@ struct ICCCLI {
               --ssh-option <opt>      Extra SSH -o option (repeatable)
 
             Example:
-              icc ssh dev@my-host
-              icc ssh dev@my-host --name "gpu-box" --port 2222 --identity ~/.ssh/id_ed25519
-              icc ssh dev@my-host --ssh-option UserKnownHostsFile=/dev/null --ssh-option StrictHostKeyChecking=no
+              imux ssh dev@my-host
+              imux ssh dev@my-host --name "gpu-box" --port 2222 --identity ~/.ssh/id_ed25519
+              imux ssh dev@my-host --ssh-option UserKnownHostsFile=/dev/null --ssh-option StrictHostKeyChecking=no
             """
         case "remote-daemon-status":
             return """
-            Usage: icc remote-daemon-status [--os <darwin|linux>] [--arch <arm64|amd64>]
+            Usage: imux remote-daemon-status [--os <darwin|linux>] [--arch <arm64|amd64>]
 
             Show the embedded iccd-remote release manifest, local cache status, checksum verification state,
             and the GitHub attestation verification command for a target platform.
 
             Example:
-              icc remote-daemon-status
-              icc remote-daemon-status --os linux --arch arm64
+              imux remote-daemon-status
+              imux remote-daemon-status --os linux --arch arm64
             """
         case "new-split":
             return """
-            Usage: icc new-split <left|right|up|down> [flags]
+            Usage: imux new-split <left|right|up|down> [flags]
 
             Split the current pane in the given direction.
 
@@ -6352,12 +6414,12 @@ struct ICCCLI {
               --panel <id|ref>       Alias for --surface
 
             Example:
-              icc new-split right
-              icc new-split down --workspace workspace:1
+              imux new-split right
+              imux new-split down --workspace workspace:1
             """
         case "list-panes":
             return """
-            Usage: icc list-panes [--workspace <id|ref>]
+            Usage: imux list-panes [--workspace <id|ref>]
 
             List panes in a workspace.
 
@@ -6365,12 +6427,12 @@ struct ICCCLI {
               --workspace <id|ref>   Workspace context (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc list-panes
-              icc list-panes --workspace workspace:2
+              imux list-panes
+              imux list-panes --workspace workspace:2
             """
         case "list-pane-surfaces":
             return """
-            Usage: icc list-pane-surfaces [--workspace <id|ref>] [--pane <id|ref>]
+            Usage: imux list-pane-surfaces [--workspace <id|ref>] [--pane <id|ref>]
 
             List surfaces in a pane.
 
@@ -6379,12 +6441,12 @@ struct ICCCLI {
               --pane <id|ref>        Restrict to a specific pane (default: focused pane)
 
             Example:
-              icc list-pane-surfaces
-              icc list-pane-surfaces --workspace workspace:2 --pane pane:1
+              imux list-pane-surfaces
+              imux list-pane-surfaces --workspace workspace:2 --pane pane:1
             """
         case "tree":
             return """
-            Usage: icc tree [flags]
+            Usage: imux tree [flags]
 
             Print the hierarchy of windows, workspaces, panes, and surfaces.
 
@@ -6396,21 +6458,21 @@ struct ICCCLI {
             Output:
               Text mode prints a box-drawing tree with markers:
               - ◀ active (true focused window/workspace/pane/surface path)
-              - ◀ here (caller surface where `icc tree` was invoked)
+              - ◀ here (caller surface where `imux tree` was invoked)
               - workspace [selected]
               - pane [focused]
               - surface [selected]
               Browser surfaces also include their current URL.
 
             Example:
-              icc tree
-              icc tree --all
-              icc tree --workspace workspace:2
-              icc --json tree --all
+              imux tree
+              imux tree --all
+              imux tree --workspace workspace:2
+              imux --json tree --all
             """
         case "focus-pane":
             return """
-            Usage: icc focus-pane [--pane <id|ref> | <id|ref>] [flags]
+            Usage: imux focus-pane [--pane <id|ref> | <id|ref>] [flags]
 
             Focus the specified pane.
 
@@ -6419,13 +6481,13 @@ struct ICCCLI {
               --workspace <id|ref>     Workspace context (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc focus-pane --pane pane:2
-              icc focus-pane pane:1
-              icc focus-pane --pane pane:1 --workspace workspace:2
+              imux focus-pane --pane pane:2
+              imux focus-pane pane:1
+              imux focus-pane --pane pane:1 --workspace workspace:2
             """
         case "new-pane":
             return """
-            Usage: icc new-pane [flags]
+            Usage: imux new-pane [flags]
 
             Create a new pane in the workspace.
 
@@ -6436,12 +6498,12 @@ struct ICCCLI {
               --url <url>                         URL for browser panes
 
             Example:
-              icc new-pane
-              icc new-pane --type browser --direction down --url https://example.com
+              imux new-pane
+              imux new-pane --type browser --direction down --url https://example.com
             """
         case "new-surface":
             return """
-            Usage: icc new-surface [flags]
+            Usage: imux new-surface [flags]
 
             Create a new surface (tab) in a pane.
 
@@ -6452,12 +6514,12 @@ struct ICCCLI {
               --url <url>                 URL for browser surfaces
 
             Example:
-              icc new-surface
-              icc new-surface --type browser --pane pane:1 --url https://example.com
+              imux new-surface
+              imux new-surface --type browser --pane pane:1 --url https://example.com
             """
         case "close-surface":
             return """
-            Usage: icc close-surface [flags]
+            Usage: imux close-surface [flags]
 
             Close a surface. Defaults to the focused surface if none specified.
 
@@ -6467,12 +6529,12 @@ struct ICCCLI {
               --workspace <id|ref>   Workspace context (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc close-surface
-              icc close-surface --surface surface:3
+              imux close-surface
+              imux close-surface --surface surface:3
             """
         case "drag-surface-to-split":
             return """
-            Usage: icc drag-surface-to-split --surface <id|ref> <left|right|up|down>
+            Usage: imux drag-surface-to-split --surface <id|ref> <left|right|up|down>
 
             Drag a surface into a new split in the given direction.
 
@@ -6481,18 +6543,18 @@ struct ICCCLI {
               --panel <id|ref>     Alias for --surface
 
             Example:
-              icc drag-surface-to-split --surface surface:1 right
-              icc drag-surface-to-split --panel surface:2 down
+              imux drag-surface-to-split --surface surface:1 right
+              imux drag-surface-to-split --panel surface:2 down
             """
         case "refresh-surfaces":
             return """
-            Usage: icc refresh-surfaces
+            Usage: imux refresh-surfaces
 
             Refresh surface snapshots for the focused workspace.
             """
         case "surface-health":
             return """
-            Usage: icc surface-health [--workspace <id|ref>]
+            Usage: imux surface-health [--workspace <id|ref>]
 
             List health details for surfaces in a workspace.
 
@@ -6500,19 +6562,19 @@ struct ICCCLI {
               --workspace <id|ref>   Workspace context (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc surface-health
-              icc surface-health --workspace workspace:2
+              imux surface-health
+              imux surface-health --workspace workspace:2
             """
         case "debug-terminals":
             return """
-            Usage: icc debug-terminals
+            Usage: imux debug-terminals
 
             Print live Ghostty terminal runtime metadata across all windows and workspaces.
             Intended for debugging stray or detached terminal views.
             """
         case "trigger-flash":
             return """
-            Usage: icc trigger-flash [--workspace <id|ref>] [--surface <id|ref>] [--panel <id|ref>]
+            Usage: imux trigger-flash [--workspace <id|ref>] [--surface <id|ref>] [--panel <id|ref>]
 
             Trigger the unread flash indicator for a surface.
 
@@ -6522,12 +6584,12 @@ struct ICCCLI {
               --panel <id|ref>       Alias for --surface
 
             Example:
-              icc trigger-flash
-              icc trigger-flash --workspace workspace:2 --surface surface:3
+              imux trigger-flash
+              imux trigger-flash --workspace workspace:2 --surface surface:3
             """
         case "list-panels":
             return """
-            Usage: icc list-panels [--workspace <id|ref>]
+            Usage: imux list-panels [--workspace <id|ref>]
 
             List surfaces (panels) in a workspace.
 
@@ -6535,12 +6597,12 @@ struct ICCCLI {
               --workspace <id|ref>   Workspace context (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc list-panels
-              icc list-panels --workspace workspace:2
+              imux list-panels
+              imux list-panels --workspace workspace:2
             """
         case "focus-panel":
             return """
-            Usage: icc focus-panel --panel <id|ref> [--workspace <id|ref>]
+            Usage: imux focus-panel --panel <id|ref> [--workspace <id|ref>]
 
             Focus a specific panel (surface).
 
@@ -6549,12 +6611,12 @@ struct ICCCLI {
               --workspace <id|ref>   Workspace context (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc focus-panel --panel surface:2
-              icc focus-panel --panel surface:5 --workspace workspace:2
+              imux focus-panel --panel surface:2
+              imux focus-panel --panel surface:5 --workspace workspace:2
             """
         case "close-workspace":
             return """
-            Usage: icc close-workspace --workspace <id|ref|index>
+            Usage: imux close-workspace --workspace <id|ref|index>
 
             Close the specified workspace.
 
@@ -6562,11 +6624,11 @@ struct ICCCLI {
               --workspace <id|ref|index>   Workspace to close (required)
 
             Example:
-              icc close-workspace --workspace workspace:2
+              imux close-workspace --workspace workspace:2
             """
         case "select-workspace":
             return """
-            Usage: icc select-workspace --workspace <id|ref|index>
+            Usage: imux select-workspace --workspace <id|ref|index>
 
             Select (switch to) the specified workspace.
 
@@ -6574,12 +6636,12 @@ struct ICCCLI {
               --workspace <id|ref|index>   Workspace to select (required)
 
             Example:
-              icc select-workspace --workspace workspace:2
-              icc select-workspace --workspace 0
+              imux select-workspace --workspace workspace:2
+              imux select-workspace --workspace 0
             """
         case "rename-workspace", "rename-window":
             return """
-            Usage: icc rename-workspace [--workspace <id|ref|index>] [--] <title>
+            Usage: imux rename-workspace [--workspace <id|ref|index>] [--] <title>
 
             Rename a workspace. Defaults to the current workspace.
             tmux-compatible alias: rename-window
@@ -6588,18 +6650,18 @@ struct ICCCLI {
               --workspace <id|ref|index>   Workspace to rename (default: current/$ICC_WORKSPACE_ID)
 
             Example:
-              icc rename-workspace "backend logs"
-              icc rename-window --workspace workspace:2 "agent run"
+              imux rename-workspace "backend logs"
+              imux rename-window --workspace workspace:2 "agent run"
             """
         case "current-workspace":
             return """
-            Usage: icc current-workspace
+            Usage: imux current-workspace
 
             Print the currently selected workspace ID.
             """
         case "capture-pane":
             return """
-            Usage: icc capture-pane [--workspace <id|ref>] [--surface <id|ref>] [--scrollback] [--lines <n>]
+            Usage: imux capture-pane [--workspace <id|ref>] [--surface <id|ref>] [--scrollback] [--lines <n>]
 
             tmux-compatible alias for reading terminal text from a pane.
 
@@ -6610,11 +6672,11 @@ struct ICCCLI {
               --lines <n>            Return only the last N lines (implies --scrollback)
 
             Example:
-              icc capture-pane --workspace workspace:2 --surface surface:1 --scrollback --lines 200
+              imux capture-pane --workspace workspace:2 --surface surface:1 --scrollback --lines 200
             """
         case "resize-pane":
             return """
-            Usage: icc resize-pane [--pane <id|ref>] [--workspace <id|ref>] [-L|-R|-U|-D] [--amount <n>]
+            Usage: imux resize-pane [--pane <id|ref>] [--workspace <id|ref>] [-L|-R|-U|-D] [--amount <n>]
 
             tmux-compatible pane resize command.
 
@@ -6626,7 +6688,7 @@ struct ICCCLI {
             """
         case "pipe-pane":
             return """
-            Usage: icc pipe-pane [--workspace <id|ref>] [--surface <id|ref>] [--command <shell-command> | <shell-command>]
+            Usage: imux pipe-pane [--workspace <id|ref>] [--surface <id|ref>] [--command <shell-command> | <shell-command>]
 
             Capture pane text and pipe it to a shell command via stdin.
 
@@ -6637,7 +6699,7 @@ struct ICCCLI {
             """
         case "wait-for":
             return """
-            Usage: icc wait-for [-S|--signal] <name> [--timeout <seconds>]
+            Usage: imux wait-for [-S|--signal] <name> [--timeout <seconds>]
 
             Wait for or signal a named synchronization token.
 
@@ -6647,7 +6709,7 @@ struct ICCCLI {
             """
         case "swap-pane":
             return """
-            Usage: icc swap-pane --pane <id|ref> --target-pane <id|ref> [--workspace <id|ref>]
+            Usage: imux swap-pane --pane <id|ref> --target-pane <id|ref> [--workspace <id|ref>]
 
             Swap two panes.
 
@@ -6658,7 +6720,7 @@ struct ICCCLI {
             """
         case "break-pane":
             return """
-            Usage: icc break-pane [--workspace <id|ref>] [--pane <id|ref>] [--surface <id|ref>] [--no-focus]
+            Usage: imux break-pane [--workspace <id|ref>] [--pane <id|ref>] [--surface <id|ref>] [--no-focus]
 
             Move a pane/surface out into its own pane context.
 
@@ -6670,7 +6732,7 @@ struct ICCCLI {
             """
         case "join-pane":
             return """
-            Usage: icc join-pane --target-pane <id|ref> [--workspace <id|ref>] [--pane <id|ref>] [--surface <id|ref>] [--no-focus]
+            Usage: imux join-pane --target-pane <id|ref> [--workspace <id|ref>] [--pane <id|ref>] [--surface <id|ref>] [--no-focus]
 
             Join a pane/surface into another pane.
 
@@ -6683,13 +6745,13 @@ struct ICCCLI {
             """
         case "next-window", "previous-window", "last-window":
             return """
-            Usage: icc \(command)
+            Usage: imux \(command)
 
             Switch workspace selection (next/previous/last) in the current window.
             """
         case "last-pane":
             return """
-            Usage: icc last-pane [--workspace <id|ref>]
+            Usage: imux last-pane [--workspace <id|ref>]
 
             Focus the previously focused pane in a workspace.
 
@@ -6698,7 +6760,7 @@ struct ICCCLI {
             """
         case "find-window":
             return """
-            Usage: icc find-window [--content] [--select] [query]
+            Usage: imux find-window [--content] [--select] [query]
 
             Find workspaces by title (and optionally terminal content).
 
@@ -6708,7 +6770,7 @@ struct ICCCLI {
             """
         case "clear-history":
             return """
-            Usage: icc clear-history [--workspace <id|ref>] [--surface <id|ref>]
+            Usage: imux clear-history [--workspace <id|ref>] [--surface <id|ref>]
 
             Clear terminal scrollback history.
 
@@ -6718,7 +6780,7 @@ struct ICCCLI {
             """
         case "set-hook":
             return """
-            Usage: icc set-hook [--list] [--unset <event>] | <event> <command>
+            Usage: imux set-hook [--list] [--unset <event>] | <event> <command>
 
             Manage tmux-compat hook definitions.
 
@@ -6728,19 +6790,19 @@ struct ICCCLI {
             """
         case "popup":
             return """
-            Usage: icc popup
+            Usage: imux popup
 
             tmux compatibility placeholder. This command is currently not supported.
             """
         case "bind-key", "unbind-key", "copy-mode":
             return """
-            Usage: icc \(command)
+            Usage: imux \(command)
 
             tmux compatibility placeholder. This command is currently not supported.
             """
         case "set-buffer":
             return """
-            Usage: icc set-buffer [--name <name>] [--] <text>
+            Usage: imux set-buffer [--name <name>] [--] <text>
 
             Save text into a named tmux-compat buffer.
 
@@ -6749,7 +6811,7 @@ struct ICCCLI {
             """
         case "paste-buffer":
             return """
-            Usage: icc paste-buffer [--name <name>] [--workspace <id|ref>] [--surface <id|ref>]
+            Usage: imux paste-buffer [--name <name>] [--workspace <id|ref>] [--surface <id|ref>]
 
             Paste a named tmux-compat buffer into a surface.
 
@@ -6760,13 +6822,13 @@ struct ICCCLI {
             """
         case "list-buffers":
             return """
-            Usage: icc list-buffers
+            Usage: imux list-buffers
 
             List tmux-compat buffers.
             """
         case "respawn-pane":
             return """
-            Usage: icc respawn-pane [--workspace <id|ref>] [--surface <id|ref>] [--command <cmd> | <cmd>]
+            Usage: imux respawn-pane [--workspace <id|ref>] [--surface <id|ref>] [--command <cmd> | <cmd>]
 
             Send a command (or default shell restart command) to a surface.
 
@@ -6777,7 +6839,7 @@ struct ICCCLI {
             """
         case "display-message":
             return """
-            Usage: icc display-message [-p|--print] <text>
+            Usage: imux display-message [-p|--print] <text>
 
             Print text (or show it via notification bridge in parity mode).
 
@@ -6786,7 +6848,7 @@ struct ICCCLI {
             """
         case "read-screen":
             return """
-            Usage: icc read-screen [flags]
+            Usage: imux read-screen [flags]
 
             Read terminal text from a surface as plain text.
 
@@ -6797,12 +6859,12 @@ struct ICCCLI {
               --lines <n>            Limit to the last n lines (implies --scrollback)
 
             Example:
-              icc read-screen
-              icc read-screen --surface surface:2 --scrollback --lines 200
+              imux read-screen
+              imux read-screen --surface surface:2 --scrollback --lines 200
             """
         case "send":
             return """
-            Usage: icc send [flags] [--] <text>
+            Usage: imux send [flags] [--] <text>
 
             Send text to a terminal surface. Escape sequences: \\n and \\r send Enter, \\t sends Tab.
 
@@ -6811,12 +6873,12 @@ struct ICCCLI {
               --surface <id|ref>     Target surface (default: $ICC_SURFACE_ID)
 
             Example:
-              icc send "echo hello"
-              icc send --surface surface:2 "ls -la\\n"
+              imux send "echo hello"
+              imux send --surface surface:2 "ls -la\\n"
             """
         case "send-key":
             return """
-            Usage: icc send-key [flags] [--] <key>
+            Usage: imux send-key [flags] [--] <key>
 
             Send a key event to a terminal surface.
 
@@ -6825,12 +6887,12 @@ struct ICCCLI {
               --surface <id|ref>     Target surface (default: $ICC_SURFACE_ID)
 
             Example:
-              icc send-key enter
-              icc send-key --surface surface:2 ctrl+c
+              imux send-key enter
+              imux send-key --surface surface:2 ctrl+c
             """
         case "send-panel":
             return """
-            Usage: icc send-panel --panel <id|ref> [flags] [--] <text>
+            Usage: imux send-panel --panel <id|ref> [flags] [--] <text>
 
             Send text to a specific panel (surface). Escape sequences: \\n and \\r send Enter, \\t sends Tab.
 
@@ -6839,11 +6901,11 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc send-panel --panel surface:2 "echo hello\\n"
+              imux send-panel --panel surface:2 "echo hello\\n"
             """
         case "send-key-panel":
             return """
-            Usage: icc send-key-panel --panel <id|ref> [flags] [--] <key>
+            Usage: imux send-key-panel --panel <id|ref> [flags] [--] <key>
 
             Send a key event to a specific panel (surface).
 
@@ -6852,12 +6914,12 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc send-key-panel --panel surface:2 enter
-              icc send-key-panel --panel surface:2 ctrl+c
+              imux send-key-panel --panel surface:2 enter
+              imux send-key-panel --panel surface:2 ctrl+c
             """
         case "notify":
             return """
-            Usage: icc notify [flags]
+            Usage: imux notify [flags]
 
             Send a notification to a workspace/surface.
 
@@ -6869,24 +6931,24 @@ struct ICCCLI {
               --surface <id|ref>     Target surface (default: $ICC_SURFACE_ID)
 
             Example:
-              icc notify --title "Build done" --body "All tests passed"
-              icc notify --title "Error" --subtitle "test.swift" --body "Line 42: syntax error"
+              imux notify --title "Build done" --body "All tests passed"
+              imux notify --title "Error" --subtitle "test.swift" --body "Line 42: syntax error"
             """
         case "list-notifications":
             return """
-            Usage: icc list-notifications
+            Usage: imux list-notifications
 
             List queued notifications.
             """
         case "clear-notifications":
             return """
-            Usage: icc clear-notifications
+            Usage: imux clear-notifications
 
             Clear all queued notifications.
             """
         case "set-status":
             return """
-            Usage: icc set-status <key> <value> [flags]
+            Usage: imux set-status <key> <value> [flags]
 
             Set a sidebar status entry for a workspace. Status entries appear as
             pills in the sidebar tab row. Use a unique key so different tools
@@ -6898,12 +6960,12 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc set-status build "compiling" --icon hammer --color "#ff9500"
-              icc set-status deploy "v1.2.3" --workspace workspace:2
+              imux set-status build "compiling" --icon hammer --color "#ff9500"
+              imux set-status deploy "v1.2.3" --workspace workspace:2
             """
         case "clear-status":
             return """
-            Usage: icc clear-status <key> [flags]
+            Usage: imux clear-status <key> [flags]
 
             Remove a sidebar status entry by key.
 
@@ -6911,11 +6973,11 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc clear-status build
+              imux clear-status build
             """
         case "list-status":
             return """
-            Usage: icc list-status [flags]
+            Usage: imux list-status [flags]
 
             List all sidebar status entries for a workspace.
 
@@ -6923,12 +6985,12 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc list-status
-              icc list-status --workspace workspace:2
+              imux list-status
+              imux list-status --workspace workspace:2
             """
         case "set-progress":
             return """
-            Usage: icc set-progress <0.0-1.0> [flags]
+            Usage: imux set-progress <0.0-1.0> [flags]
 
             Set a progress bar in the sidebar for a workspace.
 
@@ -6937,12 +6999,12 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc set-progress 0.5 --label "Building..."
-              icc set-progress 1.0 --label "Done"
+              imux set-progress 0.5 --label "Building..."
+              imux set-progress 1.0 --label "Done"
             """
         case "clear-progress":
             return """
-            Usage: icc clear-progress [flags]
+            Usage: imux clear-progress [flags]
 
             Clear the sidebar progress bar for a workspace.
 
@@ -6950,11 +7012,11 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc clear-progress
+              imux clear-progress
             """
         case "log":
             return """
-            Usage: icc log [flags] [--] <message>
+            Usage: imux log [flags] [--] <message>
 
             Append a log entry to the sidebar for a workspace.
 
@@ -6964,13 +7026,13 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc log "Build started"
-              icc log --level error --source build "Compilation failed"
-              icc log --level success -- "All 42 tests passed"
+              imux log "Build started"
+              imux log --level error --source build "Compilation failed"
+              imux log --level success -- "All 42 tests passed"
             """
         case "clear-log":
             return """
-            Usage: icc clear-log [flags]
+            Usage: imux clear-log [flags]
 
             Clear all sidebar log entries for a workspace.
 
@@ -6978,11 +7040,11 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc clear-log
+              imux clear-log
             """
         case "list-log":
             return """
-            Usage: icc list-log [flags]
+            Usage: imux list-log [flags]
 
             List sidebar log entries for a workspace.
 
@@ -6991,12 +7053,12 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc list-log
-              icc list-log --limit 5
+              imux list-log
+              imux list-log --limit 5
             """
         case "sidebar-state":
             return """
-            Usage: icc sidebar-state [flags]
+            Usage: imux sidebar-state [flags]
 
             Dump all sidebar metadata for a workspace (cwd, git branch, ports,
             status entries, progress, log entries).
@@ -7005,28 +7067,28 @@ struct ICCCLI {
               --workspace <id|ref>   Target workspace (default: $ICC_WORKSPACE_ID)
 
             Example:
-              icc sidebar-state
-              icc sidebar-state --workspace workspace:2
+              imux sidebar-state
+              imux sidebar-state --workspace workspace:2
             """
         case "set-app-focus":
             return """
-            Usage: icc set-app-focus <active|inactive|clear>
+            Usage: imux set-app-focus <active|inactive|clear>
 
             Override app focus state for notification routing tests.
 
             Example:
-              icc set-app-focus inactive
-              icc set-app-focus clear
+              imux set-app-focus inactive
+              imux set-app-focus clear
             """
         case "simulate-app-active":
             return """
-            Usage: icc simulate-app-active
+            Usage: imux simulate-app-active
 
             Trigger the app-active handler used by notification focus tests.
             """
         case "claude-hook":
             return """
-            Usage: icc claude-hook <session-start|active|stop|idle|notification|notify|prompt-submit> [flags]
+            Usage: imux claude-hook <session-start|active|stop|idle|notification|notify|prompt-submit> [flags]
 
             Hook for Claude Code integration. Reads JSON from stdin.
 
@@ -7044,12 +7106,12 @@ struct ICCCLI {
               --surface <id|ref>     Target surface (default: $ICC_SURFACE_ID)
 
             Example:
-              echo '{"session_id":"abc"}' | icc claude-hook session-start
-              echo '{}' | icc claude-hook stop
+              echo '{"session_id":"abc"}' | imux claude-hook session-start
+              echo '{}' | imux claude-hook stop
             """
         case "browser":
             return """
-            Usage: icc browser [--surface <id|ref|index> | <surface>] <subcommand> [args]
+            Usage: imux browser [--surface <id|ref|index> | <surface>] <subcommand> [args]
 
             Browser automation commands. Most subcommands require a surface handle.
             A surface can be passed as `--surface <handle>` or as the first positional token.
@@ -7106,31 +7168,31 @@ struct ICCCLI {
               identify [--surface <id|ref|index>]
 
             Example:
-              icc browser open https://example.com
-              icc browser surface:1 navigate https://google.com
-              icc browser --surface surface:1 snapshot --interactive
+              imux browser open https://example.com
+              imux browser surface:1 navigate https://google.com
+              imux browser --surface surface:1 snapshot --interactive
             """
-        // Legacy browser aliases — point users to `icc browser --help`
+        // Legacy browser aliases — point users to `imux browser --help`
         case "open-browser":
-            return "Legacy alias for 'icc browser open'. Run 'icc browser --help' for details."
+            return "Legacy alias for 'imux browser open'. Run 'imux browser --help' for details."
         case "navigate":
-            return "Legacy alias for 'icc browser navigate'. Run 'icc browser --help' for details."
+            return "Legacy alias for 'imux browser navigate'. Run 'imux browser --help' for details."
         case "browser-back":
-            return "Legacy alias for 'icc browser back'. Run 'icc browser --help' for details."
+            return "Legacy alias for 'imux browser back'. Run 'imux browser --help' for details."
         case "browser-forward":
-            return "Legacy alias for 'icc browser forward'. Run 'icc browser --help' for details."
+            return "Legacy alias for 'imux browser forward'. Run 'imux browser --help' for details."
         case "browser-reload":
-            return "Legacy alias for 'icc browser reload'. Run 'icc browser --help' for details."
+            return "Legacy alias for 'imux browser reload'. Run 'imux browser --help' for details."
         case "get-url":
-            return "Legacy alias for 'icc browser get-url'. Run 'icc browser --help' for details."
+            return "Legacy alias for 'imux browser get-url'. Run 'imux browser --help' for details."
         case "focus-webview":
-            return "Legacy alias for 'icc browser focus-webview'. Run 'icc browser --help' for details."
+            return "Legacy alias for 'imux browser focus-webview'. Run 'imux browser --help' for details."
         case "is-webview-focused":
-            return "Legacy alias for 'icc browser is-webview-focused'. Run 'icc browser --help' for details."
+            return "Legacy alias for 'imux browser is-webview-focused'. Run 'imux browser --help' for details."
         case "markdown":
             return """
-            Usage: icc markdown open <path> [options]
-                   icc markdown <path>       (shorthand for 'open')
+            Usage: imux markdown open <path> [options]
+                   imux markdown <path>       (shorthand for 'open')
 
             Open a markdown file in a formatted viewer panel with live file watching.
             The file is rendered with rich formatting (headings, code blocks, tables,
@@ -7143,10 +7205,10 @@ struct ICCCLI {
               --direction <left|right|up|down>  Split direction (default: right)
 
             Examples:
-              icc markdown open plan.md
-              icc markdown ~/project/CHANGELOG.md
-              icc markdown open ./docs/design.md --workspace 0
-              icc markdown open plan.md --direction down
+              imux markdown open plan.md
+              imux markdown ~/project/CHANGELOG.md
+              imux markdown open ./docs/design.md --workspace 0
+              imux markdown open plan.md --direction down
             """
         default:
             return nil
@@ -7157,13 +7219,13 @@ struct ICCCLI {
     private func dispatchSubcommandHelp(command: String, commandArgs: [String]) -> Bool {
         guard commandArgs.contains("--help") || commandArgs.contains("-h") else { return false }
         guard let text = subcommandUsage(command) else { return false }
-        print("icc \(command)")
+        print("imux \(command)")
         print("")
         print(text)
         return true
     }
 
-    private static let iccThemeOverrideBundleIdentifier = "com.icc.app"
+    private static let iccThemeOverrideBundleIdentifier = "com.imux.app"
     private static let iccThemesBlockStart = "# icc themes start"
     private static let iccThemesBlockEnd = "# icc themes end"
     private static let iccThemesReloadNotificationName = "com.icc.themes.reload-config"
@@ -7199,7 +7261,7 @@ struct ICCCLI {
         let selection = currentThemeSelection()
         var environment = ProcessInfo.processInfo.environment
         environment["ICC_THEME_PICKER_CONFIG"] = try iccThemeOverrideConfigURL().path
-        environment["ICC_THEME_PICKER_BUNDLE_ID"] = currentIccAppBundleIdentifier() ?? Self.iccThemeOverrideBundleIdentifier
+        environment["ICC_THEME_PICKER_BUNDLE_ID"] = currentAppBundleIdentifier() ?? Self.iccThemeOverrideBundleIdentifier
         environment["ICC_THEME_PICKER_TARGET"] = defaultThemePickerTargetMode(current: selection).rawValue
         environment["ICC_THEME_PICKER_COLOR_SCHEME"] = defaultAppearancePrefersDarkThemes() ? "dark" : "light"
         if let light = selection.light {
@@ -7363,7 +7425,7 @@ struct ICCCLI {
             try runThemesClear(jsonOutput: jsonOutput)
         default:
             if subcommand.hasPrefix("-") {
-                throw CLIError(message: "Unknown themes subcommand '\(subcommand)'. Run 'icc themes --help'.")
+                throw CLIError(message: "Unknown themes subcommand '\(subcommand)'. Run 'imux themes --help'.")
             }
 
             try runThemesSet(
@@ -7700,7 +7762,7 @@ struct ICCCLI {
         if availableThemes.isEmpty {
             return trimmed
         }
-        throw CLIError(message: "Unknown theme '\(trimmed)'. Run 'icc themes' to list available themes.")
+        throw CLIError(message: "Unknown theme '\(trimmed)'. Run 'imux themes' to list available themes.")
     }
 
     private func themeConfigSearchURLs() -> [URL] {
@@ -7829,7 +7891,7 @@ struct ICCCLI {
     }
 
     private func reloadThemesIfPossible() -> ThemeReloadStatus {
-        let bundleIdentifier = currentIccAppBundleIdentifier() ?? Self.iccThemeOverrideBundleIdentifier
+        let bundleIdentifier = currentAppBundleIdentifier() ?? Self.iccThemeOverrideBundleIdentifier
         DistributedNotificationCenter.default().post(
             name: Notification.Name(Self.iccThemesReloadNotificationName),
             object: nil,
@@ -7838,8 +7900,8 @@ struct ICCCLI {
         return ThemeReloadStatus(requested: true, targetBundleIdentifier: bundleIdentifier)
     }
 
-    private func currentIccAppBundleIdentifier() -> String? {
-        if let bundleIdentifier = ProcessInfo.processInfo.environment["ICC_BUNDLE_ID"]?.trimmingCharacters(in: .whitespacesAndNewlines),
+    private func currentAppBundleIdentifier() -> String? {
+        if let bundleIdentifier = CLIBranding.firstEnvironmentValue(CLIBranding.bundleIDEnvKeys, in: ProcessInfo.processInfo.environment),
            !bundleIdentifier.isEmpty {
             return bundleIdentifier
         }
@@ -8983,7 +9045,7 @@ struct ICCCLI {
     ) throws -> [String: String] {
         let canonicalWorkspaceId = try resolveWorkspaceId(workspaceId, client: client)
         var context: [String: String] = [
-            "session_name": "icc",
+            "session_name": "imux",
             "window_id": "@\(canonicalWorkspaceId)",
             "window_uuid": canonicalWorkspaceId
         ]
@@ -9226,7 +9288,7 @@ struct ICCCLI {
         guard let data = FileManager.default.contents(atPath: path) else { return false }
         let prefixData = data.prefix(512)
         guard let prefix = String(data: prefixData, encoding: .utf8) else { return false }
-        return prefix.contains("icc claude wrapper - injects hooks and session tracking")
+        return prefix.contains("imux claude wrapper - injects hooks and session tracking")
     }
 
     private func resolveClaudeExecutable(searchPath: String?) -> String? {
@@ -9270,9 +9332,9 @@ struct ICCCLI {
         let fakeTmuxValue: String = {
             if let focusedContext {
                 let windowToken = focusedContext.windowId ?? focusedContext.workspaceId
-                return "/tmp/icc-claude-teams/\(focusedContext.workspaceId),\(windowToken),\(focusedContext.paneHandle)"
+                return "/tmp/imux-claude-teams/\(focusedContext.workspaceId),\(windowToken),\(focusedContext.paneHandle)"
             }
-            return processEnvironment["TMUX"] ?? "/tmp/icc-claude-teams/default,0,0"
+            return processEnvironment["TMUX"] ?? "/tmp/imux-claude-teams/default,0,0"
         }()
         let fakeTmuxPane = focusedContext.map { "%\($0.paneHandle)" }
             ?? processEnvironment["TMUX_PANE"]
@@ -9303,7 +9365,7 @@ struct ICCCLI {
     private func createClaudeTeamsShimDirectory() throws -> URL {
         let homePath = ProcessInfo.processInfo.environment["HOME"] ?? NSHomeDirectory()
         let rootPath = URL(fileURLWithPath: homePath, isDirectory: true)
-            .appendingPathComponent(".icc", isDirectory: true)
+            .appendingPathComponent(".imux", isDirectory: true)
             .appendingPathComponent("claude-teams-bin", isDirectory: true)
             .path
         let root = URL(fileURLWithPath: rootPath, isDirectory: true)
@@ -9312,7 +9374,7 @@ struct ICCCLI {
         let script = """
         #!/usr/bin/env bash
         set -euo pipefail
-        exec "${ICC_CLAUDE_TEAMS_ICC_BIN:-icc}" __tmux-compat "$@"
+        exec "${ICC_CLAUDE_TEAMS_ICC_BIN:-imux}" __tmux-compat "$@"
         """
         let normalizedScript = script.trimmingCharacters(in: .whitespacesAndNewlines)
         let existingScript = try? String(contentsOf: tmuxURL, encoding: .utf8)
@@ -9337,7 +9399,7 @@ struct ICCCLI {
             launcherEnvironment["ICC_SOCKET_PASSWORD"] = explicitPassword
         }
         let shimDirectory = try createClaudeTeamsShimDirectory()
-        let executablePath = resolvedExecutableURL()?.path ?? (args.first ?? "icc")
+        let executablePath = resolvedExecutableURL()?.path ?? (args.first ?? "imux")
         let focusedContext = claudeTeamsFocusedContext(
             processEnvironment: launcherEnvironment,
             explicitPassword: explicitPassword
@@ -9397,7 +9459,7 @@ struct ICCCLI {
                 boolFlags: ["-A", "-d", "-P"]
             )
             if parsed.hasFlag("-A") {
-                throw CLIError(message: "new-session -A is not supported in icc claude-teams mode")
+                throw CLIError(message: "new-session -A is not supported in imux claude-teams mode")
             }
             var params: [String: Any] = ["focus": false]
             if let cwd = parsed.value("-c") {
@@ -9434,7 +9496,7 @@ struct ICCCLI {
                 boolFlags: ["-d", "-P"]
             )
             if parsed.value("-t") != nil {
-                throw CLIError(message: "new-window -t is not supported in icc claude-teams mode")
+                throw CLIError(message: "new-window -t is not supported in imux claude-teams mode")
             }
             var params: [String: Any] = ["focus": false]
             if let cwd = parsed.value("-c") {
@@ -9721,17 +9783,24 @@ struct ICCCLI {
     }
 
     private func tmuxCompatStoreURL() -> URL {
+        let root = NSString(string: "~/.imux").expandingTildeInPath
+        return URL(fileURLWithPath: root).appendingPathComponent("tmux-compat-store.json")
+    }
+
+    private func legacyTmuxCompatStoreURL() -> URL {
         let root = NSString(string: "~/.icc").expandingTildeInPath
         return URL(fileURLWithPath: root).appendingPathComponent("tmux-compat-store.json")
     }
 
     private func loadTmuxCompatStore() -> TmuxCompatStore {
-        let url = tmuxCompatStoreURL()
-        guard let data = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode(TmuxCompatStore.self, from: data) else {
-            return TmuxCompatStore()
+        for url in [tmuxCompatStoreURL(), legacyTmuxCompatStoreURL()] {
+            guard let data = try? Data(contentsOf: url),
+                  let decoded = try? JSONDecoder().decode(TmuxCompatStore.self, from: data) else {
+                continue
+            }
+            return decoded
         }
-        return decoded
+        return TmuxCompatStore()
     }
 
     private func saveTmuxCompatStore(_ store: TmuxCompatStore) throws {
@@ -9769,7 +9838,7 @@ struct ICCCLI {
     private func tmuxWaitForSignalURL(name: String) -> URL {
         let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "._-"))
         let sanitized = name.unicodeScalars.map { allowed.contains($0) ? Character($0) : "_" }
-        return URL(fileURLWithPath: "/tmp/icc-wait-for-\(String(sanitized)).sig")
+        return URL(fileURLWithPath: "/tmp/imux-wait-for-\(String(sanitized)).sig")
     }
 
     private func runTmuxCompatCommand(
@@ -10065,10 +10134,10 @@ struct ICCCLI {
             print("OK")
 
         case "popup":
-            throw CLIError(message: "popup is not supported yet in icc CLI parity mode")
+            throw CLIError(message: "popup is not supported yet in imux CLI parity mode")
 
         case "bind-key", "unbind-key", "copy-mode":
-            throw CLIError(message: "\(command) is not supported yet in icc CLI parity mode")
+            throw CLIError(message: "\(command) is not supported yet in imux CLI parity mode")
 
         case "set-buffer":
             let (nameArg, rem0) = parseOption(commandArgs, name: "--name")
@@ -10139,7 +10208,7 @@ struct ICCCLI {
                 print(message)
                 return
             }
-            let payload = try client.sendV2(method: "notification.create", params: ["title": "icc", "body": message])
+            let payload = try client.sendV2(method: "notification.create", params: ["title": "imux", "body": message])
             if jsonOutput {
                 print(jsonString(payload))
             } else {
@@ -10437,7 +10506,7 @@ struct ICCCLI {
             telemetry.breadcrumb("claude-hook.help")
             print(
                 """
-                icc claude-hook <session-start|stop|session-end|notification|prompt-submit|pre-tool-use> [--workspace <id|index>] [--surface <id|index>]
+                imux claude-hook <session-start|stop|session-end|notification|prompt-submit|pre-tool-use> [--workspace <id|index>] [--surface <id|index>]
                 """
             )
 
@@ -10984,13 +11053,13 @@ struct ICCCLI {
         let commit = info["ICCCommit"].flatMap { normalizedCommitHash($0) }
         let baseSummary: String
         if let version = info["CFBundleShortVersionString"], let build = info["CFBundleVersion"] {
-            baseSummary = "icc \(version) (\(build))"
+            baseSummary = "imux \(version) (\(build))"
         } else if let version = info["CFBundleShortVersionString"] {
-            baseSummary = "icc \(version)"
+            baseSummary = "imux \(version)"
         } else if let build = info["CFBundleVersion"] {
-            baseSummary = "icc build \(build)"
+            baseSummary = "imux build \(build)"
         } else {
-            baseSummary = "icc version unknown"
+            baseSummary = "imux version unknown"
         }
         guard let commit else { return baseSummary }
         return "\(baseSummary) [\(commit)]"
@@ -11019,9 +11088,9 @@ struct ICCCLI {
         let commandPaletteLabel = String(localized: "menu.file.commandPalette", defaultValue: "Command Palette…")
 
         print()
-        print("  \(bold)\(accent)icc\(reset) \(subdued)\(displayVersion)\(reset)")
+        print("  \(bold)\(accent)imux\(reset) \(subdued)\(displayVersion)\(reset)")
         print("  \(bold)\u{2318}N\(reset) \(newWorkspaceLabel)   \(bold)\u{2318}P\(reset) \(goToWorkspaceLabel)   \(bold)\u{2318}\u{21E7}P\(reset) \(commandPaletteLabel)")
-        print("  \(subdued)icc --help   github.com/mycode699/imux\(reset)")
+        print("  \(subdued)imux --help   github.com/mycode699/imux\(reset)")
         print()
     }
 
@@ -11302,11 +11371,11 @@ struct ICCCLI {
 
     private func usage() -> String {
         return """
-        icc - control icc via Unix socket
+        imux - control imux via Unix socket
 
         Usage:
-          icc <path>                Open a directory in a new workspace (launches icc if needed)
-          icc [global-options] <command> [options]
+          imux <path>                Open a directory in a new workspace (launches imux if needed)
+          imux [global-options] <command> [options]
 
         Handle Inputs:
           Use UUIDs, short refs (window:1/workspace:2/pane:3/surface:4), or indexes where commands accept window, workspace, pane, or surface inputs.
@@ -11432,12 +11501,13 @@ struct ICCCLI {
           help
 
         Environment:
-          ICC_WORKSPACE_ID   Auto-set in icc terminals. Used as default --workspace for
+          IMUX_WORKSPACE_ID  Auto-set in imux terminals. Used as default --workspace for
                               ALL commands (send, list-panels, new-split, notify, etc.).
-          ICC_TAB_ID         Optional alias used by `tab-action`/`rename-tab` as default --tab.
-          ICC_SURFACE_ID     Auto-set in icc terminals. Used as default --surface.
-          ICC_SOCKET_PATH    Override the Unix socket path. Without this, the CLI defaults
-                              to ~/Library/Application Support/icc/icc.sock and auto-discovers tagged/debug sockets.
+          IMUX_TAB_ID        Optional alias used by `tab-action`/`rename-tab` as default --tab.
+          IMUX_SURFACE_ID    Auto-set in imux terminals. Used as default --surface.
+          IMUX_SOCKET_PATH   Override the Unix socket path. Without this, the CLI defaults
+                              to ~/Library/Application Support/imux/imux.sock and auto-discovers tagged/debug sockets.
+          ICC_*              Legacy aliases remain accepted for compatibility.
         """
     }
 

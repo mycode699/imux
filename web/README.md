@@ -1,6 +1,6 @@
-# icc web
+# imux web
 
-This directory contains the website and documentation frontend for `icc`.
+This directory contains the website and documentation frontend for `imux`.
 
 ## Local development
 
@@ -15,9 +15,9 @@ Then open <http://localhost:3000>.
 
 The web app is intended to host:
 
-- marketing pages for `icc`
+- marketing pages for `imux`
 - release notes sourced from the repository changelog
-- product documentation that mirrors the current `icc` feature set
+- product documentation that mirrors the current `imux` feature set
 
 ## Tone requirements
 
@@ -28,6 +28,6 @@ When the site copy is expanded, it should feel:
 - native to macOS, not like a browser wrapper
 - operational and decisive, not fluffy
 
-The first screen should make it obvious that `icc` is a serious AI execution workspace, not only a renamed terminal app.
+The first screen should make it obvious that `imux` is a serious AI execution workspace, not only a renamed terminal app.
 
 Before publishing, verify that the website copy matches the current repository branding, release docs, and [brand guidelines](../docs/brand-guidelines.md).

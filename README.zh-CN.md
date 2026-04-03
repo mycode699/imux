@@ -1,8 +1,8 @@
-# icc
+# imux
 
 > 面向 macOS 的 AI 指挥中心
 
-`icc` 是一个面向高强度 AI 工作流的原生 macOS 指挥台。它把 Ghostty 级别的终端渲染、本地与远程资源管理器、文件查看编辑、浏览器执行面板，以及可由 LLM 驱动的监督器整合到同一个工作界面里，让用户从意图到执行几乎不丢上下文。
+`imux` 是一个面向高强度 AI 工作流的原生 macOS 指挥台。它把 Ghostty 级别的终端渲染、本地与远程资源管理器、文件查看编辑、浏览器执行面板，以及可由 LLM 驱动的监督器整合到同一个工作界面里，让用户从意图到执行几乎不丢上下文。
 
 仓库地址：<https://github.com/mycode699/imux>
 
@@ -10,12 +10,12 @@
 
 品牌指南：[docs/brand-guidelines.md](docs/brand-guidelines.md)
 
-## 为什么 `icc` 看起来不一样
+## 为什么 `imux` 看起来不一样
 
 - 把终端执行、文件、远程主机、浏览器流程和监督器放进同一个原生 macOS 工作面。
 - 保留低延迟终端体验，不把产品做成一个套壳网页工具。
 - 目标不是“功能更杂”，而是让用户在几轮交流后立刻进入可执行状态。
-- 相比单纯的终端，`icc` 提供更强的上下文可见性和调度能力。
+- 相比单纯的终端，`imux` 提供更强的上下文可见性和调度能力。
 
 ## 用户第一眼会感受到什么
 
@@ -26,7 +26,7 @@
 
 ## 产品定位
 
-`icc` 面向的是已经在用多个工具处理 AI 协作、自动化执行和远程任务的用户。它不是再加一个窗口，而是试图把原本分散的控制面收束成一个更强、更快、更稳的工作台。
+`imux` 面向的是已经在用多个工具处理 AI 协作、自动化执行和远程任务的用户。它不是再加一个窗口，而是试图把原本分散的控制面收束成一个更强、更快、更稳的工作台。
 
 ## 当前版本的核心能力
 
@@ -80,14 +80,14 @@ cd imux
 
 ## 快速开始
 
-1. 启动 `icc`。
+1. 启动 `imux`。
 2. 打开本地项目目录。
 3. 在远程资源管理器中读取 `~/.ssh/config` 并连接目标主机。
 4. 在右侧面板查看、编辑本地或远程文件。
 5. 如需监督器和自动化能力，进入“设置 → 自动化”配置 LLM。
-6. 如需在终端中使用命令行，可通过应用内入口把 `icc` CLI 安装到 `PATH`。
+6. 如需在终端中使用命令行，可通过应用内入口把 `imux` CLI 安装到 `PATH`。
 
-## 为什么值得评估 `icc`
+## 为什么值得评估 `imux`
 
 - 用一个工作区取代“终端 + SFTP + 记事本 + 远程助手”这类分裂工具链。
 - 在代理或操作者执行过程中，持续保留项目上下文和状态可见性。
@@ -96,28 +96,28 @@ cd imux
 
 ## CLI 说明
 
-当前打包的可执行文件名称是 `icc`。
+当前打包的可执行文件名称是 `imux`。
 
 常用示例：
 
 ```bash
-icc --help
-icc notify --title "构建完成" --body "测试已通过"
-icc list-notifications
-icc clear-notifications
+imux --help
+imux notify --title "构建完成" --body "测试已通过"
+imux list-notifications
+imux clear-notifications
 ```
 
 兼容性说明：
 
 - 当前仓库内部仍保留部分历史 `icc` / `ICC_*` 命名，例如协议字段、环境变量和远程守护进程名。
-- 面向用户展示和发布的产品名称、CLI 名称均为 `icc`。
+- 面向用户展示和发布的产品名称、CLI 名称均为 `imux`。
 
 ## 远程工作流
 
-`icc` 同时支持两类远程方式：
+`imux` 同时支持两类远程方式：
 
 - 图形化远程资源管理器：直接读取 OpenSSH / VS Code 风格的 SSH 配置，交互式登录，并在连接后展示远端文件树。
-- 受管远程工作区：通过 `icc ssh ...` 创建可重连的远程工作区，并接入应用内部的浏览器、通知和会话管理。
+- 受管远程工作区：通过 `imux ssh ...` 创建可重连的远程工作区，并接入应用内部的浏览器、通知和会话管理。
 
 补充说明：
 
@@ -147,7 +147,7 @@ icc clear-notifications
 - [README.md](README.md)：英文主文档
 - [CONTRIBUTING.md](CONTRIBUTING.md)：开发与提交说明
 - [CHANGELOG.md](CHANGELOG.md)：版本历史
-- [docs/brand-guidelines.md](docs/brand-guidelines.md)：ICC 品牌命名与文案规则
+- [docs/brand-guidelines.md](docs/brand-guidelines.md)：IMUX 品牌命名与文案规则
 - [docs/notifications.md](docs/notifications.md)：通知与 Hook 集成
 - [docs/remote-daemon-spec.md](docs/remote-daemon-spec.md)：受管 SSH 架构
 - [docs/agent-browser-port-spec.md](docs/agent-browser-port-spec.md)：浏览器自动化接口说明
@@ -156,7 +156,7 @@ icc clear-notifications
 
 ## 开发说明
 
-- 当前仓库名为 `icc`，本次发布的产品名也为 `icc`。
+- 当前仓库名为 `imux`，本次发布的产品名也为 `imux`。
 - 部分 Xcode target、脚本、辅助二进制和协议层仍保留 `icc` 历史命名，这是兼容迁移的一部分，不建议直接全量替换。
 - Homebrew 子模块目前仍是历史命名，首个公开版本建议以 GitHub Releases 和源码构建为主。
 

@@ -21,7 +21,7 @@ enum SocketControlMode: String, CaseIterable, Identifiable {
         case .off:
             return String(localized: "socketControl.off.name", defaultValue: "Off")
         case .iccOnly:
-            return String(localized: "socketControl.iccOnly.name", defaultValue: "icc-managed processes only")
+            return String(localized: "socketControl.iccOnly.name", defaultValue: "imux-managed processes only")
         case .automation:
             return String(localized: "socketControl.automation.name", defaultValue: "Automation mode")
         case .password:
@@ -36,7 +36,7 @@ enum SocketControlMode: String, CaseIterable, Identifiable {
         case .off:
             return String(localized: "socketControl.off.description", defaultValue: "Disable the local control socket.")
         case .iccOnly:
-            return String(localized: "socketControl.iccOnly.description", defaultValue: "Only processes started inside icc terminals can send commands.")
+            return String(localized: "socketControl.iccOnly.description", defaultValue: "Only processes started inside imux terminals can send commands.")
         case .automation:
             return String(localized: "socketControl.automation.description", defaultValue: "Allow external local automation clients from this macOS user (no ancestry check).")
         case .password:
@@ -61,11 +61,14 @@ enum SocketControlMode: String, CaseIterable, Identifiable {
 }
 
 enum SocketControlPasswordStore {
-    static let directoryName = "iatlas"
+    static let directoryName = "imux"
     static let fileName = "socket-control-password"
     private static let keychainMigrationDefaultsKey = "socketControlPasswordMigrationVersion"
     private static let keychainMigrationVersion = 1
-    private static let legacyKeychainService = "com.icc.app.socket-control"
+    private static let keychainServices = [
+        "com.imux.app.socket-control",
+        "com.icc.app.socket-control",
+    ]
     private static let legacyKeychainAccount = "local-socket-password"
     private struct LazyKeychainFallbackCache {
         var hasLoaded = false
@@ -80,7 +83,9 @@ enum SocketControlPasswordStore {
         allowLazyKeychainFallback: Bool = false,
         loadKeychainPassword: () -> String? = { loadLegacyPasswordFromKeychain() }
     ) -> String? {
-        if let envPassword = normalized(environment[SocketControlSettings.socketPasswordEnvKey]) {
+        if let envPassword = normalized(
+            SocketControlSettings.firstEnvironmentValue(SocketControlSettings.socketPasswordEnvKeys, in: environment)
+        ) {
             return envPassword
         }
         let filePassword: String?
@@ -160,17 +165,15 @@ enum SocketControlPasswordStore {
     }
 
     static func loadPassword(fileURL: URL? = nil) throws -> String? {
-        guard let fileURL = fileURL ?? defaultPasswordFileURL() else {
-            return nil
+        if let fileURL {
+            return try loadPassword(at: fileURL)
         }
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            return nil
+        for candidate in defaultPasswordFileCandidates() {
+            if let password = try loadPassword(at: candidate) {
+                return password
+            }
         }
-        let data = try Data(contentsOf: fileURL)
-        guard let password = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-        return normalized(password)
+        return nil
     }
 
     static func savePassword(_ password: String, fileURL: URL? = nil) throws {
@@ -199,13 +202,17 @@ enum SocketControlPasswordStore {
     }
 
     static func clearPassword(fileURL: URL? = nil) throws {
-        guard let fileURL = fileURL ?? defaultPasswordFileURL() else {
+        if let fileURL {
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                try FileManager.default.removeItem(at: fileURL)
+            }
             return
         }
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            return
+        for candidate in defaultPasswordFileCandidates() {
+            if FileManager.default.fileExists(atPath: candidate.path) {
+                try FileManager.default.removeItem(at: candidate)
+            }
         }
-        try FileManager.default.removeItem(at: fileURL)
     }
 
     static func resetLazyKeychainFallbackCacheForTests() {
@@ -233,20 +240,23 @@ enum SocketControlPasswordStore {
 
     private static func loadLegacyPasswordFromKeychain() -> String? {
 #if canImport(Security)
-        let query: [CFString: Any] = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrService: legacyKeychainService,
-            kSecAttrAccount: legacyKeychainAccount,
-            kSecReturnData: true,
-            kSecMatchLimit: kSecMatchLimitOne,
-        ]
+        for service in keychainServices {
+            let query: [CFString: Any] = [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrService: service,
+                kSecAttrAccount: legacyKeychainAccount,
+                kSecReturnData: true,
+                kSecMatchLimit: kSecMatchLimitOne,
+            ]
 
-        var result: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        guard status == errSecSuccess, let data = result as? Data else {
-            return nil
+            var result: CFTypeRef?
+            let status = SecItemCopyMatching(query as CFDictionary, &result)
+            guard status == errSecSuccess, let data = result as? Data else {
+                continue
+            }
+            return String(data: data, encoding: .utf8)
         }
-        return String(data: data, encoding: .utf8)
+        return nil
 #else
         return nil
 #endif
@@ -254,16 +264,47 @@ enum SocketControlPasswordStore {
 
     private static func deleteLegacyPasswordFromKeychain() -> Bool {
 #if canImport(Security)
-        let query: [CFString: Any] = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrService: legacyKeychainService,
-            kSecAttrAccount: legacyKeychainAccount,
-        ]
-        let status = SecItemDelete(query as CFDictionary)
-        return status == errSecSuccess || status == errSecItemNotFound
+        var deletedAll = true
+        for service in keychainServices {
+            let query: [CFString: Any] = [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrService: service,
+                kSecAttrAccount: legacyKeychainAccount,
+            ]
+            let status = SecItemDelete(query as CFDictionary)
+            if status != errSecSuccess && status != errSecItemNotFound {
+                deletedAll = false
+            }
+        }
+        return deletedAll
 #else
         return false
 #endif
+    }
+
+    private static func loadPassword(at fileURL: URL) throws -> String? {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return nil
+        }
+        let data = try Data(contentsOf: fileURL)
+        guard let password = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        return normalized(password)
+    }
+
+    private static func defaultPasswordFileCandidates(
+        appSupportDirectory: URL? = nil,
+        fileManager: FileManager = .default
+    ) -> [URL] {
+        guard let appSupport = appSupportDirectory ?? fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+            return []
+        }
+        return SocketControlSettings.dedupedURLs([
+            appSupport.appendingPathComponent("imux", isDirectory: true).appendingPathComponent(fileName, isDirectory: false),
+            appSupport.appendingPathComponent("icc", isDirectory: true).appendingPathComponent(fileName, isDirectory: false),
+            appSupport.appendingPathComponent("imux", isDirectory: true).appendingPathComponent(fileName, isDirectory: false),
+        ])
     }
 
     private static func cachedLazyKeychainFallbackPassword(
@@ -289,22 +330,32 @@ enum SocketControlPasswordStore {
 struct SocketControlSettings {
     static let appStorageKey = "socketControlMode"
     static let legacyEnabledKey = "socketControlEnabled"
-    static let allowSocketPathOverrideKey = "ICC_ALLOW_SOCKET_OVERRIDE"
-    static let socketPasswordEnvKey = "ICC_SOCKET_PASSWORD"
-    static let launchTagEnvKey = "ICC_TAG"
-    static let baseDebugBundleIdentifier = "com.icc.app.debug"
-    private static let socketDirectoryName = "icc"
-    private static let stableSocketFileName = "icc.sock"
+    static let allowSocketPathOverrideKey = "IMUX_ALLOW_SOCKET_OVERRIDE"
+    static let allowSocketPathOverrideEnvKeys = ["IMUX_ALLOW_SOCKET_OVERRIDE", "ICC_ALLOW_SOCKET_OVERRIDE"]
+    static let socketPasswordEnvKey = "IMUX_SOCKET_PASSWORD"
+    static let socketPasswordEnvKeys = ["IMUX_SOCKET_PASSWORD", "ICC_SOCKET_PASSWORD"]
+    static let launchTagEnvKey = "IMUX_TAG"
+    static let launchTagEnvKeys = ["IMUX_TAG", "ICC_TAG"]
+    static let socketPathEnvKeys = ["IMUX_SOCKET_PATH", "ICC_SOCKET_PATH", "ICC_SOCKET"]
+    static let socketEnableEnvKeys = ["IMUX_SOCKET_ENABLE", "ICC_SOCKET_ENABLE"]
+    static let socketModeEnvKeys = ["IMUX_SOCKET_MODE", "ICC_SOCKET_MODE"]
+    static let allowUntaggedDebugLaunchEnvKeys = ["IMUX_ALLOW_UNTAGGED_DEBUG_LAUNCH", "ICC_ALLOW_UNTAGGED_DEBUG_LAUNCH"]
+    static let uiTestPrefixes = ["IMUX_UI_TEST_", "ICC_UI_TEST_"]
+    static let baseDebugBundleIdentifier = "com.imux.app.debug"
+    private static let socketDirectoryName = "imux"
+    private static let stableSocketFileName = "imux.sock"
     private static let lastSocketPathFileName = "last-socket-path"
+    static let fallbackStableDefaultSocketPath = "/tmp/imux.sock"
     static let legacyStableDefaultSocketPath = "/tmp/icc.sock"
+    static let fallbackLastSocketPathFile = "/tmp/imux-last-socket-path"
     static let legacyLastSocketPathFile = "/tmp/icc-last-socket-path"
 
     static var stableDefaultSocketPath: String {
-        stableSocketFileURL()?.path ?? legacyStableDefaultSocketPath
+        stableSocketFileURL()?.path ?? fallbackStableDefaultSocketPath
     }
 
     static var lastSocketPathFile: String {
-        lastSocketPathFileURL()?.path ?? legacyLastSocketPathFile
+        lastSocketPathFileURL()?.path ?? fallbackLastSocketPathFile
     }
 
     enum StableDefaultSocketPathEntry: Equatable {
@@ -364,7 +415,7 @@ struct SocketControlSettings {
     static func launchTag(
         environment: [String: String] = ProcessInfo.processInfo.environment
     ) -> String? {
-        guard let raw = environment[launchTagEnvKey] else { return nil }
+        guard let raw = firstEnvironmentValue(launchTagEnvKeys, in: environment) else { return nil }
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? nil : trimmed
     }
@@ -374,7 +425,7 @@ struct SocketControlSettings {
         bundleIdentifier: String? = Bundle.main.bundleIdentifier,
         isDebugBuild: Bool = SocketControlSettings.isDebugBuild
     ) -> Bool {
-        if environment["ICC_ALLOW_UNTAGGED_DEBUG_LAUNCH"] == "1" {
+        if isTruthy(firstEnvironmentValue(allowUntaggedDebugLaunchEnvKeys, in: environment)) {
             return false
         }
 
@@ -388,7 +439,9 @@ struct SocketControlSettings {
         }
         // XCUITest launches the app as a separate process without XCTest env vars,
         // so isRunningUnderXCTest() misses it. Check for any ICC_UI_TEST_ env var.
-        if environment.keys.contains(where: { $0.hasPrefix("ICC_UI_TEST_") }) {
+        if environment.keys.contains(where: { key in
+            uiTestPrefixes.contains(where: { key.hasPrefix($0) })
+        }) {
             return false
         }
 
@@ -446,15 +499,15 @@ struct SocketControlSettings {
             bundleIdentifier: bundleIdentifier,
             environment: environment
         ) {
-            if isTruthy(environment[allowSocketPathOverrideKey]),
-               let override = environment["ICC_SOCKET_PATH"],
+            if isTruthy(firstEnvironmentValue(allowSocketPathOverrideEnvKeys, in: environment)),
+               let override = firstEnvironmentValue(socketPathEnvKeys, in: environment),
                !override.isEmpty {
                 return override
             }
             return taggedDebugPath
         }
 
-        guard let override = environment["ICC_SOCKET_PATH"], !override.isEmpty else {
+        guard let override = firstEnvironmentValue(socketPathEnvKeys, in: environment), !override.isEmpty else {
             return fallback
         }
 
@@ -478,14 +531,14 @@ struct SocketControlSettings {
         if let taggedDebugPath = taggedDebugSocketPath(bundleIdentifier: bundleIdentifier, environment: [:]) {
             return taggedDebugPath
         }
-        if bundleIdentifier == "com.icc.app.nightly" {
-            return "/tmp/icc-nightly.sock"
+        if bundleIdentifier == "com.imux.app.nightly" {
+            return "/tmp/imux-nightly.sock"
         }
         if isDebugLikeBundleIdentifier(bundleIdentifier) || isDebugBuild {
-            return "/tmp/icc-debug.sock"
+            return "/tmp/imux-debug.sock"
         }
         if isStagingBundleIdentifier(bundleIdentifier) {
-            return "/tmp/icc-staging.sock"
+            return "/tmp/imux-staging.sock"
         }
         return resolvedStableDefaultSocketPath(
             currentUserID: currentUserID,
@@ -495,8 +548,8 @@ struct SocketControlSettings {
 
     static func userScopedStableSocketPath(currentUserID: uid_t = getuid()) -> String {
         stableSocketDirectoryURL()?
-            .appendingPathComponent("icc-\(currentUserID).sock", isDirectory: false)
-            .path ?? "/tmp/icc-\(currentUserID).sock"
+            .appendingPathComponent("imux-\(currentUserID).sock", isDirectory: false)
+            .path ?? "/tmp/imux-\(currentUserID).sock"
     }
 
     static func resolvedStableDefaultSocketPath(
@@ -516,8 +569,16 @@ struct SocketControlSettings {
     static func recordLastSocketPath(_ path: String, filePath: String = lastSocketPathFile) {
         let payload = Data((path + "\n").utf8)
         writeSocketPathMarker(payload, to: filePath)
+        if filePath != fallbackLastSocketPathFile {
+            writeSocketPathMarker(payload, to: fallbackLastSocketPathFile)
+        }
         if filePath != legacyLastSocketPathFile {
             writeSocketPathMarker(payload, to: legacyLastSocketPathFile)
+        }
+        for legacyURL in legacyLastSocketPathFileURLs() {
+            if legacyURL.path != filePath {
+                writeSocketPathMarker(payload, to: legacyURL.path)
+            }
         }
     }
 
@@ -526,7 +587,7 @@ struct SocketControlSettings {
         bundleIdentifier: String?,
         isDebugBuild: Bool
     ) -> Bool {
-        if isTruthy(environment[allowSocketPathOverrideKey]) {
+        if isTruthy(firstEnvironmentValue(allowSocketPathOverrideEnvKeys, in: environment)) {
             return true
         }
         if isDebugLikeBundleIdentifier(bundleIdentifier) || isStagingBundleIdentifier(bundleIdentifier) {
@@ -537,8 +598,8 @@ struct SocketControlSettings {
 
     static func isDebugLikeBundleIdentifier(_ bundleIdentifier: String?) -> Bool {
         guard let bundleIdentifier else { return false }
-        return bundleIdentifier == "com.icc.app.debug"
-            || bundleIdentifier.hasPrefix("com.icc.app.debug.")
+        return bundleIdentifier == "com.imux.app.debug"
+            || bundleIdentifier.hasPrefix("com.imux.app.debug.")
     }
 
     static func taggedDebugSocketPath(
@@ -552,7 +613,7 @@ struct SocketControlSettings {
                 .replacingOccurrences(of: ".", with: "-")
                 .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
             if !slug.isEmpty {
-                return "/tmp/icc-debug-\(slug).sock"
+                return "/tmp/imux-debug-\(slug).sock"
             }
         }
 
@@ -569,13 +630,13 @@ struct SocketControlSettings {
               !tag.isEmpty else {
             return nil
         }
-        return "/tmp/icc-debug-\(tag).sock"
+        return "/tmp/imux-debug-\(tag).sock"
     }
 
     static func isStagingBundleIdentifier(_ bundleIdentifier: String?) -> Bool {
         guard let bundleIdentifier else { return false }
-        return bundleIdentifier == "com.icc.app.staging"
-            || bundleIdentifier.hasPrefix("com.icc.app.staging.")
+        return bundleIdentifier == "com.imux.app.staging"
+            || bundleIdentifier.hasPrefix("com.imux.app.staging.")
     }
 
     static func stableSocketDirectoryURL(fileManager: FileManager = .default) -> URL? {
@@ -593,6 +654,32 @@ struct SocketControlSettings {
     static func lastSocketPathFileURL(fileManager: FileManager = .default) -> URL? {
         stableSocketDirectoryURL(fileManager: fileManager)?
             .appendingPathComponent(lastSocketPathFileName, isDirectory: false)
+    }
+
+    static func legacyStableSocketDirectoryURLs(fileManager: FileManager = .default) -> [URL] {
+        guard let appSupportDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+            return []
+        }
+        return dedupedURLs([
+            appSupportDirectory.appendingPathComponent("icc", isDirectory: true),
+            appSupportDirectory.appendingPathComponent("imux", isDirectory: true),
+        ])
+    }
+
+    static func legacyStableSocketFileURLs(fileManager: FileManager = .default) -> [URL] {
+        dedupedURLs(
+            legacyStableSocketDirectoryURLs(fileManager: fileManager).map {
+                $0.appendingPathComponent("icc.sock", isDirectory: false)
+            }
+        )
+    }
+
+    static func legacyLastSocketPathFileURLs(fileManager: FileManager = .default) -> [URL] {
+        dedupedURLs(
+            legacyStableSocketDirectoryURLs(fileManager: fileManager).map {
+                $0.appendingPathComponent(lastSocketPathFileName, isDirectory: false)
+            }
+        )
     }
 
     private static func writeSocketPathMarker(_ payload: Data, to filePath: String) {
@@ -636,7 +723,7 @@ struct SocketControlSettings {
     static func envOverrideEnabled(
         environment: [String: String] = ProcessInfo.processInfo.environment
     ) -> Bool? {
-        guard let raw = environment["ICC_SOCKET_ENABLE"], !raw.isEmpty else {
+        guard let raw = firstEnvironmentValue(socketEnableEnvKeys, in: environment), !raw.isEmpty else {
             return nil
         }
 
@@ -653,7 +740,7 @@ struct SocketControlSettings {
     static func envOverrideMode(
         environment: [String: String] = ProcessInfo.processInfo.environment
     ) -> SocketControlMode? {
-        guard let raw = environment["ICC_SOCKET_MODE"], !raw.isEmpty else {
+        guard let raw = firstEnvironmentValue(socketModeEnvKeys, in: environment), !raw.isEmpty else {
             return nil
         }
         return parseMode(raw)
@@ -678,5 +765,29 @@ struct SocketControlSettings {
         }
 
         return userMode
+    }
+
+    static func firstEnvironmentValue(_ keys: [String], in environment: [String: String]) -> String? {
+        for key in keys {
+            guard let raw = environment[key] else { continue }
+            let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty {
+                return trimmed
+            }
+        }
+        return nil
+    }
+
+    static func dedupedURLs(_ urls: [URL]) -> [URL] {
+        var seen: Set<String> = []
+        var ordered: [URL] = []
+        ordered.reserveCapacity(urls.count)
+        for url in urls {
+            let standardized = url.standardizedFileURL
+            if seen.insert(standardized.path).inserted {
+                ordered.append(standardized)
+            }
+        }
+        return ordered
     }
 }

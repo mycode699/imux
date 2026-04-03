@@ -1713,7 +1713,7 @@ final class UpdateTitlebarAccessoryController {
 
     private func isSettingsWindow(_ window: NSWindow) -> Bool {
         if let raw = window.identifier?.rawValue,
-           raw == "icc.settings" || raw == "iatlas.settings" || raw == "icc.settings" {
+           raw == "icc.settings" || raw == "imux.settings" || raw == "icc.settings" {
             return true
         }
         return window.title == "Settings"
@@ -1721,7 +1721,7 @@ final class UpdateTitlebarAccessoryController {
 
     private func isMainTerminalWindow(_ window: NSWindow) -> Bool {
         guard let raw = window.identifier?.rawValue else { return false }
-        return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+        return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
     }
 
     private func preferredNotificationsController(

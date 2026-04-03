@@ -466,7 +466,13 @@ enum SessionPersistenceStore {
     }
 
     static func load(fileURL: URL? = nil) -> AppSessionSnapshot? {
-        guard let fileURL = fileURL ?? defaultSnapshotFileURL() else { return nil }
+        let resolvedFileURL: URL?
+        if let fileURL {
+            resolvedFileURL = fileURL
+        } else {
+            resolvedFileURL = defaultSnapshotLoadFileURL()
+        }
+        guard let fileURL = resolvedFileURL else { return nil }
         let primary = loadSnapshot(fileURL: fileURL)
         let stable = loadSnapshot(fileURL: stableSnapshotFileURL(for: fileURL))
 
@@ -526,6 +532,46 @@ enum SessionPersistenceStore {
         bundleIdentifier: String? = Bundle.main.bundleIdentifier,
         appSupportDirectory: URL? = nil
     ) -> URL? {
+        snapshotFileURL(
+            directoryName: "imux",
+            bundleIdentifier: bundleIdentifier,
+            appSupportDirectory: appSupportDirectory
+        )
+    }
+
+    private static func defaultSnapshotLoadFileURL(
+        bundleIdentifier: String? = Bundle.main.bundleIdentifier,
+        appSupportDirectory: URL? = nil
+    ) -> URL? {
+        let candidates = snapshotFileCandidates(
+            bundleIdentifier: bundleIdentifier,
+            appSupportDirectory: appSupportDirectory
+        )
+        if let existing = candidates.first(where: {
+            FileManager.default.fileExists(atPath: $0.path)
+                || FileManager.default.fileExists(atPath: stableSnapshotFileURL(for: $0).path)
+        }) {
+            return existing
+        }
+        return candidates.first
+    }
+
+    private static func snapshotFileCandidates(
+        bundleIdentifier: String? = Bundle.main.bundleIdentifier,
+        appSupportDirectory: URL? = nil
+    ) -> [URL] {
+        [
+            snapshotFileURL(directoryName: "imux", bundleIdentifier: bundleIdentifier, appSupportDirectory: appSupportDirectory),
+            snapshotFileURL(directoryName: "icc", bundleIdentifier: bundleIdentifier, appSupportDirectory: appSupportDirectory),
+            snapshotFileURL(directoryName: "imux", bundleIdentifier: bundleIdentifier, appSupportDirectory: appSupportDirectory),
+        ].compactMap { $0 }
+    }
+
+    private static func snapshotFileURL(
+        directoryName: String,
+        bundleIdentifier: String?,
+        appSupportDirectory: URL?
+    ) -> URL? {
         let resolvedAppSupport: URL
         if let appSupportDirectory {
             resolvedAppSupport = appSupportDirectory
@@ -536,14 +582,14 @@ enum SessionPersistenceStore {
         }
         let bundleId = (bundleIdentifier?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false)
             ? bundleIdentifier!
-            : "com.icc.app"
+            : "com.imux.app"
         let safeBundleId = bundleId.replacingOccurrences(
             of: "[^A-Za-z0-9._-]",
             with: "_",
             options: .regularExpression
         )
         return resolvedAppSupport
-            .appendingPathComponent("iatlas", isDirectory: true)
+            .appendingPathComponent(directoryName, isDirectory: true)
             .appendingPathComponent("session-\(safeBundleId).json", isDirectory: false)
     }
 
@@ -625,7 +671,7 @@ enum SessionPersistenceStore {
 
 enum SessionScrollbackReplayStore {
     static let environmentKey = "ICC_RESTORE_SCROLLBACK_FILE"
-    private static let directoryName = "iatlas-session-scrollback"
+    private static let directoryName = "imux-session-scrollback"
     private static let ansiEscape = "\u{001B}"
     private static let ansiReset = "\u{001B}[0m"
 

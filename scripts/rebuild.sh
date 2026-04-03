@@ -12,7 +12,7 @@ pkill -9 -f "icc" 2>/dev/null || true
 swift build
 
 # Copy to app bundle
-cp .build/debug/icc .build/debug/icc.app/Contents/MacOS/
+cp .build/debug/icc .build/debug/imux.app/Contents/MacOS/
 
 # Open the app
-open .build/debug/icc.app
+open .build/debug/imux.app

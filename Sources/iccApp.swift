@@ -220,7 +220,7 @@ struct iccApp: App {
     }
 
     private static func terminateForMissingLaunchTag() -> Never {
-        let message = "error: refusing to launch untagged iatlas DEV; start with ./scripts/reload.sh --tag <name> (or set ICC_TAG for test harnesses)"
+        let message = "error: refusing to launch untagged imux DEV; start with ./scripts/reload.sh --tag <name> (or set ICC_TAG for test harnesses)"
         fputs("\(message)\n", stderr)
         fflush(stderr)
         NSLog("%@", message)
@@ -373,7 +373,7 @@ struct iccApp: App {
             }
 
             CommandGroup(replacing: .appInfo) {
-                Button(String(localized: "menu.app.about", defaultValue: "About icc")) {
+                Button(String(localized: "menu.app.about", defaultValue: "About imux")) {
                     showAboutPanel()
                 }
                 Button(String(localized: "menu.app.ghosttySettings", defaultValue: "Ghostty Settings…")) {
@@ -1306,7 +1306,7 @@ private enum SettingsAboutWindowKind: String, CaseIterable, Identifiable {
         case .settings:
             return "Settings"
         case .about:
-            return "About icc"
+            return "About imux"
         }
     }
 
@@ -1419,7 +1419,7 @@ private struct SettingsAboutTitlebarDebugOptions: Equatable {
         case .about:
             return SettingsAboutTitlebarDebugOptions(
                 overridesEnabled: false,
-                windowTitle: "About icc",
+                windowTitle: "About imux",
                 titleVisibility: .hidden,
                 titlebarAppearsTransparent: true,
                 movableByWindowBackground: false,
@@ -1655,7 +1655,7 @@ private struct SettingsAboutTitlebarDebugView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Toggle("Enable Debug Overrides", isOn: overridesEnabled)
 
-                Text("When disabled, icc uses the normal default titlebar behavior for this window.")
+                Text("When disabled, imux uses the normal default titlebar behavior for this window.")
                     .font(.caption)
                     .foregroundColor(.secondary)
 
@@ -2819,7 +2819,7 @@ private struct AboutPanelView: View {
 
             VStack(alignment: .center, spacing: 32) {
                 VStack(alignment: .center, spacing: 8) {
-                    Text(String(localized: "about.appName", defaultValue: "icc"))
+                    Text(String(localized: "about.appName", defaultValue: "imux"))
                         .bold()
                         .font(.title)
                     Text(String(localized: "about.description", defaultValue: "A native macOS command center for terminal-first AI work."))
@@ -3174,7 +3174,7 @@ private final class MenuBarExtraDebugWindowController: NSWindowController, NSWin
         window.titlebarAppearsTransparent = false
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.menubarDebug")
+        window.identifier = NSUserInterfaceItemIdentifier("imux.menubarDebug")
         window.center()
         window.contentView = IccFirstMouseHostingView(rootView: MenuBarExtraDebugView())
         AppDelegate.shared?.applyWindowDecorations(to: window)
@@ -3344,7 +3344,7 @@ private final class BackgroundDebugWindowController: NSWindowController, NSWindo
         window.titlebarAppearsTransparent = false
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.identifier = NSUserInterfaceItemIdentifier("iatlas.backgroundDebug")
+        window.identifier = NSUserInterfaceItemIdentifier("imux.backgroundDebug")
         window.center()
         window.contentView = IccFirstMouseHostingView(rootView: BackgroundDebugView())
         AppDelegate.shared?.applyWindowDecorations(to: window)
@@ -3439,12 +3439,12 @@ private struct BackgroundDebugView: View {
         let window: NSWindow? = {
             if let key = NSApp.keyWindow,
                let raw = key.identifier?.rawValue,
-               raw == "icc.main" || raw == "icc.main" || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.") {
+               raw == "icc.main" || raw == "icc.main" || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.") {
                 return key
             }
             return NSApp.windows.first(where: {
                 guard let raw = $0.identifier?.rawValue else { return false }
-                return raw == "icc.main" || raw == "icc.main" || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+                return raw == "icc.main" || raw == "icc.main" || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
             })
         }()
         guard let window else { return }
@@ -3863,7 +3863,7 @@ enum WeChatChannelSettings {
 }
 
 enum WeChatBotTokenStore {
-    static let serviceName = "com.icc.app.wechat.bot-token"
+    static let serviceName = "com.imux.app.wechat.bot-token"
 
     static func loadToken(for accountId: UUID) -> String? {
 #if canImport(Security)
@@ -4422,16 +4422,16 @@ struct SettingsView: View {
         if paneFirstClickFocusEnabled {
             return localizedSettingsText(
                 "settings.app.paneFirstClickFocus.subtitleOn",
-                english: "When icc is inactive, clicking a pane activates the window and focuses that pane in one click.",
-                simplifiedChinese: "当 icc 未激活时，点击面板会同时激活窗口并聚焦该面板。",
-                traditionalChinese: "當 icc 未啟用時，點擊面板會同時啟用視窗並聚焦該面板。"
+                english: "When imux is inactive, clicking a pane activates the window and focuses that pane in one click.",
+                simplifiedChinese: "当 imux 未激活时，点击面板会同时激活窗口并聚焦该面板。",
+                traditionalChinese: "當 imux 未啟用時，點擊面板會同時啟用視窗並聚焦該面板。"
             )
         }
         return localizedSettingsText(
             "settings.app.paneFirstClickFocus.subtitleOff",
-            english: "When icc is inactive, the first click only activates the window. Click again to focus the pane.",
-            simplifiedChinese: "当 icc 未激活时，第一次点击只会激活窗口；再次点击才会聚焦面板。",
-            traditionalChinese: "當 icc 未啟用時，第一次點擊只會啟用視窗；再次點擊才會聚焦面板。"
+            english: "When imux is inactive, the first click only activates the window. Click again to focus the pane.",
+            simplifiedChinese: "当 imux 未激活时，第一次点击只会激活窗口；再次点击才会聚焦面板。",
+            traditionalChinese: "當 imux 未啟用時，第一次點擊只會啟用視窗；再次點擊才會聚焦面板。"
         )
     }
 
@@ -5257,7 +5257,7 @@ struct SettingsView: View {
                         )
 
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("icc")
+                            Text("imux")
                                 .font(.system(size: 22, weight: .bold, design: .rounded))
                             Text(
                                 localizedSettingsText(
@@ -5371,7 +5371,7 @@ struct SettingsView: View {
                         SettingsCardRow(
                             String(localized: "settings.app.language", defaultValue: "Language"),
                             subtitle: appLanguage != LanguageSettings.languageAtLaunch.rawValue
-                                ? String(localized: "settings.app.language.restartSubtitle", defaultValue: "Restart icc to apply")
+                                ? String(localized: "settings.app.language.restartSubtitle", defaultValue: "Restart imux to apply")
                                 : nil,
                             controlWidth: pickerColumnWidth
                         ) {
@@ -5495,7 +5495,7 @@ struct SettingsView: View {
 
                         SettingsCardRow(
                             localizedSettingsText("settings.app.showInMenuBar", english: "Show in Menu Bar", simplifiedChinese: "在菜单栏显示", traditionalChinese: "在選單列顯示"),
-                            subtitle: localizedSettingsText("settings.app.showInMenuBar.subtitle", english: "Keep icc in the menu bar for unread notifications and quick actions.", simplifiedChinese: "在菜单栏中保留 icc，用于未读提醒和快捷操作。", traditionalChinese: "在選單列中保留 icc，用於未讀提醒與快捷操作。")
+                            subtitle: localizedSettingsText("settings.app.showInMenuBar.subtitle", english: "Keep imux in the menu bar for unread notifications and quick actions.", simplifiedChinese: "在菜单栏中保留 imux，用于未读提醒和快捷操作。", traditionalChinese: "在選單列中保留 imux，用於未讀提醒與快捷操作。")
                         ) {
                             Toggle("", isOn: $showMenuBarExtra)
                                 .labelsHidden()
@@ -5524,7 +5524,7 @@ struct SettingsView: View {
 
                         SettingsCardRow(
                             localizedSettingsText("settings.notifications.paneFlash.title", english: "Pane Flash", simplifiedChinese: "面板闪烁提示", traditionalChinese: "面板閃爍提示"),
-                            subtitle: localizedSettingsText("settings.notifications.paneFlash.subtitle", english: "Briefly flash a blue outline when icc highlights a pane.", simplifiedChinese: "icc 高亮面板时，会短暂闪烁蓝色边框。", traditionalChinese: "icc 高亮面板時，會短暫閃爍藍色邊框。")
+                            subtitle: localizedSettingsText("settings.notifications.paneFlash.subtitle", english: "Briefly flash a blue outline when imux highlights a pane.", simplifiedChinese: "imux 高亮面板时，会短暂闪烁蓝色边框。", traditionalChinese: "imux 高亮面板時，會短暫閃爍藍色邊框。")
                         ) {
                             Toggle("", isOn: $notificationPaneFlashEnabled)
                                 .labelsHidden()
@@ -5637,7 +5637,7 @@ struct SettingsView: View {
                             localizedSettingsText("settings.app.telemetry", english: "Send anonymous telemetry", simplifiedChinese: "发送匿名遥测", traditionalChinese: "傳送匿名遙測"),
                             subtitle: sendAnonymousTelemetry != telemetryValueAtLaunch
                                 ? localizedSettingsText("settings.app.telemetry.subtitleChanged", english: "Change takes effect on next launch.", simplifiedChinese: "更改将在下次启动后生效。", traditionalChinese: "變更將在下次啟動後生效。")
-                                : localizedSettingsText("settings.app.telemetry.subtitle", english: "Share anonymized crash and usage data to help improve icc.", simplifiedChinese: "共享匿名化的崩溃与使用数据，以帮助改进 icc。", traditionalChinese: "共享匿名化的崩潰與使用資料，以協助改進 icc。")
+                                : localizedSettingsText("settings.app.telemetry.subtitle", english: "Share anonymized crash and usage data to help improve imux.", simplifiedChinese: "共享匿名化的崩溃与使用数据，以帮助改进 imux。", traditionalChinese: "共享匿名化的崩潰與使用資料，以協助改進 imux。")
                         ) {
                             Toggle("", isOn: $sendAnonymousTelemetry)
                                 .labelsHidden()
@@ -5754,9 +5754,9 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            localizedSettingsText("settings.app.openSidebarPRLinks", english: "Open Sidebar PR Links in icc Browser", simplifiedChinese: "在 icc 浏览器中打开侧边栏 PR 链接", traditionalChinese: "在 icc 瀏覽器中開啟側邊欄 PR 連結"),
+                            localizedSettingsText("settings.app.openSidebarPRLinks", english: "Open Sidebar PR Links in imux Browser", simplifiedChinese: "在 imux 浏览器中打开侧边栏 PR 链接", traditionalChinese: "在 imux 瀏覽器中開啟側邊欄 PR 連結"),
                             subtitle: openSidebarPullRequestLinksInIccBrowser
-                                ? localizedSettingsText("settings.app.openSidebarPRLinks.subtitleOn", english: "Clicks open inside the icc browser.", simplifiedChinese: "点击后会在 icc 内置浏览器中打开。", traditionalChinese: "點擊後會在 icc 內建瀏覽器中開啟。")
+                                ? localizedSettingsText("settings.app.openSidebarPRLinks.subtitleOn", english: "Clicks open inside the imux browser.", simplifiedChinese: "点击后会在 imux 内置浏览器中打开。", traditionalChinese: "點擊後會在 imux 內建瀏覽器中開啟。")
                                 : localizedSettingsText("settings.app.openSidebarPRLinks.subtitleOff", english: "Clicks open in your default browser.", simplifiedChinese: "点击后会在系统默认浏览器中打开。", traditionalChinese: "點擊後會在系統預設瀏覽器中開啟。")
                         ) {
                             Toggle("", isOn: $openSidebarPullRequestLinksInIccBrowser)
@@ -6037,9 +6037,9 @@ struct SettingsView: View {
                             ),
                             subtitle: localizedSettingsText(
                                 "settings.wechat.integration.subtitle",
-                                english: "Bind inbound WeChat chats to specific icc windows or workspaces, so each conversation controls the right target.",
-                                simplifiedChinese: "把微信会话绑定到指定的 icc 窗口或工作区，让每个对话都控制正确的目标。",
-                                traditionalChinese: "把微信會話綁定到指定的 icc 視窗或工作區，讓每個對話都控制正確的目標。"
+                                english: "Bind inbound WeChat chats to specific imux windows or workspaces, so each conversation controls the right target.",
+                                simplifiedChinese: "把微信会话绑定到指定的 imux 窗口或工作区，让每个对话都控制正确的目标。",
+                                traditionalChinese: "把微信會話綁定到指定的 imux 視窗或工作區，讓每個對話都控制正確的目標。"
                             )
                         ) {
                             Toggle("", isOn: weChatConfigurationBinding)
@@ -6680,7 +6680,7 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(localizedSettingsText("settings.automation.quickImport.title", english: "Quick Import", simplifiedChinese: "快速导入", traditionalChinese: "快速匯入"))
                                     .font(.system(size: 13, weight: .semibold))
-                                Text(localizedSettingsText("settings.automation.quickImport.subtitle", english: "Pull editor defaults into icc and install agent notification hooks with one click.", simplifiedChinese: "一键把编辑器默认项导入 icc，并安装代理通知集成。", traditionalChinese: "一鍵把編輯器預設匯入 icc，並安裝代理通知整合。"))
+                                Text(localizedSettingsText("settings.automation.quickImport.subtitle", english: "Pull editor defaults into imux and install agent notification hooks with one click.", simplifiedChinese: "一键把编辑器默认项导入 imux，并安装代理通知集成。", traditionalChinese: "一鍵把編輯器預設匯入 imux，並安裝代理通知整合。"))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -6712,7 +6712,7 @@ struct SettingsView: View {
                                 .controlSize(.small)
                             }
 
-                            Text(localizedSettingsText("settings.automation.quickImport.footnote", english: "VS Code and Cursor sync terminal font and color defaults. Claude Code and Codex add icc notification hooks without touching your other settings.", simplifiedChinese: "VS Code 和 Cursor 会同步终端字体与颜色默认值。Claude Code 和 Codex 会添加 icc 通知钩子，不影响你的其他设置。", traditionalChinese: "VS Code 和 Cursor 會同步終端字體與顏色預設。Claude Code 和 Codex 會加入 icc 通知鉤子，不影響你的其他設定。"))
+                            Text(localizedSettingsText("settings.automation.quickImport.footnote", english: "VS Code and Cursor sync terminal font and color defaults. Claude Code and Codex add imux notification hooks without touching your other settings.", simplifiedChinese: "VS Code 和 Cursor 会同步终端字体与颜色默认值。Claude Code 和 Codex 会添加 imux 通知钩子，不影响你的其他设置。", traditionalChinese: "VS Code 和 Cursor 會同步終端字體與顏色預設。Claude Code 和 Codex 會加入 imux 通知鉤子，不影響你的其他設定。"))
                                 .font(.system(size: 10.5))
                                 .foregroundStyle(.tertiary)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -6795,7 +6795,7 @@ struct SettingsView: View {
                             String(localized: "settings.automation.claudeCode", defaultValue: "Claude Code Integration"),
                             subtitle: claudeCodeHooksEnabled
                                 ? String(localized: "settings.automation.claudeCode.subtitleOn", defaultValue: "Sidebar shows Claude session status and notifications.")
-                                : String(localized: "settings.automation.claudeCode.subtitleOff", defaultValue: "Claude Code runs without icc integration.")
+                                : String(localized: "settings.automation.claudeCode.subtitleOff", defaultValue: "Claude Code runs without imux integration.")
                         ) {
                             Toggle("", isOn: $claudeCodeHooksEnabled)
                                 .labelsHidden()
@@ -6805,7 +6805,7 @@ struct SettingsView: View {
 
                         SettingsCardDivider()
 
-                        SettingsCardNote(String(localized: "settings.automation.claudeCode.note", defaultValue: "When enabled, icc wraps the claude command to inject session tracking and notification hooks. Disable if you prefer to manage Claude Code hooks yourself."))
+                        SettingsCardNote(String(localized: "settings.automation.claudeCode.note", defaultValue: "When enabled, imux wraps the claude command to inject session tracking and notification hooks. Disable if you prefer to manage Claude Code hooks yourself."))
                     }
 
                     SettingsCard {
@@ -6869,7 +6869,7 @@ struct SettingsView: View {
                         SettingsCardDivider()
 
                         SettingsCardRow(
-                            String(localized: "settings.browser.openTerminalLinks", defaultValue: "Open Terminal Links in icc Browser"),
+                            String(localized: "settings.browser.openTerminalLinks", defaultValue: "Open Terminal Links in imux Browser"),
                             subtitle: String(localized: "settings.browser.openTerminalLinks.subtitle", defaultValue: "When off, links clicked in terminal output open in your default browser.")
                         ) {
                             Toggle("", isOn: $openTerminalLinksInIccBrowser)
@@ -6894,7 +6894,7 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 6) {
                                 SettingsCardRow(
                                     String(localized: "settings.browser.hostWhitelist", defaultValue: "Hosts to Open in Embedded Browser"),
-                                    subtitle: String(localized: "settings.browser.hostWhitelist.subtitle", defaultValue: "Applies to terminal link clicks and intercepted `open https://...` calls. Only these hosts open in icc. Others open in your default browser. One host or wildcard per line (for example: example.com, *.internal.example). Leave empty to open all hosts in icc.")
+                                    subtitle: String(localized: "settings.browser.hostWhitelist.subtitle", defaultValue: "Applies to terminal link clicks and intercepted `open https://...` calls. Only these hosts open in imux. Others open in your default browser. One host or wildcard per line (for example: example.com, *.internal.example). Leave empty to open all hosts in imux.")
                                 ) {
                                     EmptyView()
                                 }
@@ -6946,7 +6946,7 @@ struct SettingsView: View {
                             Text(String(localized: "settings.browser.httpAllowlist", defaultValue: "HTTP Hosts Allowed in Embedded Browser"))
                                 .font(.system(size: 13, weight: .semibold))
 
-                            Text(String(localized: "settings.browser.httpAllowlist.description", defaultValue: "Controls which HTTP (non-HTTPS) hosts can open in icc without a warning prompt. Defaults include localhost, 127.0.0.1, ::1, 0.0.0.0, and *.localtest.me."))
+                            Text(String(localized: "settings.browser.httpAllowlist.description", defaultValue: "Controls which HTTP (non-HTTPS) hosts can open in imux without a warning prompt. Defaults include localhost, 127.0.0.1, ::1, 0.0.0.0, and *.localtest.me."))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
 
@@ -7558,7 +7558,7 @@ struct SettingsView: View {
     private func installClaudeCodeNotificationHook() throws -> String {
         let settingsURL = FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent(".claude/settings.json")
-        let notificationCommand = "command -v icc >/dev/null 2>&1 && icc notify --title 'Claude Code' --body 'Waiting for input' || osascript -e 'display notification \"Waiting for input\" with title \"Claude Code\"'"
+        let notificationCommand = "command -v imux >/dev/null 2>&1 && imux notify --title 'Claude Code' --body 'Waiting for input' || osascript -e 'display notification \"Waiting for input\" with title \"Claude Code\"'"
 
         var root = try loadOrCreateJSONObject(at: settingsURL)
         var hooks = root["hooks"] as? [String: Any] ?? [:]
@@ -7587,8 +7587,8 @@ struct SettingsView: View {
         claudeCodeHooksEnabled = true
 
         return alreadyInstalled
-            ? localizedSettingsText("settings.automation.quickImport.claude.exists", english: "Claude Code already has the icc notification hook.", simplifiedChinese: "Claude Code 已存在 icc 通知钩子。", traditionalChinese: "Claude Code 已存在 icc 通知鉤子。")
-            : localizedSettingsText("settings.automation.quickImport.claude.installed", english: "Installed the icc notification hook for Claude Code.", simplifiedChinese: "已为 Claude Code 安装 icc 通知钩子。", traditionalChinese: "已為 Claude Code 安裝 icc 通知鉤子。")
+            ? localizedSettingsText("settings.automation.quickImport.claude.exists", english: "Claude Code already has the imux notification hook.", simplifiedChinese: "Claude Code 已存在 imux 通知钩子。", traditionalChinese: "Claude Code 已存在 imux 通知鉤子。")
+            : localizedSettingsText("settings.automation.quickImport.claude.installed", english: "Installed the imux notification hook for Claude Code.", simplifiedChinese: "已为 Claude Code 安装 imux 通知钩子。", traditionalChinese: "已為 Claude Code 安裝 imux 通知鉤子。")
     }
 
     private func installCodexNotificationHook() throws -> String {
@@ -7598,7 +7598,7 @@ struct SettingsView: View {
         let endMarker = "# <<< icc codex notify <<<"
         let managedBlock = [
             startMarker,
-            "notify = [\"bash\", \"-lc\", \"MSG=$(echo \\\"$1\\\" | jq -r '.\\\"last-assistant-message\\\" // \\\"Turn complete\\\"' 2>/dev/null | head -c 100); command -v icc >/dev/null 2>&1 && icc notify --title 'Codex' --body \\\"$MSG\\\" || osascript -e \\\"display notification \\\\\\\"$MSG\\\\\\\" with title \\\\\\\"Codex\\\\\\\"\\\"\", \"--\"]",
+            "notify = [\"bash\", \"-lc\", \"MSG=$(echo \\\"$1\\\" | jq -r '.\\\"last-assistant-message\\\" // \\\"Turn complete\\\"' 2>/dev/null | head -c 100); command -v imux >/dev/null 2>&1 && imux notify --title 'Codex' --body \\\"$MSG\\\" || osascript -e \\\"display notification \\\\\\\"$MSG\\\\\\\" with title \\\\\\\"Codex\\\\\\\"\\\"\", \"--\"]",
             endMarker,
         ].joined(separator: "\n")
 
@@ -7611,7 +7611,7 @@ struct SettingsView: View {
                 startMarker: startMarker,
                 endMarker: endMarker
             )
-            return localizedSettingsText("settings.automation.quickImport.codex.updated", english: "Updated the icc notification block in Codex config.", simplifiedChinese: "已更新 Codex 配置中的 icc 通知区块。", traditionalChinese: "已更新 Codex 設定中的 icc 通知區塊。")
+            return localizedSettingsText("settings.automation.quickImport.codex.updated", english: "Updated the imux notification block in Codex config.", simplifiedChinese: "已更新 Codex 配置中的 imux 通知区块。", traditionalChinese: "已更新 Codex 設定中的 imux 通知區塊。")
         }
 
         if existing
@@ -7640,7 +7640,7 @@ struct SettingsView: View {
             startMarker: startMarker,
             endMarker: endMarker
         )
-        return localizedSettingsText("settings.automation.quickImport.codex.installed", english: "Installed the icc notification hook for Codex.", simplifiedChinese: "已为 Codex 安装 icc 通知钩子。", traditionalChinese: "已為 Codex 安裝 icc 通知鉤子。")
+        return localizedSettingsText("settings.automation.quickImport.codex.installed", english: "Installed the imux notification hook for Codex.", simplifiedChinese: "已为 Codex 安装 imux 通知钩子。", traditionalChinese: "已為 Codex 安裝 imux 通知鉤子。")
     }
 
     private func loadOrCreateJSONObject(at url: URL) throws -> [String: Any] {
@@ -7708,7 +7708,7 @@ struct SettingsView: View {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support")
         return appSupport
-            .appendingPathComponent("com.icc.app", isDirectory: true)
+            .appendingPathComponent("com.imux.app", isDirectory: true)
             .appendingPathComponent("config.ghostty", isDirectory: false)
     }
 

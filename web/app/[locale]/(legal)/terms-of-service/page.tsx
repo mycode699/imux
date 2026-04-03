@@ -4,8 +4,8 @@ const supportEmail = "support@iccjk.com";
 const siteUrl = "https://www.iccjk.com";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — icc",
-  description: "Terms of service for icc",
+  title: "Terms of Service — imux",
+  description: "Terms of service for imux",
   alternates: { canonical: "./" },
 };
 
@@ -18,8 +18,8 @@ export default function TermsOfServicePage() {
       <p>
         The website located at{" "}
         <a href={siteUrl}>{siteUrl}</a> (the
-        &ldquo;Site&rdquo;) and the icc desktop application (the
-        &ldquo;Application&rdquo;) are copyrighted works belonging to ICC
+        &ldquo;Site&rdquo;) and the imux desktop application (the
+        &ldquo;Application&rdquo;) are copyrighted works belonging to IMUX
         (&ldquo;Company&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;, and
         &ldquo;we&rdquo;). These Terms of Use (these &ldquo;Terms&rdquo;) set
         forth the legally binding terms and conditions that govern your use of
@@ -184,7 +184,7 @@ export default function TermsOfServicePage() {
       </p>
 
       <p>
-        Copyright &copy; {new Date().getFullYear()} ICC. All rights reserved.
+        Copyright &copy; {new Date().getFullYear()} IMUX. All rights reserved.
       </p>
     </>
   );

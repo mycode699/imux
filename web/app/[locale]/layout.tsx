@@ -28,7 +28,7 @@ export async function generateMetadata({
     title: copy.metaTitle,
     description: copy.metaDescription,
     keywords: [
-      "icc",
+      "imux",
       "AI command center",
       "macOS terminal",
       "Ghostty",
@@ -97,7 +97,7 @@ export default async function LocaleLayout({
     downloadUrl: siteConfig.downloadUrl,
     description: siteConfig.description,
     keywords:
-      "icc, AI command center, macOS, Ghostty, terminal, SSH, source control, browser operator, supervisor",
+      "imux, AI command center, macOS, Ghostty, terminal, SSH, source control, browser operator, supervisor",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
 

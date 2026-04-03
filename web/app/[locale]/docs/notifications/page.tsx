@@ -81,8 +81,8 @@ echo "$ICC_NOTIFICATION_TITLE: $ICC_NOTIFICATION_BODY" >> ~/notifications.log`}<
       <h2>{t("sending")}</h2>
 
       <h3>{t("cli")}</h3>
-      <CodeBlock lang="bash">{`icc notify --title "Task Complete" --body "Your build finished"
-icc notify --title "Claude Code" --subtitle "Waiting" --body "Agent needs input"`}</CodeBlock>
+      <CodeBlock lang="bash">{`imux notify --title "Task Complete" --body "Your build finished"
+imux notify --title "Claude Code" --subtitle "Waiting" --body "Agent needs input"`}</CodeBlock>
 
       <h3>{t("osc777Title")}</h3>
       <p>{t("osc777Desc")}</p>
@@ -153,9 +153,9 @@ printf '\\e]99;i=1;e=1;d=1;p=body:All tests passed\\e\\\\'`}</CodeBlock>
       </p>
 
       <h3>{t("createHookScript")}</h3>
-      <CodeBlock title="~/.claude/hooks/icc-notify.sh" lang="bash">{`#!/bin/bash
-# Skip if not in icc
-[ -S /tmp/icc.sock ] || exit 0
+      <CodeBlock title="~/.claude/hooks/imux-notify.sh" lang="bash">{`#!/bin/bash
+# Skip if not in imux
+[ -S /tmp/imux.sock ] || exit 0
 
 EVENT=$(cat)
 EVENT_TYPE=$(echo "$EVENT" | jq -r '.hook_event_name // "unknown"')
@@ -163,13 +163,13 @@ TOOL=$(echo "$EVENT" | jq -r '.tool_name // ""')
 
 case "$EVENT_TYPE" in
     "Stop")
-        icc notify --title "Claude Code" --body "Session complete"
+        imux notify --title "Claude Code" --body "Session complete"
         ;;
     "PostToolUse")
-        [ "$TOOL" = "Task" ] && icc notify --title "Claude Code" --body "Agent finished"
+        [ "$TOOL" = "Task" ] && imux notify --title "Claude Code" --body "Agent finished"
         ;;
 esac`}</CodeBlock>
-      <CodeBlock lang="bash">{`chmod +x ~/.claude/hooks/icc-notify.sh`}</CodeBlock>
+      <CodeBlock lang="bash">{`chmod +x ~/.claude/hooks/imux-notify.sh`}</CodeBlock>
 
       <h3>{t("configureClaude")}</h3>
       <CodeBlock title="~/.claude/settings.json" lang="json">{`{
@@ -180,7 +180,7 @@ esac`}</CodeBlock>
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/icc-notify.sh"
+            "command": "~/.claude/hooks/imux-notify.sh"
           }
         ]
       }
@@ -191,7 +191,7 @@ esac`}</CodeBlock>
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/icc-notify.sh"
+            "command": "~/.claude/hooks/imux-notify.sh"
           }
         ]
       }
@@ -208,9 +208,9 @@ notify-after() {
   "$@"
   local exit_code=$?
   if [ $exit_code -eq 0 ]; then
-    icc notify --title "✓ Command Complete" --body "$1"
+    imux notify --title "✓ Command Complete" --body "$1"
   else
-    icc notify --title "✗ Command Failed" --body "$1 (exit $exit_code)"
+    imux notify --title "✗ Command Failed" --body "$1 (exit $exit_code)"
   fi
   return $exit_code
 }

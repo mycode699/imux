@@ -1,7 +1,7 @@
 "use strict";
 
 const DEFAULT_IMMUTABLE_RELEASE_ASSETS = [
-  "icc-v0.0.1-macos.dmg",
+  "imux-v0.0.1-macos.dmg",
   "appcast.xml",
   "iccd-remote-darwin-arm64",
   "iccd-remote-darwin-amd64",
@@ -18,7 +18,7 @@ const RELEASE_ASSET_GUARD_STATE = Object.freeze({
 
 function releaseDmgNameForTag(tagName) {
   const version = String(tagName || "").replace(/^v/, "");
-  return `icc-v${version}-macos.dmg`;
+  return `imux-v${version}-macos.dmg`;
 }
 
 function immutableReleaseAssetsForTag(tagName) {

@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This runner is intended for the UTM macOS VM (ssh icc-vm).
+# This runner is intended for the UTM macOS VM (ssh imux-vm).
 # It is intentionally guarded so we don't accidentally kill the host user's icc instances.
 if [ "$(id -un)" != "icc" ]; then
-  echo "ERROR: This script is intended to be run on the icc-vm (user: icc)." >&2
-  echo "Run via: ssh icc-vm 'cd /Users/icc/GhosttyTabs && ./scripts/run-tests-v1.sh'" >&2
+  echo "ERROR: This script is intended to be run on the imux-vm (user: icc)." >&2
+  echo "Run via: ssh imux-vm 'cd /Users/icc/GhosttyTabs && ./scripts/run-tests-v1.sh'" >&2
   exit 2
 fi
 
 cd "$(dirname "$0")/.."
 
 DERIVED_DATA_PATH="$HOME/Library/Developer/Xcode/DerivedData/icc-tests-v1"
-APP="$DERIVED_DATA_PATH/Build/Products/Debug/icc DEV.app"
+APP="$DERIVED_DATA_PATH/Build/Products/Debug/imux DEV.app"
 RUN_TAG="tests-v1"
 
 echo "== build =="
@@ -29,12 +29,12 @@ xcodebuild \
   build >/dev/null
 
 if [ ! -d "$APP" ]; then
-  echo "ERROR: icc DEV.app not found at expected path: $APP" >&2
+  echo "ERROR: imux DEV.app not found at expected path: $APP" >&2
   exit 1
 fi
 
 cleanup() {
-  pkill -x "icc DEV" || true
+  pkill -x "imux DEV" || true
   pkill -x "icc" || true
   rm -f /tmp/icc*.sock || true
 }
@@ -44,15 +44,15 @@ launch_and_wait() {
   # Wait briefly for the previous instance to fully terminate; LaunchServices can flake if we
   # relaunch too quickly.
   for _ in {1..50}; do
-    pgrep -x "icc DEV" >/dev/null 2>&1 || break
+    pgrep -x "imux DEV" >/dev/null 2>&1 || break
     sleep 0.1
   done
 
   # Force socket mode for deterministic automation runs, independent of prior user settings.
-  defaults write com.icc.app.debug socketControlMode -string full >/dev/null 2>&1 || true
+  defaults write com.imux.app.debug socketControlMode -string full >/dev/null 2>&1 || true
 
   # Launch directly with UI test mode enabled so startup follows deterministic test codepaths.
-  ICC_TAG="$RUN_TAG" ICC_UI_TEST_MODE=1 "$APP/Contents/MacOS/icc DEV" >/dev/null 2>&1 &
+  ICC_TAG="$RUN_TAG" ICC_UI_TEST_MODE=1 "$APP/Contents/MacOS/imux DEV" >/dev/null 2>&1 &
 
   SOCK=""
   for _ in {1..120}; do

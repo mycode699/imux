@@ -2,16 +2,16 @@
 
 Last updated: 2026-03-25
 
-This document is the current release-facing summary of `icc` managed SSH behavior.
+This document is the current release-facing summary of `imux` managed SSH behavior.
 
 Historical note:
 
-- The shipped app is `icc`.
+- The shipped app is `imux`.
 - Several internal components still keep legacy names such as `iccd-remote`, `ICC_*`, and `~/.icc/...` paths for compatibility.
 
 ## Goal
 
-`icc ssh` and the remote explorer should provide:
+`imux ssh` and the remote explorer should provide:
 
 1. durable remote terminals with reconnect support
 2. remote file browsing and editing after login
@@ -30,7 +30,7 @@ Historical note:
 
 ### Managed SSH workspaces
 
-- `icc ssh <destination>` creates a remote-tagged workspace.
+- `imux ssh <destination>` creates a remote-tagged workspace.
 - The app bootstraps the remote helper when needed and reconnects managed sessions.
 - Remote browser surfaces and remote file operations follow workspace-specific remote state instead of pretending the target is local.
 - Disconnect, reconnect, error visibility, and compatibility status are surfaced in the UI.

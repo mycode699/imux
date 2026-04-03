@@ -49,10 +49,10 @@ export default function GettingStartedPage() {
 
       <h2>{t("cliSetup")}</h2>
       <p>{t("cliDesc")}</p>
-      <CodeBlock lang="bash">{`sudo ln -sf "/Applications/icc.app/Contents/Resources/bin/icc" /usr/local/bin/icc`}</CodeBlock>
+      <CodeBlock lang="bash">{`sudo ln -sf "/Applications/imux.app/Contents/Resources/bin/imux" /usr/local/bin/imux`}</CodeBlock>
       <p>{t("cliThen")}</p>
-      <CodeBlock lang="bash">{`icc --help
-icc notify --title "Build Complete" --body "Your build finished"`}</CodeBlock>
+      <CodeBlock lang="bash">{`imux --help
+imux notify --title "Build Complete" --body "Your build finished"`}</CodeBlock>
 
       <h2>{t("autoUpdates")}</h2>
       <p>{t("autoUpdatesDesc")}</p>

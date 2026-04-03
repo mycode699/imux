@@ -1,10 +1,10 @@
 # V2 Socket API Notes
 
-This document tracks the modern JSON socket API used by `icc`.
+This document tracks the modern JSON socket API used by `imux`.
 
 Historical note:
 
-- The current product and shipped CLI are `icc`.
+- The current product and shipped CLI are `imux`.
 - The implementation still contains legacy `icc` naming in protocol handlers, tests, and scripts.
 
 ## Purpose

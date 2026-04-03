@@ -61,9 +61,9 @@ test("marks guard as partial when only some immutable assets exist", () => {
 });
 
 test("derives the release dmg name from a tag", () => {
-  assert.equal(releaseDmgNameForTag("v1.2.3"), "icc-v1.2.3-macos.dmg");
+  assert.equal(releaseDmgNameForTag("v1.2.3"), "imux-v1.2.3-macos.dmg");
   assert.deepEqual(immutableReleaseAssetsForTag("v1.2.3"), [
-    "icc-v1.2.3-macos.dmg",
+    "imux-v1.2.3-macos.dmg",
     ...IMMUTABLE_RELEASE_ASSETS.filter((assetName) => !assetName.endsWith(".dmg")),
   ]);
 });

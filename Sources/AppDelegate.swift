@@ -1038,7 +1038,7 @@ final class VSCodeServeWebController {
 
     private static func makeConnectionTokenFile() -> URL? {
         let token = randomConnectionToken()
-        let tokenFileName = "icc-vscode-token-\(UUID().uuidString)"
+        let tokenFileName = "imux-vscode-token-\(UUID().uuidString)"
         let tokenFileURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
             .appendingPathComponent(tokenFileName, isDirectory: false)
         guard let tokenData = token.data(using: .utf8) else { return nil }
@@ -1171,13 +1171,13 @@ struct IccCLIPathInstaller {
         var errorDescription: String? {
             switch self {
             case .bundledCLIMissing(let expectedPath):
-                return "Bundled icc CLI was not found at \(expectedPath)."
+                return "Bundled imux CLI was not found at \(expectedPath)."
             case .destinationParentNotDirectory(let path):
                 return "Expected \(path) to be a directory."
             case .destinationIsDirectory(let path):
                 return "\(path) is a directory. Remove or rename it and try again."
             case .installVerificationFailed(let path):
-                return "Installed symlink at \(path) did not point to the bundled icc CLI."
+                return "Installed symlink at \(path) did not point to the bundled imux CLI."
             case .uninstallVerificationFailed(let path):
                 return "Failed to remove \(path)."
             case .privilegedCommandFailed(let message):
@@ -1198,7 +1198,7 @@ struct IccCLIPathInstaller {
 
     init(
         fileManager: FileManager = .default,
-        destinationURL: URL = URL(fileURLWithPath: "/usr/local/bin/icc"),
+        destinationURL: URL = URL(fileURLWithPath: "/usr/local/bin/imux"),
         bundledCLIURLProvider: @escaping () -> URL? = {
             IccCLIPathInstaller.defaultBundledCLIURL()
         },
@@ -1381,12 +1381,12 @@ struct IccCLIPathInstaller {
     }
 
     private static func defaultBundledCLIURL(bundle: Bundle = .main) -> URL? {
-        bundle.resourceURL?.appendingPathComponent("bin/icc", isDirectory: false)
+        bundle.resourceURL?.appendingPathComponent("bin/imux", isDirectory: false)
     }
 
     private static func defaultBundledCLIExpectedPath(bundle: Bundle = .main) -> String {
         bundle.bundleURL
-            .appendingPathComponent("Contents/Resources/bin/icc", isDirectory: false)
+            .appendingPathComponent("Contents/Resources/bin/imux", isDirectory: false)
             .path
     }
 
@@ -1488,7 +1488,7 @@ struct IccAppBundleInstaller {
         var errorDescription: String? {
             switch self {
             case .bundledAppMissing(let path):
-                return "icc.app was not found at \(path)."
+                return "imux.app was not found at \(path)."
             case .destinationParentNotDirectory(let path):
                 return "Expected \(path) to be a directory."
             case .destinationIsDirectory(let path):
@@ -2533,11 +2533,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private var sessionAutosaveTickInFlight = false
     private var sessionAutosaveDeferredRetryPending = false
     private let sessionPersistenceQueue = DispatchQueue(
-        label: "com.icc.app.sessionPersistence",
+        label: "com.imux.app.sessionPersistence",
         qos: .utility
     )
     private nonisolated static let launchServicesRegistrationQueue = DispatchQueue(
-        label: "com.icc.app.launchServicesRegistration",
+        label: "com.imux.app.launchServicesRegistration",
         qos: .utility
     )
     private nonisolated static func enqueueLaunchServicesRegistrationWork(_ work: @escaping @Sendable () -> Void) {
@@ -6452,7 +6452,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         // Tagged dev/staging variants intentionally run from DerivedData or other
         // non-Applications paths, so only the stable production bundle should
         // auto-prompt for install-location repair on launch.
-        return bundleIdentifier == "com.icc.app"
+        return bundleIdentifier == "com.imux.app"
     }
 
     private func promptToInstallAppBundleIfNeeded() {
@@ -6497,13 +6497,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
                 informativeText += "\n\n" + String(localized: "cli.install.adminRequired", defaultValue: "Administrator privileges were required to write to /usr/local/bin.")
             }
             presentCLIPathAlert(
-                title: String(localized: "cli.installed", defaultValue: "icc CLI Installed"),
+                title: String(localized: "cli.installed", defaultValue: "imux CLI Installed"),
                 informativeText: informativeText,
                 style: .informational
             )
         } catch {
             presentCLIPathAlert(
-                title: String(localized: "cli.installFailed", defaultValue: "Couldn't Install icc CLI"),
+                title: String(localized: "cli.installFailed", defaultValue: "Couldn't Install imux CLI"),
                 informativeText: error.localizedDescription,
                 style: .warning
             )
@@ -6516,19 +6516,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             let outcome = try installer.uninstall()
             let prefix = outcome.removedExistingEntry
                 ? String(localized: "cli.uninstall.removed", defaultValue: "Removed \(outcome.destinationURL.path).")
-                : String(localized: "cli.uninstall.notFound", defaultValue: "No icc CLI symlink was found at \(outcome.destinationURL.path).")
+                : String(localized: "cli.uninstall.notFound", defaultValue: "No imux CLI symlink was found at \(outcome.destinationURL.path).")
             var informativeText = prefix
             if outcome.usedAdministratorPrivileges {
                 informativeText += "\n\n" + String(localized: "cli.uninstall.adminRequired", defaultValue: "Administrator privileges were required to modify /usr/local/bin.")
             }
             presentCLIPathAlert(
-                title: String(localized: "cli.uninstalled", defaultValue: "icc CLI Uninstalled"),
+                title: String(localized: "cli.uninstalled", defaultValue: "imux CLI Uninstalled"),
                 informativeText: informativeText,
                 style: .informational
             )
         } catch {
             presentCLIPathAlert(
-                title: String(localized: "cli.uninstallFailed", defaultValue: "Couldn't Uninstall icc CLI"),
+                title: String(localized: "cli.uninstallFailed", defaultValue: "Couldn't Uninstall imux CLI"),
                 informativeText: error.localizedDescription,
                 style: .warning
             )
@@ -7554,7 +7554,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         func hasMainTerminalWindow() -> Bool {
             NSApp.windows.contains { window in
                 guard let raw = window.identifier?.rawValue else { return false }
-                return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+                return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
             }
         }
 
@@ -7609,7 +7609,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         func hasMainTerminalWindow() -> Bool {
             NSApp.windows.contains { window in
                 guard let raw = window.identifier?.rawValue else { return false }
-                return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+                return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
             }
         }
 
@@ -7626,7 +7626,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             }
             if let mainWindow = NSApp.windows.first(where: { window in
                 guard let raw = window.identifier?.rawValue else { return false }
-                return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+                return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
             }) {
                 let screenFrame = mainWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame
                 if let screenFrame {
@@ -9520,7 +9520,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
         let alert = NSAlert()
         alert.alertStyle = .warning
-        alert.messageText = String(localized: "dialog.quitIcc.title", defaultValue: "Quit icc?")
+        alert.messageText = String(localized: "dialog.quitIcc.title", defaultValue: "Quit imux?")
         alert.informativeText = String(localized: "dialog.quitIcc.message", defaultValue: "This will close all windows and workspaces.")
         alert.addButton(withTitle: String(localized: "dialog.quitIcc.quit", defaultValue: "Quit"))
         alert.addButton(withTitle: String(localized: "common.cancel", defaultValue: "Cancel"))
@@ -11528,7 +11528,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private func observeDuplicateLaunches() {
         guard let bundleId = Bundle.main.bundleIdentifier else { return }
         let embeddedCLIURL = Bundle.main.bundleURL
-            .appendingPathComponent("Contents/Resources/bin/icc", isDirectory: false)
+            .appendingPathComponent("Contents/Resources/bin/imux", isDirectory: false)
             .standardizedFileURL
             .resolvingSymlinksInPath()
         let currentPid = ProcessInfo.processInfo.processIdentifier
@@ -11756,7 +11756,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             return true
         }
         guard let raw = window.identifier?.rawValue else { return false }
-        return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+        return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
     }
 
     private func contextContainingTabId(_ tabId: UUID) -> MainWindowContext? {
@@ -12099,7 +12099,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 @MainActor
 final class MenuBarExtraController: NSObject, NSMenuDelegate {
     private let statusItem: NSStatusItem
-    private let menu = NSMenu(title: "iatlas")
+    private let menu = NSMenu(title: "imux")
     private let notificationStore: TerminalNotificationStore
     private let onShowNotifications: () -> Void
     private let onOpenNotification: (TerminalNotification) -> Void
@@ -12120,7 +12120,7 @@ final class MenuBarExtraController: NSObject, NSMenuDelegate {
     private let clearAllItem = NSMenuItem(title: String(localized: "statusMenu.clearAll", defaultValue: "Clear All"), action: nil, keyEquivalent: "")
     private let checkForUpdatesItem = NSMenuItem(title: String(localized: "menu.checkForUpdates", defaultValue: "Check for Updates…"), action: nil, keyEquivalent: "")
     private let preferencesItem = NSMenuItem(title: String(localized: "menu.preferences", defaultValue: "Preferences…"), action: nil, keyEquivalent: "")
-    private let quitItem = NSMenuItem(title: String(localized: "menu.quitIcc", defaultValue: "Quit iatlas"), action: nil, keyEquivalent: "")
+    private let quitItem = NSMenuItem(title: String(localized: "menu.quitIcc", defaultValue: "Quit imux"), action: nil, keyEquivalent: "")
 
     private var notificationItems: [NSMenuItem] = []
     private let maxInlineNotificationItems = 6
@@ -12151,7 +12151,7 @@ final class MenuBarExtraController: NSObject, NSMenuDelegate {
             button.imagePosition = .imageOnly
             button.imageScaling = .scaleProportionallyDown
             button.image = MenuBarIconRenderer.makeImage(unreadCount: 0)
-            button.toolTip = "iatlas"
+            button.toolTip = "imux"
         }
 
         notificationsCancellable = notificationStore.$notifications
@@ -12255,10 +12255,10 @@ final class MenuBarExtraController: NSObject, NSMenuDelegate {
         if let button = statusItem.button {
             button.image = MenuBarIconRenderer.makeImage(unreadCount: displayedUnreadCount)
             button.toolTip = displayedUnreadCount == 0
-                ? "iatlas"
+                ? "imux"
                 : displayedUnreadCount == 1
-                    ? "iatlas: " + String(localized: "statusMenu.tooltip.unread.one", defaultValue: "1 unread notification")
-                    : "iatlas: " + String(localized: "statusMenu.tooltip.unread.other", defaultValue: "\(displayedUnreadCount) unread notifications")
+                    ? "imux: " + String(localized: "statusMenu.tooltip.unread.one", defaultValue: "1 unread notification")
+                    : "imux: " + String(localized: "statusMenu.tooltip.unread.other", defaultValue: "\(displayedUnreadCount) unread notifications")
         }
     }
 
@@ -12526,7 +12526,7 @@ enum MenuBarBuildHintFormatter {
     ) -> String? {
         guard isDebugBuild else { return nil }
         let normalized = appName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let prefix = "iatlas DEV"
+        let prefix = "imux DEV"
         guard normalized.hasPrefix(prefix) else { return "Build: DEV" }
 
         let suffix = String(normalized.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)

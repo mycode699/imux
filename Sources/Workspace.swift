@@ -2768,7 +2768,7 @@ private final class WorkspaceRemoteCLIRelayServer {
             }
             guard connectResult == 0 else {
                 throw NSError(domain: "icc.remote.relay", code: 3, userInfo: [
-                    NSLocalizedDescriptionKey: "failed to connect to local icc socket",
+                    NSLocalizedDescriptionKey: "failed to connect to local imux socket",
                 ])
             }
 
@@ -2806,11 +2806,11 @@ private final class WorkspaceRemoteCLIRelayServer {
                         break
                     }
                     throw NSError(domain: "icc.remote.relay", code: 5, userInfo: [
-                        NSLocalizedDescriptionKey: "timed out waiting for local icc response",
+                        NSLocalizedDescriptionKey: "timed out waiting for local imux response",
                     ])
                 }
                 throw NSError(domain: "icc.remote.relay", code: 6, userInfo: [
-                    NSLocalizedDescriptionKey: "failed to read local icc response",
+                    NSLocalizedDescriptionKey: "failed to read local imux response",
                 ])
             }
             return response
@@ -4067,7 +4067,7 @@ final class WorkspaceRemoteSessionController {
 
         guard let repoRoot = Self.findRepoRoot() else {
             throw NSError(domain: "icc.remote.daemon", code: 20, userInfo: [
-                NSLocalizedDescriptionKey: "cannot locate icc repo root for dev-only iccd-remote build fallback",
+                NSLocalizedDescriptionKey: "cannot locate imux repo root for dev-only iccd-remote build fallback",
             ])
         }
         let daemonRoot = repoRoot.appendingPathComponent("daemon/remote", isDirectory: true)
@@ -9555,7 +9555,7 @@ final class Workspace: Identifiable, ObservableObject {
             let failure = NSAlert()
             failure.alertStyle = .warning
             failure.messageText = "Move Failed"
-            failure.informativeText = "icc could not move this tab to the selected destination."
+            failure.informativeText = "imux could not move this tab to the selected destination."
             failure.addButton(withTitle: "OK")
             _ = failure.runModal()
         }

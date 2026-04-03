@@ -28,7 +28,7 @@ extension UpdateDriver: SPUUpdaterDelegate {
 #endif
         // The feed URL is baked into Info.plist at build time:
         // - Stable releases use the stable appcast URL
-        // - icc NIGHTLY has the nightly appcast URL injected by CI
+        // - imux NIGHTLY has the nightly appcast URL injected by CI
         let infoFeedURL = Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") as? String
         let resolved = UpdateFeedResolver.resolvedFeedURLString(infoFeedURL: infoFeedURL)
         UpdateLogStore.shared.append("update channel: \(resolved.isNightly ? "nightly" : "stable")")

@@ -14,7 +14,7 @@ Usage: scripts/stage-website-release-assets.sh \
   [--remote-assets-dir <dir>]
 
 Stages the latest website-hosted release assets:
-  downloads/icc-macos.dmg
+  downloads/imux-macos.dmg
   downloads/appcast.xml
   downloads/latest.json
   downloads/archive/<tag>/...
@@ -92,7 +92,7 @@ mkdir -p "$OUTPUT_DIR"
 OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
 VERSIONED_DMG_NAME="$(source "$(cd "$(dirname "$0")" && pwd)/release-config.sh"; icc_release_dmg_name "$VERSION")"
 LATEST_DMG_PATH="${OUTPUT_DIR}/${VERSIONED_DMG_NAME}"
-LEGACY_DMG_PATH="${OUTPUT_DIR}/icc-macos.dmg"
+LEGACY_DMG_PATH="${OUTPUT_DIR}/imux-macos.dmg"
 LATEST_APPCAST_PATH="${OUTPUT_DIR}/appcast.xml"
 LATEST_MANIFEST_PATH="${OUTPUT_DIR}/latest.json"
 ARCHIVE_DIR="${OUTPUT_DIR}/archive/${TAG}"
@@ -133,7 +133,7 @@ from pathlib import Path
 manifest_path, tag, version, published_at, base_url = sys.argv[1:]
 manifest = {
     "schemaVersion": 1,
-    "product": "icc",
+    "product": "imux",
     "channel": "stable",
     "tag": tag,
     "version": version,
@@ -154,7 +154,7 @@ from pathlib import Path
 manifest_path, tag, version, published_at, base_url, notes_url, dmg_sha256, dmg_size, remote_assets_dir, dmg_name = sys.argv[1:]
 manifest = {
     "schemaVersion": 1,
-    "product": "icc",
+    "product": "imux",
     "channel": "stable",
     "tag": tag,
     "version": version,
@@ -162,7 +162,7 @@ manifest = {
     "notesUrl": notes_url,
     "downloads": {
         "macos": {
-            "bundleId": "com.icc.app",
+            "bundleId": "com.imux.app",
             "artifactType": "dmg",
             "url": f"{base_url}/{dmg_name}",
             "archiveUrl": f"{base_url}/archive/{tag}/{dmg_name}",
@@ -172,7 +172,7 @@ manifest = {
         },
         "windows": {
             "available": False,
-            "reason": "icc currently ships as a native macOS AppKit application and does not have a real Windows desktop build target yet."
+            "reason": "imux currently ships as a native macOS AppKit application and does not have a real Windows desktop build target yet."
         },
     },
     "update": {

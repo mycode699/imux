@@ -10,7 +10,7 @@ import Bonsplit
 // freeze the UI.
 extension UNUserNotificationCenter {
     private static let removalQueue = DispatchQueue(
-        label: "com.iatlas.notification-removal",
+        label: "com.imux.notification-removal",
         qos: .utility
     )
 
@@ -37,7 +37,7 @@ enum NotificationSoundSettings {
     static let defaultCustomFilePath = ""
     private static let stagedCustomSoundBaseName = "icc-custom-notification-sound"
     private static let customSoundPreparationQueue = DispatchQueue(
-        label: "com.iatlas.notification-sound-preparation",
+        label: "com.imux.notification-sound-preparation",
         qos: .utility
     )
     private static let pendingCustomSoundPreparationLock = NSLock()
@@ -521,7 +521,7 @@ enum NotificationSoundSettings {
     }
 
     private static let customCommandQueue = DispatchQueue(
-        label: "com.iatlas.notification-custom-command",
+        label: "com.imux.notification-custom-command",
         qos: .utility
     )
 
@@ -616,7 +616,7 @@ enum AppFocusState {
         // Only treat the app as "focused" for notification suppression when a main terminal window
         // is key. If Settings/About/debug panels are key, we still want notifications to show.
         if let raw = keyWindow.identifier?.rawValue {
-            return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+            return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
         }
         return false
     }
@@ -683,8 +683,8 @@ final class TerminalNotificationStore: ObservableObject {
 
     static let shared = TerminalNotificationStore()
 
-    static let categoryIdentifier = "com.icc.app.userNotification"
-    static let actionShowIdentifier = "com.icc.app.userNotification.show"
+    static let categoryIdentifier = "com.imux.app.userNotification"
+    static let actionShowIdentifier = "com.imux.app.userNotification.show"
     private enum AuthorizationRequestOrigin: String {
         case notificationDelivery = "notification_delivery"
         case settingsButton = "settings_button"
@@ -832,7 +832,7 @@ final class TerminalNotificationStore: ObservableObject {
             guard let self, authorized else { return }
 
             let content = UNMutableNotificationContent()
-            content.title = "iatlas test notification"
+            content.title = "imux test notification"
             content.body = "Desktop notifications are enabled."
             content.sound = NotificationSoundSettings.sound()
             content.categoryIdentifier = Self.categoryIdentifier
@@ -1092,7 +1092,7 @@ final class TerminalNotificationStore: ObservableObject {
     private func resolvedNotificationTitle(for notification: TerminalNotification) -> String {
         let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
             ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
-            ?? "iatlas"
+            ?? "imux"
         return notification.title.isEmpty ? appName : notification.title
     }
 
@@ -1247,8 +1247,8 @@ final class TerminalNotificationStore: ObservableObject {
         }
 
         let alert = notificationSettingsAlertFactory()
-        alert.messageText = String(localized: "dialog.enableNotifications.title", defaultValue: "Enable Notifications for iatlas")
-        alert.informativeText = String(localized: "dialog.enableNotifications.message", defaultValue: "Notifications are disabled for icc. Enable them in System Settings to see alerts.")
+        alert.messageText = String(localized: "dialog.enableNotifications.title", defaultValue: "Enable Notifications for imux")
+        alert.informativeText = String(localized: "dialog.enableNotifications.message", defaultValue: "Notifications are disabled for imux. Enable them in System Settings to see alerts.")
         alert.addButton(withTitle: String(localized: "dialog.enableNotifications.openSettings", defaultValue: "Open Settings"))
         alert.addButton(withTitle: String(localized: "dialog.enableNotifications.notNow", defaultValue: "Not Now"))
         alert.beginSheetModal(for: window) { [weak self] response in

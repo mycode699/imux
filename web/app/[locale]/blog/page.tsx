@@ -24,9 +24,9 @@ const blogSlugs = [
 
 const slugToPath: Record<string, string> = {
   cmdShiftU: "cmd-shift-u",
-  zenOfIcc: "zen-of-icc",
+  zenOfIcc: "zen-of-imux",
   showHnLaunch: "show-hn-launch",
-  introducingIcc: "introducing-icc",
+  introducingIcc: "introducing-imux",
 };
 
 export default function BlogPage() {

@@ -115,14 +115,14 @@ const releaseValue = `${siteConfig.version} on ${siteConfig.domain}`;
 
 const copy: Partial<Record<Locale, MarketingCopy>> = {
   en: {
-    metaTitle: "icc — AI Command Center for macOS",
+    metaTitle: "imux — AI Command Center for macOS",
     metaDescription:
-      "icc is a native macOS command center for serious AI work. It combines Ghostty-grade terminal rendering, local and remote file exploration, in-app editing, browser execution, source control visibility, and a supervisor layer in one focused workspace.",
+      "imux is a native macOS command center for serious AI work. It combines Ghostty-grade terminal rendering, local and remote file exploration, in-app editing, browser execution, source control visibility, and a supervisor layer in one focused workspace.",
     descriptor: "AI Command Center for macOS",
     tagline: "One cockpit for terminal-first AI execution.",
     eyebrow: "Official site",
     heroDescription:
-      "icc is a native macOS command center for serious AI work. Keep terminal execution, local and remote files, source control, browser tasks, and supervisor-driven next steps inside one deliberate workspace.",
+      "imux is a native macOS command center for serious AI work. Keep terminal execution, local and remote files, source control, browser tasks, and supervisor-driven next steps inside one deliberate workspace.",
     buttons: {
       download: "Download for macOS",
       github: "View on GitHub",
@@ -155,13 +155,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "workspace: /Users/operator/work/icc",
+      workspace: "workspace: /Users/operator/work/imux",
       rail: "Rail",
-      railItems: ["terminal / build", "repo / icc", "remote / prod-ssh", "browser / review"],
+      railItems: ["terminal / build", "repo / imux", "remote / prod-ssh", "browser / review"],
       terminal: "Terminal conversation",
       ready: "ready",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Connected. Reading remote workspace and shell state.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -181,7 +181,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Capabilities",
       title: "Built for operators who want context visible while work is happening.",
       body:
-        "icc is not another browser dashboard sitting on top of a terminal. It is a command center that keeps execution, files, remote state, and guidance within the same working surface.",
+        "imux is not another browser dashboard sitting on top of a terminal. It is a command center that keeps execution, files, remote state, and guidance within the same working surface.",
       items: [
         {
           title: "Terminal-first execution",
@@ -256,7 +256,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Open a workspace",
           body:
-            "Point icc at a local repo or connect an SSH target. Zero-config flow infers enough structure to begin immediately.",
+            "Point imux at a local repo or connect an SSH target. Zero-config flow infers enough structure to begin immediately.",
         },
         {
           step: "02",
@@ -268,7 +268,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Let the supervisor frame the next move",
           body:
-            "icc can compress current context into a startup plan, execution brief, or operator handoff without turning the workflow into ceremony.",
+            "imux can compress current context into a startup plan, execution brief, or operator handoff without turning the workflow into ceremony.",
         },
         {
           step: "04",
@@ -284,32 +284,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "The product stays opinionated about workflow quality, while remaining practical to adopt.",
       items: [
         {
-          q: "Is icc just a Ghostty fork?",
+          q: "Is imux just a Ghostty fork?",
           a:
-            "No. icc is a native macOS command center built on Ghostty-grade terminal rendering. The product expands that foundation with explorers, editing, browser execution, supervision, and workspace orchestration.",
+            "No. imux is a native macOS command center built on Ghostty-grade terminal rendering. The product expands that foundation with explorers, editing, browser execution, supervision, and workspace orchestration.",
         },
         {
-          q: "Who is icc for?",
+          q: "Who is imux for?",
           a:
             "Operators, engineers, founders, and power users who already run multiple AI-assisted workflows and want one sharper control surface instead of more window sprawl.",
         },
         {
           q: "What makes the workflow different?",
           a:
-            "icc keeps the terminal first-class while adding the missing surfaces around it: files, remote hosts, source control, browser context, and an execution-focused supervisor.",
+            "imux keeps the terminal first-class while adding the missing surfaces around it: files, remote hosts, source control, browser context, and an execution-focused supervisor.",
         },
         {
           q: "Does it support remote work?",
           a:
-            "Yes. icc reads SSH configuration, connects to remote targets, and exposes remote files in the same explorer model used for local work.",
+            "Yes. imux reads SSH configuration, connects to remote targets, and exposes remote files in the same explorer model used for local work.",
         },
       ],
     },
     cta: {
-      eyebrow: "Launch icc",
+      eyebrow: "Launch imux",
       title: "Move from intent to execution without losing the shape of the work.",
       body:
-        "Download the current macOS build or track releases and source on GitHub. The public site, release line, and repository are now aligned to one identity: icc.",
+        "Download the current macOS build or track releases and source on GitHub. The public site, release line, and repository are now aligned to one identity: imux.",
     },
     footer: {
       blurb:
@@ -323,18 +323,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Releases",
       repository: "GitHub Repository",
       support: "Support / Issues",
-      copyright: "© {year} icc. One cockpit for terminal-first AI execution.",
+      copyright: "© {year} imux. One cockpit for terminal-first AI execution.",
     },
   },
   "zh-CN": {
-    metaTitle: "icc — macOS AI 指挥中心",
+    metaTitle: "imux — macOS AI 指挥中心",
     metaDescription:
-      "icc 是一个面向高强度 AI 工作流的原生 macOS 指挥中心。它将 Ghostty 级终端渲染、本地与远程文件浏览、内置编辑、浏览器执行、源码状态可见性以及监督器能力整合到同一工作界面中。",
+      "imux 是一个面向高强度 AI 工作流的原生 macOS 指挥中心。它将 Ghostty 级终端渲染、本地与远程文件浏览、内置编辑、浏览器执行、源码状态可见性以及监督器能力整合到同一工作界面中。",
     descriptor: "macOS AI 指挥中心",
     tagline: "一个座舱，承接以终端为核心的 AI 执行流。",
     eyebrow: "官方网站",
     heroDescription:
-      "icc 是一个面向严肃 AI 工作的原生 macOS 指挥中心。终端执行、本地与远程文件、源码状态、浏览器任务以及监督器给出的下一步建议，都保留在同一个清晰工作区里。",
+      "imux 是一个面向严肃 AI 工作的原生 macOS 指挥中心。终端执行、本地与远程文件、源码状态、浏览器任务以及监督器给出的下一步建议，都保留在同一个清晰工作区里。",
     buttons: {
       download: "下载 macOS 版本",
       github: "查看 GitHub",
@@ -367,13 +367,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "工作区: /Users/operator/work/icc",
+      workspace: "工作区: /Users/operator/work/imux",
       rail: "侧栏",
-      railItems: ["终端 / 构建", "仓库 / icc", "远程 / prod-ssh", "浏览器 / review"],
+      railItems: ["终端 / 构建", "仓库 / imux", "远程 / prod-ssh", "浏览器 / review"],
       terminal: "终端对话",
       ready: "已就绪",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "已连接，正在读取远端工作区和 shell 状态。",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -393,7 +393,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "核心能力",
       title: "给真正执行任务的人准备，让上下文在工作发生时始终可见。",
       body:
-        "icc 不是套在终端外面的一层浏览器面板，它是一个把执行、文件、远程状态和行动建议收拢在同一工作面的指挥中心。",
+        "imux 不是套在终端外面的一层浏览器面板，它是一个把执行、文件、远程状态和行动建议收拢在同一工作面的指挥中心。",
       items: [
         {
           title: "终端优先执行",
@@ -461,7 +461,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
         {
           step: "01",
           title: "打开工作区",
-          body: "让 icc 指向本地仓库，或连接一个 SSH 目标。零配置流程会先推断足够多的信息，让你立刻开始。",
+          body: "让 imux 指向本地仓库，或连接一个 SSH 目标。零配置流程会先推断足够多的信息，让你立刻开始。",
         },
         {
           step: "02",
@@ -471,7 +471,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
         {
           step: "03",
           title: "由监督器组织下一步",
-          body: "icc 可以把当前上下文压缩成启动计划、执行简报或交接摘要，而不会把流程变得官僚。",
+          body: "imux 可以把当前上下文压缩成启动计划、执行简报或交接摘要，而不会把流程变得官僚。",
         },
         {
           step: "04",
@@ -486,28 +486,28 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "保持清晰、强执行力和低摩擦，是这个网站信息架构的原则。",
       items: [
         {
-          q: "icc 只是 Ghostty 的一个分支吗？",
-          a: "不是。icc 是一个建立在 Ghostty 级渲染能力之上的原生 macOS 指挥中心，在其基础上进一步扩展了资源管理、编辑、浏览器执行、监督和工作区编排能力。",
+          q: "imux 只是 Ghostty 的一个分支吗？",
+          a: "不是。imux 是一个建立在 Ghostty 级渲染能力之上的原生 macOS 指挥中心，在其基础上进一步扩展了资源管理、编辑、浏览器执行、监督和工作区编排能力。",
         },
         {
-          q: "icc 面向谁？",
+          q: "imux 面向谁？",
           a: "面向操作者、工程师、创始人以及已经在同时运行多个 AI 工作流的高阶用户。他们需要的是一个更锋利的控制面，而不是更多窗口堆积。",
         },
         {
           q: "它的工作方式有什么不同？",
-          a: "icc 让终端保持第一公民地位，同时把缺失的外围能力补齐：文件、远程主机、源码状态、浏览器上下文，以及面向执行的监督器。",
+          a: "imux 让终端保持第一公民地位，同时把缺失的外围能力补齐：文件、远程主机、源码状态、浏览器上下文，以及面向执行的监督器。",
         },
         {
           q: "支持远程协作吗？",
-          a: "支持。icc 会读取 SSH 配置、连接远程目标，并用与本地资源管理器一致的模型展示远程文件。",
+          a: "支持。imux 会读取 SSH 配置、连接远程目标，并用与本地资源管理器一致的模型展示远程文件。",
         },
       ],
     },
     cta: {
-      eyebrow: "开始使用 icc",
+      eyebrow: "开始使用 imux",
       title: "从目标到执行，不再丢失工作的整体形状。",
       body:
-        "你可以直接下载当前 macOS 构建，也可以在 GitHub 上跟踪发布与源码。官网、发布线路和仓库现在已经统一到同一个品牌：icc。",
+        "你可以直接下载当前 macOS 构建，也可以在 GitHub 上跟踪发布与源码。官网、发布线路和仓库现在已经统一到同一个品牌：imux。",
     },
     footer: {
       blurb:
@@ -521,18 +521,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "版本发布",
       repository: "GitHub 仓库",
       support: "支持 / 问题反馈",
-      copyright: "© {year} icc。一个座舱，承接以终端为核心的 AI 执行流。",
+      copyright: "© {year} imux。一个座舱，承接以终端为核心的 AI 执行流。",
     },
   },
   "zh-TW": {
-    metaTitle: "icc — macOS AI 指揮中心",
+    metaTitle: "imux — macOS AI 指揮中心",
     metaDescription:
-      "icc 是面向高強度 AI 工作流的原生 macOS 指揮中心。它整合 Ghostty 級終端渲染、本地與遠端檔案瀏覽、內建編輯、瀏覽器執行、原始碼狀態可視化，以及監督器能力於同一工作介面。",
+      "imux 是面向高強度 AI 工作流的原生 macOS 指揮中心。它整合 Ghostty 級終端渲染、本地與遠端檔案瀏覽、內建編輯、瀏覽器執行、原始碼狀態可視化，以及監督器能力於同一工作介面。",
     descriptor: "macOS AI 指揮中心",
     tagline: "一個座艙，承接以終端為核心的 AI 執行流。",
     eyebrow: "官方網站",
     heroDescription:
-      "icc 是面向嚴肅 AI 工作的原生 macOS 指揮中心。終端執行、本地與遠端檔案、原始碼狀態、瀏覽器任務以及監督器給出的下一步建議，都留在同一個清晰工作區裡。",
+      "imux 是面向嚴肅 AI 工作的原生 macOS 指揮中心。終端執行、本地與遠端檔案、原始碼狀態、瀏覽器任務以及監督器給出的下一步建議，都留在同一個清晰工作區裡。",
     buttons: {
       download: "下載 macOS 版本",
       github: "查看 GitHub",
@@ -565,13 +565,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "工作區: /Users/operator/work/icc",
+      workspace: "工作區: /Users/operator/work/imux",
       rail: "側欄",
-      railItems: ["終端 / 建置", "倉庫 / icc", "遠端 / prod-ssh", "瀏覽器 / review"],
+      railItems: ["終端 / 建置", "倉庫 / imux", "遠端 / prod-ssh", "瀏覽器 / review"],
       terminal: "終端對話",
       ready: "已就緒",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "已連線，正在讀取遠端工作區與 shell 狀態。",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -591,7 +591,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "核心能力",
       title: "為真正執行任務的人準備，讓上下文在工作發生時始終可見。",
       body:
-        "icc 不是套在終端外的一層瀏覽器面板，它是把執行、檔案、遠端狀態與行動建議收斂在同一工作面的指揮中心。",
+        "imux 不是套在終端外的一層瀏覽器面板，它是把執行、檔案、遠端狀態與行動建議收斂在同一工作面的指揮中心。",
       items: [
         {
           title: "終端優先執行",
@@ -659,7 +659,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
         {
           step: "01",
           title: "開啟工作區",
-          body: "讓 icc 指向本地倉庫，或連線一個 SSH 目標。零配置流程會先推斷足夠多的資訊，讓你立即開始。",
+          body: "讓 imux 指向本地倉庫，或連線一個 SSH 目標。零配置流程會先推斷足夠多的資訊，讓你立即開始。",
         },
         {
           step: "02",
@@ -669,7 +669,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
         {
           step: "03",
           title: "由監督器組織下一步",
-          body: "icc 可以把目前上下文壓縮成啟動計畫、執行簡報或交接摘要，而不會讓流程變得官僚。",
+          body: "imux 可以把目前上下文壓縮成啟動計畫、執行簡報或交接摘要，而不會讓流程變得官僚。",
         },
         {
           step: "04",
@@ -684,28 +684,28 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "保持清晰、強執行力和低摩擦，是這個網站資訊架構的原則。",
       items: [
         {
-          q: "icc 只是 Ghostty 的一個分支嗎？",
-          a: "不是。icc 是建立在 Ghostty 級渲染能力之上的原生 macOS 指揮中心，在此基礎上進一步擴展了資源管理、編輯、瀏覽器執行、監督與工作區編排能力。",
+          q: "imux 只是 Ghostty 的一個分支嗎？",
+          a: "不是。imux 是建立在 Ghostty 級渲染能力之上的原生 macOS 指揮中心，在此基礎上進一步擴展了資源管理、編輯、瀏覽器執行、監督與工作區編排能力。",
         },
         {
-          q: "icc 面向誰？",
+          q: "imux 面向誰？",
           a: "面向操作者、工程師、創辦人以及已經同時執行多個 AI 工作流的高階使用者。他們需要的是一個更銳利的控制面，而不是更多視窗堆疊。",
         },
         {
           q: "它的工作方式有什麼不同？",
-          a: "icc 讓終端保持第一公民地位，同時把缺失的周邊能力補齊：檔案、遠端主機、原始碼狀態、瀏覽器上下文，以及面向執行的監督器。",
+          a: "imux 讓終端保持第一公民地位，同時把缺失的周邊能力補齊：檔案、遠端主機、原始碼狀態、瀏覽器上下文，以及面向執行的監督器。",
         },
         {
           q: "支援遠端協作嗎？",
-          a: "支援。icc 會讀取 SSH 設定、連線遠端目標，並以與本地資源管理器一致的模型展示遠端檔案。",
+          a: "支援。imux 會讀取 SSH 設定、連線遠端目標，並以與本地資源管理器一致的模型展示遠端檔案。",
         },
       ],
     },
     cta: {
-      eyebrow: "開始使用 icc",
+      eyebrow: "開始使用 imux",
       title: "從目標到執行，不再丟失工作的整體形狀。",
       body:
-        "你可以直接下載目前 macOS 建置，也可以在 GitHub 上追蹤發布與原始碼。官網、發布線與倉庫現在已經統一到同一個品牌：icc。",
+        "你可以直接下載目前 macOS 建置，也可以在 GitHub 上追蹤發布與原始碼。官網、發布線與倉庫現在已經統一到同一個品牌：imux。",
     },
     footer: {
       blurb:
@@ -719,18 +719,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "版本發布",
       repository: "GitHub 倉庫",
       support: "支援 / 問題回報",
-      copyright: "© {year} icc。一個座艙，承接以終端為核心的 AI 執行流。",
+      copyright: "© {year} imux。一個座艙，承接以終端為核心的 AI 執行流。",
     },
   },
   ja: {
-    metaTitle: "icc — macOS向けAIコマンドセンター",
+    metaTitle: "imux — macOS向けAIコマンドセンター",
     metaDescription:
-      "icc は本格的な AI ワークフローのためのネイティブ macOS コマンドセンターです。Ghostty級の端末描画、ローカル/リモートのファイル探索、アプリ内編集、ブラウザ実行、ソース管理の可視化、そしてスーパーバイザー機能を1つの作業面に統合します。",
+      "imux は本格的な AI ワークフローのためのネイティブ macOS コマンドセンターです。Ghostty級の端末描画、ローカル/リモートのファイル探索、アプリ内編集、ブラウザ実行、ソース管理の可視化、そしてスーパーバイザー機能を1つの作業面に統合します。",
     descriptor: "macOS向けAIコマンドセンター",
     tagline: "端末中心のAI実行を、一つのコックピットに。",
     eyebrow: "公式サイト",
     heroDescription:
-      "icc は本気の AI 作業のためのネイティブ macOS コマンドセンターです。端末実行、ローカル/リモートのファイル、ソース管理、ブラウザ作業、スーパーバイザーが示す次の一手を、ひとつの明快なワークスペースに保持します。",
+      "imux は本気の AI 作業のためのネイティブ macOS コマンドセンターです。端末実行、ローカル/リモートのファイル、ソース管理、ブラウザ作業、スーパーバイザーが示す次の一手を、ひとつの明快なワークスペースに保持します。",
     buttons: {
       download: "macOS版をダウンロード",
       github: "GitHubを見る",
@@ -763,13 +763,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "workspace: /Users/operator/work/icc",
+      workspace: "workspace: /Users/operator/work/imux",
       rail: "レール",
-      railItems: ["terminal / build", "repo / icc", "remote / prod-ssh", "browser / review"],
+      railItems: ["terminal / build", "repo / imux", "remote / prod-ssh", "browser / review"],
       terminal: "端末会話",
       ready: "ready",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "接続完了。リモートワークスペースと shell 状態を読み込み中。",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -789,7 +789,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "機能",
       title: "作業中の文脈を見失いたくないオペレーターのために設計。",
       body:
-        "icc は端末の上に載った単なるブラウザダッシュボードではありません。実行、ファイル、リモート状態、次の判断材料を同じ作業面に保つコマンドセンターです。",
+        "imux は端末の上に載った単なるブラウザダッシュボードではありません。実行、ファイル、リモート状態、次の判断材料を同じ作業面に保つコマンドセンターです。",
       items: [
         {
           title: "端末優先の実行",
@@ -857,7 +857,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
         {
           step: "01",
           title: "ワークスペースを開く",
-          body: "icc にローカルリポジトリを向けるか、SSH 先へ接続します。ゼロ設定フローが十分な構造を推定し、すぐ開始できます。",
+          body: "imux にローカルリポジトリを向けるか、SSH 先へ接続します。ゼロ設定フローが十分な構造を推定し、すぐ開始できます。",
         },
         {
           step: "02",
@@ -867,7 +867,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
         {
           step: "03",
           title: "スーパーバイザーに次の一手をまとめさせる",
-          body: "icc は現在の文脈を、開始プラン、実行ブリーフ、引き継ぎメモへ圧縮できます。しかも儀式的にはなりません。",
+          body: "imux は現在の文脈を、開始プラン、実行ブリーフ、引き継ぎメモへ圧縮できます。しかも儀式的にはなりません。",
         },
         {
           step: "04",
@@ -882,28 +882,28 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "導入しやすさを保ちながら、作業品質には厳しくある。それがこのサイトの前提です。",
       items: [
         {
-          q: "icc は Ghostty の fork ですか？",
-          a: "いいえ。icc は Ghostty級の端末描画を土台にしたネイティブ macOS コマンドセンターです。その上にエクスプローラー、編集、ブラウザ実行、監督、ワークスペースオーケストレーションを加えています。",
+          q: "imux は Ghostty の fork ですか？",
+          a: "いいえ。imux は Ghostty級の端末描画を土台にしたネイティブ macOS コマンドセンターです。その上にエクスプローラー、編集、ブラウザ実行、監督、ワークスペースオーケストレーションを加えています。",
         },
         {
-          q: "icc は誰のための製品ですか？",
+          q: "imux は誰のための製品ですか？",
           a: "オペレーター、エンジニア、創業者、そして複数の AI ワークフローをすでに回しているパワーユーザー向けです。必要なのは、より鋭い制御面であって、増え続けるウィンドウではありません。",
         },
         {
           q: "何が違うのですか？",
-          a: "icc は端末を主役のまま保ちつつ、不足していた周辺面を埋めます。ファイル、リモートホスト、ソース管理、ブラウザ文脈、そして実行志向のスーパーバイザーです。",
+          a: "imux は端末を主役のまま保ちつつ、不足していた周辺面を埋めます。ファイル、リモートホスト、ソース管理、ブラウザ文脈、そして実行志向のスーパーバイザーです。",
         },
         {
           q: "リモート作業に対応していますか？",
-          a: "はい。icc は SSH 設定を読み取り、リモート先へ接続し、ローカルと同じエクスプローラーモデルでリモートファイルを扱えます。",
+          a: "はい。imux は SSH 設定を読み取り、リモート先へ接続し、ローカルと同じエクスプローラーモデルでリモートファイルを扱えます。",
         },
       ],
     },
     cta: {
-      eyebrow: "icc を始める",
+      eyebrow: "imux を始める",
       title: "意図から実行へ。仕事の全体像を失わない。",
       body:
-        "現在の macOS ビルドをすぐダウンロードするか、GitHub でリリースとソースを追跡できます。公開サイト、リリースライン、リポジトリはすべて icc という1つのブランドに揃いました。",
+        "現在の macOS ビルドをすぐダウンロードするか、GitHub でリリースとソースを追跡できます。公開サイト、リリースライン、リポジトリはすべて imux という1つのブランドに揃いました。",
     },
     footer: {
       blurb:
@@ -917,18 +917,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "リリース一覧",
       repository: "GitHub リポジトリ",
       support: "サポート / Issues",
-      copyright: "© {year} icc。端末中心のAI実行を、一つのコックピットに。",
+      copyright: "© {year} imux。端末中心のAI実行を、一つのコックピットに。",
     },
   },
   "ko": {
-    metaTitle: "icc — AI macOS 명령 센터",
+    metaTitle: "imux — AI macOS 명령 센터",
     metaDescription:
-      "icc은 심각한 AI 작업을 위한 기본 macOS 명령 센터입니다. Ghostty급 터미널 렌더링, 로컬 및 원격 파일 탐색, 인앱 편집, 브라우저 실행, 소스 제어 가시성 및 감독자 레이어를 하나의 집중된 작업 공간에 결합합니다.",
+      "imux은 심각한 AI 작업을 위한 기본 macOS 명령 센터입니다. Ghostty급 터미널 렌더링, 로컬 및 원격 파일 탐색, 인앱 편집, 브라우저 실행, 소스 제어 가시성 및 감독자 레이어를 하나의 집중된 작업 공간에 결합합니다.",
     descriptor: "AI macOS 명령 센터",
     tagline: "터미널 우선 AI 실행을 위한 조종석 1개.",
     eyebrow: "공식 사이트",
     heroDescription:
-      "icc은 심각한 AI 작업을 위한 기본 macOS 명령 센터입니다. 터미널 실행, 로컬 및 원격 파일, 소스 제어, 브라우저 작업, 감독자 중심의 다음 단계를 하나의 계획된 작업 공간 내에 유지하세요.",
+      "imux은 심각한 AI 작업을 위한 기본 macOS 명령 센터입니다. 터미널 실행, 로컬 및 원격 파일, 소스 제어, 브라우저 작업, 감독자 중심의 다음 단계를 하나의 계획된 작업 공간 내에 유지하세요.",
     buttons: {
       download: "macOS용 다운로드",
       github: "GitHub에서 보기",
@@ -961,13 +961,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "작업 공간: /Users/operator/work/icc",
+      workspace: "작업 공간: /Users/operator/work/imux",
       rail: "철도",
-      railItems: ["터미널/빌드", "저장소 / icc", "원격 / prod-ssh", "브라우저 / 리뷰"],
+      railItems: ["터미널/빌드", "저장소 / imux", "원격 / prod-ssh", "브라우저 / 리뷰"],
       terminal: "터미널 대화",
       ready: "준비",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "연결되었습니다. 원격 작업공간 및 셸 상태를 읽습니다.",
         "$ git status --short",
         "남 Sources/WorkspaceSupervisor.swift",
@@ -987,7 +987,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "기능",
       title: "작업이 진행되는 동안 상황을 확인하려는 운영자를 위해 제작되었습니다.",
       body:
-        "icc은(는) 터미널 위에 있는 또 다른 브라우저 대시보드가 아닙니다. 동일한 작업 영역 내에서 실행, 파일, 원격 상태 및 지침을 유지하는 명령 센터입니다.",
+        "imux은(는) 터미널 위에 있는 또 다른 브라우저 대시보드가 아닙니다. 동일한 작업 영역 내에서 실행, 파일, 원격 상태 및 지침을 유지하는 명령 센터입니다.",
       items: [
         {
           title: "터미널 우선 실행",
@@ -1062,7 +1062,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "작업공간 열기",
           body:
-            "로컬 저장소에서 icc을 가리키거나 SSH 대상을 연결하세요. 제로 구성 흐름은 즉시 시작하기에 충분한 구조를 추론합니다.",
+            "로컬 저장소에서 imux을 가리키거나 SSH 대상을 연결하세요. 제로 구성 흐름은 즉시 시작하기에 충분한 구조를 추론합니다.",
         },
         {
           step: "02",
@@ -1074,7 +1074,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "감독관이 다음 조치를 취하도록 하세요.",
           body:
-            "icc은 워크플로를 의식으로 바꾸지 않고도 현재 컨텍스트를 시작 계획, 실행 개요 또는 운영자 전달로 압축할 수 있습니다.",
+            "imux은 워크플로를 의식으로 바꾸지 않고도 현재 컨텍스트를 시작 계획, 실행 개요 또는 운영자 전달로 압축할 수 있습니다.",
         },
         {
           step: "04",
@@ -1090,32 +1090,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "이 제품은 워크플로우 품질에 대한 독선을 유지하는 동시에 채택하기에 실용적인 상태를 유지합니다.",
       items: [
         {
-          q: "icc은(는) 단지 Ghostty 포크인가요?",
+          q: "imux은(는) 단지 Ghostty 포크인가요?",
           a:
-            "아니요. icc은 Ghostty급 터미널 렌더링을 기반으로 구축된 기본 macOS 명령 센터입니다. 이 제품은 탐색기, 편집, 브라우저 실행, 감독 및 작업 공간 조정을 통해 해당 기반을 확장합니다.",
+            "아니요. imux은 Ghostty급 터미널 렌더링을 기반으로 구축된 기본 macOS 명령 센터입니다. 이 제품은 탐색기, 편집, 브라우저 실행, 감독 및 작업 공간 조정을 통해 해당 기반을 확장합니다.",
         },
         {
-          q: "icc은(는) 누구를 위한 것인가요?",
+          q: "imux은(는) 누구를 위한 것인가요?",
           a:
             "이미 여러 개의 AI 지원 워크플로를 실행하고 있으며 창을 더 많이 펼치는 대신 하나의 더 선명한 제어 표면을 원하는 운영자, 엔지니어, 창립자 및 고급 사용자.",
         },
         {
           q: "워크플로우가 다른 이유는 무엇입니까?",
           a:
-            "icc은 파일, 원격 호스트, 소스 제어, 브라우저 컨텍스트 및 실행 중심 감독자와 같은 누락된 표면을 추가하면서 터미널을 최고 수준으로 유지합니다.",
+            "imux은 파일, 원격 호스트, 소스 제어, 브라우저 컨텍스트 및 실행 중심 감독자와 같은 누락된 표면을 추가하면서 터미널을 최고 수준으로 유지합니다.",
         },
         {
           q: "원격 근무를 지원하나요?",
           a:
-            "그렇습니다. icc은 SSH 구성을 읽고, 원격 대상에 연결하고, 로컬 작업에 사용되는 동일한 탐색기 모델에 원격 파일을 노출합니다.",
+            "그렇습니다. imux은 SSH 구성을 읽고, 원격 대상에 연결하고, 로컬 작업에 사용되는 동일한 탐색기 모델에 원격 파일을 노출합니다.",
         },
       ],
     },
     cta: {
-      eyebrow: "icc 실행",
+      eyebrow: "imux 실행",
       title: "작업의 형태를 잃지 않고 의도에서 실행으로 이동합니다.",
       body:
-        "GitHub에서 현재 macOS 빌드를 다운로드하거나 릴리스 및 소스를 추적하세요. 이제 공개 사이트, 릴리스 라인 및 저장소가 하나의 ID(icc)로 정렬되었습니다.",
+        "GitHub에서 현재 macOS 빌드를 다운로드하거나 릴리스 및 소스를 추적하세요. 이제 공개 사이트, 릴리스 라인 및 저장소가 하나의 ID(imux)로 정렬되었습니다.",
     },
     footer: {
       blurb:
@@ -1129,18 +1129,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "릴리스",
       repository: "GitHub 저장소",
       support: "지원/문제",
-      copyright: "© {year} icc. 터미널 우선 AI 실행을 위한 조종석 1개.",
+      copyright: "© {year} imux. 터미널 우선 AI 실행을 위한 조종석 1개.",
     },
   },
   "de": {
-    metaTitle: "icc – AI Kommandozentrale für macOS",
+    metaTitle: "imux – AI Kommandozentrale für macOS",
     metaDescription:
-      "icc ist eine native macOS-Kommandozentrale für ernsthafte AI-Arbeiten. Es kombiniert Terminal-Rendering auf Ghostty-Niveau, lokale und Remote-Dateiexploration, In-App-Bearbeitung, Browserausführung, Sichtbarkeit der Quellcodeverwaltung und eine Supervisor-Ebene in einem fokussierten Arbeitsbereich.",
+      "imux ist eine native macOS-Kommandozentrale für ernsthafte AI-Arbeiten. Es kombiniert Terminal-Rendering auf Ghostty-Niveau, lokale und Remote-Dateiexploration, In-App-Bearbeitung, Browserausführung, Sichtbarkeit der Quellcodeverwaltung und eine Supervisor-Ebene in einem fokussierten Arbeitsbereich.",
     descriptor: "AI Kommandozentrale für macOS",
     tagline: "Ein Cockpit für die Terminal-First-Ausführung von AI.",
     eyebrow: "Offizielle Seite",
     heroDescription:
-      "icc ist eine native macOS-Kommandozentrale für ernsthafte AI-Arbeiten. Behalten Sie die Terminalausführung, lokale und Remote-Dateien, Quellcodeverwaltung, Browseraufgaben und vom Supervisor gesteuerte nächste Schritte in einem übersichtlichen Arbeitsbereich bei.",
+      "imux ist eine native macOS-Kommandozentrale für ernsthafte AI-Arbeiten. Behalten Sie die Terminalausführung, lokale und Remote-Dateien, Quellcodeverwaltung, Browseraufgaben und vom Supervisor gesteuerte nächste Schritte in einem übersichtlichen Arbeitsbereich bei.",
     buttons: {
       download: "Herunterladen für macOS",
       github: "Auf GitHub ansehen",
@@ -1173,13 +1173,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "Arbeitsbereich: /Users/operator/work/icc",
+      workspace: "Arbeitsbereich: /Users/operator/work/imux",
       rail: "Schiene",
-      railItems: ["Terminal / Build", "Repo / icc", "Fernbedienung / prod-ssh", "Browser / Rezension"],
+      railItems: ["Terminal / Build", "Repo / imux", "Fernbedienung / prod-ssh", "Browser / Rezension"],
       terminal: "Endgespräch",
       ready: "fertig",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Verbunden. Lesen des Remote-Arbeitsbereichs und des Shell-Status.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -1199,7 +1199,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Fähigkeiten",
       title: "Entwickelt für Bediener, die den Kontext während der Arbeit sichtbar haben möchten.",
       body:
-        "icc ist kein weiteres Browser-Dashboard, das auf einem Terminal sitzt. Es handelt sich um eine Kommandozentrale, die Ausführung, Dateien, Remote-Status und Anleitung auf derselben Arbeitsoberfläche hält.",
+        "imux ist kein weiteres Browser-Dashboard, das auf einem Terminal sitzt. Es handelt sich um eine Kommandozentrale, die Ausführung, Dateien, Remote-Status und Anleitung auf derselben Arbeitsoberfläche hält.",
       items: [
         {
           title: "Terminal-First-Ausführung",
@@ -1274,7 +1274,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Öffnen Sie einen Arbeitsbereich",
           body:
-            "Richten Sie icc auf ein lokales Repo oder verbinden Sie ein SSH-Ziel. Der konfigurationsfreie Ablauf sorgt für genügend Struktur, um sofort beginnen zu können.",
+            "Richten Sie imux auf ein lokales Repo oder verbinden Sie ein SSH-Ziel. Der konfigurationsfreie Ablauf sorgt für genügend Struktur, um sofort beginnen zu können.",
         },
         {
           step: "02",
@@ -1286,7 +1286,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Lassen Sie den Vorgesetzten den nächsten Schritt festlegen",
           body:
-            "icc kann den aktuellen Kontext in einen Startplan, eine Ausführungsanweisung oder eine Bedienerübergabe komprimieren, ohne den Arbeitsablauf in eine Zeremonie zu verwandeln.",
+            "imux kann den aktuellen Kontext in einen Startplan, eine Ausführungsanweisung oder eine Bedienerübergabe komprimieren, ohne den Arbeitsablauf in eine Zeremonie zu verwandeln.",
         },
         {
           step: "04",
@@ -1302,32 +1302,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Das Produkt bleibt hinsichtlich der Arbeitsablaufqualität überzeugt und bleibt gleichzeitig praktisch in der Anwendung.",
       items: [
         {
-          q: "Ist icc nur eine Ghostty-Gabel?",
+          q: "Ist imux nur eine Ghostty-Gabel?",
           a:
-            "Nein. icc ist eine native macOS-Kommandozentrale, die auf Terminal-Rendering der Ghostty-Klasse basiert. Das Produkt erweitert diese Grundlage um Explorer, Bearbeitung, Browserausführung, Überwachung und Arbeitsbereichsorchestrierung.",
+            "Nein. imux ist eine native macOS-Kommandozentrale, die auf Terminal-Rendering der Ghostty-Klasse basiert. Das Produkt erweitert diese Grundlage um Explorer, Bearbeitung, Browserausführung, Überwachung und Arbeitsbereichsorchestrierung.",
         },
         {
-          q: "Für wen ist icc?",
+          q: "Für wen ist imux?",
           a:
             "Bediener, Ingenieure, Gründer und Power-User, die bereits mehrere AI-unterstützte Arbeitsabläufe ausführen und sich eine schärfere Bedienoberfläche statt mehr Fensterwucher wünschen.",
         },
         {
           q: "Was macht den Workflow anders?",
           a:
-            "icc hält das Terminal erstklassig und fügt gleichzeitig die fehlenden Oberflächen um es herum hinzu: Dateien, Remote-Hosts, Quellcodeverwaltung, Browserkontext und einen ausführungsorientierten Supervisor.",
+            "imux hält das Terminal erstklassig und fügt gleichzeitig die fehlenden Oberflächen um es herum hinzu: Dateien, Remote-Hosts, Quellcodeverwaltung, Browserkontext und einen ausführungsorientierten Supervisor.",
         },
         {
           q: "Unterstützt es Remote-Arbeit?",
           a:
-            "Ja. icc liest die SSH-Konfiguration, stellt eine Verbindung zu Remote-Zielen her und stellt Remote-Dateien im selben Explorer-Modell bereit, das für die lokale Arbeit verwendet wird.",
+            "Ja. imux liest die SSH-Konfiguration, stellt eine Verbindung zu Remote-Zielen her und stellt Remote-Dateien im selben Explorer-Modell bereit, das für die lokale Arbeit verwendet wird.",
         },
       ],
     },
     cta: {
-      eyebrow: "Starten Sie icc",
+      eyebrow: "Starten Sie imux",
       title: "Gehen Sie von der Absicht zur Ausführung über, ohne die Form der Arbeit zu verlieren.",
       body:
-        "Laden Sie den aktuellen macOS-Build herunter oder verfolgen Sie Releases und Quellen auf GitHub. Die öffentliche Site, die Release-Linie und das Repository sind jetzt auf eine Identität ausgerichtet: icc.",
+        "Laden Sie den aktuellen macOS-Build herunter oder verfolgen Sie Releases und Quellen auf GitHub. Die öffentliche Site, die Release-Linie und das Repository sind jetzt auf eine Identität ausgerichtet: imux.",
     },
     footer: {
       blurb:
@@ -1341,18 +1341,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Veröffentlichungen",
       repository: "GitHub-Repository",
       support: "Support / Probleme",
-      copyright: "© {year} icc. Ein Cockpit für die Terminal-First-Ausführung von AI.",
+      copyright: "© {year} imux. Ein Cockpit für die Terminal-First-Ausführung von AI.",
     },
   },
   "es": {
-    metaTitle: "icc — AI Centro de comando para macOS",
+    metaTitle: "imux — AI Centro de comando para macOS",
     metaDescription:
-      "icc es un centro de comando nativo macOS para trabajos serios AI. Combina renderizado de terminal de grado Ghostty, exploración de archivos local y remota, edición en la aplicación, ejecución del navegador, visibilidad del control de fuente y una capa de supervisión en un espacio de trabajo enfocado.",
+      "imux es un centro de comando nativo macOS para trabajos serios AI. Combina renderizado de terminal de grado Ghostty, exploración de archivos local y remota, edición en la aplicación, ejecución del navegador, visibilidad del control de fuente y una capa de supervisión en un espacio de trabajo enfocado.",
     descriptor: "AI Centro de comando para macOS",
     tagline: "Una cabina para la ejecución AI desde la terminal.",
     eyebrow: "Sitio oficial",
     heroDescription:
-      "icc es un centro de comando nativo macOS para trabajos serios AI. Mantenga la ejecución del terminal, los archivos locales y remotos, el control de fuentes, las tareas del navegador y los siguientes pasos impulsados ​​por el supervisor dentro de un espacio de trabajo deliberado.",
+      "imux es un centro de comando nativo macOS para trabajos serios AI. Mantenga la ejecución del terminal, los archivos locales y remotos, el control de fuentes, las tareas del navegador y los siguientes pasos impulsados ​​por el supervisor dentro de un espacio de trabajo deliberado.",
     buttons: {
       download: "Descargar para macOS",
       github: "Ver en GitHub",
@@ -1385,13 +1385,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "espacio de trabajo: /Usuarios/operador/trabajo/icc",
+      workspace: "espacio de trabajo: /Usuarios/operador/trabajo/imux",
       rail: "carril",
-      railItems: ["terminal / construcción", "repositorio / icc", "remoto / prod-ssh", "navegador / revisión"],
+      railItems: ["terminal / construcción", "repositorio / imux", "remoto / prod-ssh", "navegador / revisión"],
       terminal: "conversación terminal",
       ready: "listo",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Conectado. Lectura del espacio de trabajo remoto y del estado del shell.",
         "$ git status --short",
         "MSources/WorkspaceSupervisor.swift",
@@ -1411,7 +1411,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Capacidades",
       title: "Diseñado para operadores que desean que el contexto sea visible mientras se realiza el trabajo.",
       body:
-        "icc no es otro panel de control del navegador ubicado encima de una terminal. Es un centro de comando que mantiene la ejecución, los archivos, el estado remoto y la guía dentro de la misma superficie de trabajo.",
+        "imux no es otro panel de control del navegador ubicado encima de una terminal. Es un centro de comando que mantiene la ejecución, los archivos, el estado remoto y la guía dentro de la misma superficie de trabajo.",
       items: [
         {
           title: "Ejecución desde la terminal primero",
@@ -1486,7 +1486,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Abrir un espacio de trabajo",
           body:
-            "Apunte icc a un repositorio local o conecte un destino SSH. El flujo de configuración cero infiere suficiente estructura para comenzar de inmediato.",
+            "Apunte imux a un repositorio local o conecte un destino SSH. El flujo de configuración cero infiere suficiente estructura para comenzar de inmediato.",
         },
         {
           step: "02",
@@ -1498,7 +1498,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Deje que el supervisor formule el siguiente paso",
           body:
-            "icc puede comprimir el contexto actual en un plan de inicio, un informe de ejecución o un traspaso de operador sin convertir el flujo de trabajo en una ceremonia.",
+            "imux puede comprimir el contexto actual en un plan de inicio, un informe de ejecución o un traspaso de operador sin convertir el flujo de trabajo en una ceremonia.",
         },
         {
           step: "04",
@@ -1514,32 +1514,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "El producto sigue siendo obstinado sobre la calidad del flujo de trabajo, sin dejar de ser práctico de adoptar.",
       items: [
         {
-          q: "¿Es icc solo una bifurcación Ghostty?",
+          q: "¿Es imux solo una bifurcación Ghostty?",
           a:
-            "No. icc es un centro de comando nativo macOS construido en renderizado de terminal de grado Ghostty. El producto amplía esa base con exploradores, edición, ejecución del navegador, supervisión y orquestación del espacio de trabajo.",
+            "No. imux es un centro de comando nativo macOS construido en renderizado de terminal de grado Ghostty. El producto amplía esa base con exploradores, edición, ejecución del navegador, supervisión y orquestación del espacio de trabajo.",
         },
         {
-          q: "¿Para quién es icc?",
+          q: "¿Para quién es imux?",
           a:
             "Operadores, ingenieros, fundadores y usuarios avanzados que ya ejecutan múltiples flujos de trabajo asistidos por AI y desean una superficie de control más nítida en lugar de una mayor extensión de ventanas.",
         },
         {
           q: "¿Qué hace que el flujo de trabajo sea diferente?",
           a:
-            "icc mantiene la terminal de primera clase al tiempo que agrega las superficies que faltan a su alrededor: archivos, hosts remotos, control de fuente, contexto del navegador y un supervisor centrado en la ejecución.",
+            "imux mantiene la terminal de primera clase al tiempo que agrega las superficies que faltan a su alrededor: archivos, hosts remotos, control de fuente, contexto del navegador y un supervisor centrado en la ejecución.",
         },
         {
           q: "¿Admite trabajo remoto?",
           a:
-            "Sí. icc lee la configuración de SSH, se conecta a objetivos remotos y expone archivos remotos en el mismo modelo de explorador utilizado para el trabajo local.",
+            "Sí. imux lee la configuración de SSH, se conecta a objetivos remotos y expone archivos remotos en el mismo modelo de explorador utilizado para el trabajo local.",
         },
       ],
     },
     cta: {
-      eyebrow: "Lanzar icc",
+      eyebrow: "Lanzar imux",
       title: "Pasar de la intención a la ejecución sin perder la forma de la obra.",
       body:
-        "Descargue la compilación actual de macOS o realice un seguimiento de las versiones y el código fuente en GitHub. El sitio público, la línea de lanzamiento y el repositorio ahora están alineados con una identidad: icc.",
+        "Descargue la compilación actual de macOS o realice un seguimiento de las versiones y el código fuente en GitHub. El sitio público, la línea de lanzamiento y el repositorio ahora están alineados con una identidad: imux.",
     },
     footer: {
       blurb:
@@ -1553,18 +1553,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Lanzamientos",
       repository: "Repositorio GitHub",
       support: "Soporte / Problemas",
-      copyright: "© {year} icc. Una cabina para la ejecución AI desde la terminal.",
+      copyright: "© {year} imux. Una cabina para la ejecución AI desde la terminal.",
     },
   },
   "fr": {
-    metaTitle: "icc — Centre de commande AI pour macOS",
+    metaTitle: "imux — Centre de commande AI pour macOS",
     metaDescription:
-      "icc est un centre de commandement natif de macOS pour les travaux sérieux de AI. Il combine le rendu du terminal de niveau Ghostty, l'exploration de fichiers locaux et distants, l'édition dans l'application, l'exécution du navigateur, la visibilité du contrôle source et une couche de superviseur dans un seul espace de travail ciblé.",
+      "imux est un centre de commandement natif de macOS pour les travaux sérieux de AI. Il combine le rendu du terminal de niveau Ghostty, l'exploration de fichiers locaux et distants, l'édition dans l'application, l'exécution du navigateur, la visibilité du contrôle source et une couche de superviseur dans un seul espace de travail ciblé.",
     descriptor: "Centre de commande AI pour macOS",
     tagline: "Un cockpit pour l'exécution du AI en premier terminal.",
     eyebrow: "Site officiel",
     heroDescription:
-      "icc est un centre de commandement natif de macOS pour les travaux sérieux de AI. Conservez l’exécution du terminal, les fichiers locaux et distants, le contrôle des sources, les tâches du navigateur et les prochaines étapes pilotées par le superviseur dans un seul espace de travail délibéré.",
+      "imux est un centre de commandement natif de macOS pour les travaux sérieux de AI. Conservez l’exécution du terminal, les fichiers locaux et distants, le contrôle des sources, les tâches du navigateur et les prochaines étapes pilotées par le superviseur dans un seul espace de travail délibéré.",
     buttons: {
       download: "Télécharger pour macOS",
       github: "Voir sur GitHub",
@@ -1597,13 +1597,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "espace de travail : /Utilisateurs/opérateur/travail/icc",
+      workspace: "espace de travail : /Utilisateurs/opérateur/travail/imux",
       rail: "Rail",
-      railItems: ["terminal / construction", "dépôt / icc", "à distance / prod-ssh", "navigateur / avis"],
+      railItems: ["terminal / construction", "dépôt / imux", "à distance / prod-ssh", "navigateur / avis"],
       terminal: "Conversation terminale",
       ready: "prêt",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Connecté. Lecture de l'espace de travail distant et de l'état du shell.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -1623,7 +1623,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Capacités",
       title: "Conçu pour les opérateurs qui souhaitent que le contexte soit visible pendant le travail.",
       body:
-        "icc n'est pas un autre tableau de bord de navigateur posé au-dessus d'un terminal. Il s'agit d'un centre de commande qui conserve l'exécution, les fichiers, l'état distant et le guidage au sein de la même surface de travail.",
+        "imux n'est pas un autre tableau de bord de navigateur posé au-dessus d'un terminal. Il s'agit d'un centre de commande qui conserve l'exécution, les fichiers, l'état distant et le guidage au sein de la même surface de travail.",
       items: [
         {
           title: "Exécution en premier terminal",
@@ -1698,7 +1698,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Ouvrir un espace de travail",
           body:
-            "Pointez icc vers un dépôt local ou connectez une cible SSH. Le flux sans configuration déduit suffisamment de structure pour commencer immédiatement.",
+            "Pointez imux vers un dépôt local ou connectez une cible SSH. Le flux sans configuration déduit suffisamment de structure pour commencer immédiatement.",
         },
         {
           step: "02",
@@ -1710,7 +1710,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Laissez le superviseur définir la prochaine étape",
           body:
-            "icc peut compresser le contexte actuel dans un plan de démarrage, un brief d'exécution ou un transfert entre opérateur sans transformer le flux de travail en cérémonie.",
+            "imux peut compresser le contexte actuel dans un plan de démarrage, un brief d'exécution ou un transfert entre opérateur sans transformer le flux de travail en cérémonie.",
         },
         {
           step: "04",
@@ -1726,32 +1726,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Le produit reste convaincu de la qualité du flux de travail, tout en restant pratique à adopter.",
       items: [
         {
-          q: "Est-ce que icc n'est qu'un fork Ghostty ?",
+          q: "Est-ce que imux n'est qu'un fork Ghostty ?",
           a:
-            "Non. icc est un centre de commande natif macOS construit sur un rendu de terminal de qualité Ghostty. Le produit étend cette base avec des explorateurs, l'édition, l'exécution du navigateur, la supervision et l'orchestration de l'espace de travail.",
+            "Non. imux est un centre de commande natif macOS construit sur un rendu de terminal de qualité Ghostty. Le produit étend cette base avec des explorateurs, l'édition, l'exécution du navigateur, la supervision et l'orchestration de l'espace de travail.",
         },
         {
-          q: "À qui s’adresse icc ?",
+          q: "À qui s’adresse imux ?",
           a:
             "Opérateurs, ingénieurs, fondateurs et utilisateurs expérimentés qui exécutent déjà plusieurs flux de travail assistés par AI et souhaitent une surface de contrôle plus précise au lieu d'une plus grande étendue de fenêtres.",
         },
         {
           q: "Qu’est-ce qui différencie le flux de travail ?",
           a:
-            "icc maintient le terminal de première classe tout en ajoutant les surfaces manquantes autour de lui : fichiers, hôtes distants, contrôle de code source, contexte de navigateur et superviseur axé sur l'exécution.",
+            "imux maintient le terminal de première classe tout en ajoutant les surfaces manquantes autour de lui : fichiers, hôtes distants, contrôle de code source, contexte de navigateur et superviseur axé sur l'exécution.",
         },
         {
           q: "Est-il compatible avec le travail à distance ?",
           a:
-            "Oui. icc lit la configuration SSH, se connecte aux cibles distantes et expose les fichiers distants dans le même modèle d'explorateur utilisé pour le travail local.",
+            "Oui. imux lit la configuration SSH, se connecte aux cibles distantes et expose les fichiers distants dans le même modèle d'explorateur utilisé pour le travail local.",
         },
       ],
     },
     cta: {
-      eyebrow: "Lancer icc",
+      eyebrow: "Lancer imux",
       title: "Passez de l’intention à l’exécution sans perdre la forme de l’œuvre.",
       body:
-        "Téléchargez la version actuelle de macOS ou suivez les versions et les sources sur GitHub. Le site public, la ligne de publication et le référentiel sont désormais alignés sur une seule identité : icc.",
+        "Téléchargez la version actuelle de macOS ou suivez les versions et les sources sur GitHub. Le site public, la ligne de publication et le référentiel sont désormais alignés sur une seule identité : imux.",
     },
     footer: {
       blurb:
@@ -1765,18 +1765,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Sorties",
       repository: "Dépôt GitHub",
       support: "Assistance / Problèmes",
-      copyright: "© {year} icc. Un cockpit pour l'exécution du AI en premier terminal.",
+      copyright: "© {year} imux. Un cockpit pour l'exécution du AI en premier terminal.",
     },
   },
   "it": {
-    metaTitle: "icc — AI Centro di comando per macOS",
+    metaTitle: "imux — AI Centro di comando per macOS",
     metaDescription:
-      "icc è un centro di comando nativo macOS per lavori seri AI. Combina rendering del terminale di livello Ghostty, esplorazione di file locali e remoti, modifica in-app, esecuzione del browser, visibilità del controllo del codice sorgente e un livello supervisore in un unico spazio di lavoro mirato.",
+      "imux è un centro di comando nativo macOS per lavori seri AI. Combina rendering del terminale di livello Ghostty, esplorazione di file locali e remoti, modifica in-app, esecuzione del browser, visibilità del controllo del codice sorgente e un livello supervisore in un unico spazio di lavoro mirato.",
     descriptor: "AI Centro di comando per macOS",
     tagline: "Un abitacolo per l'esecuzione AI terminal-first.",
     eyebrow: "Sito ufficiale",
     heroDescription:
-      "icc è un centro di comando nativo macOS per lavori seri AI. Mantieni l'esecuzione del terminale, i file locali e remoti, il controllo del codice sorgente, le attività del browser e i passaggi successivi gestiti dal supervisore all'interno di un unico spazio di lavoro deliberato.",
+      "imux è un centro di comando nativo macOS per lavori seri AI. Mantieni l'esecuzione del terminale, i file locali e remoti, il controllo del codice sorgente, le attività del browser e i passaggi successivi gestiti dal supervisore all'interno di un unico spazio di lavoro deliberato.",
     buttons: {
       download: "Scarica per macOS",
       github: "Visualizza su GitHub",
@@ -1809,13 +1809,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "area di lavoro: /Utenti/operatore/lavoro/icc",
+      workspace: "area di lavoro: /Utenti/operatore/lavoro/imux",
       rail: "Ferrovia",
-      railItems: ["terminale/costruisci", "repository / icc", "telecomando / prod-ssh", "browser/recensione"],
+      railItems: ["terminale/costruisci", "repository / imux", "telecomando / prod-ssh", "browser/recensione"],
       terminal: "Conversazione terminale",
       ready: "pronto",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Connesso. Lettura dell'area di lavoro remota e dello stato della shell.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -1835,7 +1835,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Capacità",
       title: "Costruito per gli operatori che desiderano che il contesto sia visibile mentre si svolge il lavoro.",
       body:
-        "icc non è un altro dashboard del browser posizionato su un terminale. È un centro di comando che mantiene l'esecuzione, i file, lo stato remoto e la guida all'interno della stessa superficie di lavoro.",
+        "imux non è un altro dashboard del browser posizionato su un terminale. È un centro di comando che mantiene l'esecuzione, i file, lo stato remoto e la guida all'interno della stessa superficie di lavoro.",
       items: [
         {
           title: "Esecuzione prima dal terminale",
@@ -1910,7 +1910,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Apri uno spazio di lavoro",
           body:
-            "Punta icc a un repository locale o collega un target SSH. Il flusso a configurazione zero deduce una struttura sufficiente per iniziare immediatamente.",
+            "Punta imux a un repository locale o collega un target SSH. Il flusso a configurazione zero deduce una struttura sufficiente per iniziare immediatamente.",
         },
         {
           step: "02",
@@ -1922,7 +1922,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Lascia che sia il supervisore a definire la mossa successiva",
           body:
-            "icc può comprimere il contesto corrente in un piano di avvio, un brief di esecuzione o un passaggio di consegne da parte dell'operatore senza trasformare il flusso di lavoro in una cerimonia.",
+            "imux può comprimere il contesto corrente in un piano di avvio, un brief di esecuzione o un passaggio di consegne da parte dell'operatore senza trasformare il flusso di lavoro in una cerimonia.",
         },
         {
           step: "04",
@@ -1938,32 +1938,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Il prodotto rimane supponente sulla qualità del flusso di lavoro, pur rimanendo pratico da adottare.",
       items: [
         {
-          q: "icc è solo una forchetta Ghostty?",
+          q: "imux è solo una forchetta Ghostty?",
           a:
-            "No. icc è un centro di comando nativo macOS basato sul rendering del terminale di livello Ghostty. Il prodotto espande queste basi con esplorazioni, modifica, esecuzione del browser, supervisione e orchestrazione dello spazio di lavoro.",
+            "No. imux è un centro di comando nativo macOS basato sul rendering del terminale di livello Ghostty. Il prodotto espande queste basi con esplorazioni, modifica, esecuzione del browser, supervisione e orchestrazione dello spazio di lavoro.",
         },
         {
-          q: "Per chi è icc?",
+          q: "Per chi è imux?",
           a:
             "Operatori, ingegneri, fondatori e utenti esperti che già eseguono più flussi di lavoro assistiti da AI e desiderano una superficie di controllo più nitida invece di una maggiore espansione delle finestre.",
         },
         {
           q: "Cosa rende diverso il flusso di lavoro?",
           a:
-            "icc mantiene il terminale di prima classe aggiungendo le superfici mancanti attorno ad esso: file, host remoti, controllo del codice sorgente, contesto del browser e un supervisore incentrato sull'esecuzione.",
+            "imux mantiene il terminale di prima classe aggiungendo le superfici mancanti attorno ad esso: file, host remoti, controllo del codice sorgente, contesto del browser e un supervisore incentrato sull'esecuzione.",
         },
         {
           q: "Supporta il lavoro a distanza?",
           a:
-            "Sì. icc legge la configurazione SSH, si connette a destinazioni remote ed espone file remoti nello stesso modello Explorer utilizzato per il lavoro locale.",
+            "Sì. imux legge la configurazione SSH, si connette a destinazioni remote ed espone file remoti nello stesso modello Explorer utilizzato per il lavoro locale.",
         },
       ],
     },
     cta: {
-      eyebrow: "Avvia icc",
+      eyebrow: "Avvia imux",
       title: "Passare dall'intento all'esecuzione senza perdere la forma dell'opera.",
       body:
-        "Scarica la build corrente di macOS o monitora le versioni e il codice sorgente su GitHub. Il sito pubblico, la riga di rilascio e il repository sono ora allineati a un'unica identità: icc.",
+        "Scarica la build corrente di macOS o monitora le versioni e il codice sorgente su GitHub. Il sito pubblico, la riga di rilascio e il repository sono ora allineati a un'unica identità: imux.",
     },
     footer: {
       blurb:
@@ -1977,18 +1977,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Rilasci",
       repository: "GitHub Archivio",
       support: "Supporto/Problemi",
-      copyright: "© {year} icc. Un abitacolo per l'esecuzione AI terminal-first.",
+      copyright: "© {year} imux. Un abitacolo per l'esecuzione AI terminal-first.",
     },
   },
   "da": {
-    metaTitle: "icc — AI Kommandocenter for macOS",
+    metaTitle: "imux — AI Kommandocenter for macOS",
     metaDescription:
-      "icc er et indfødt macOS kommandocenter til seriøst AI arbejde. Den kombinerer terminalgengivelse af Ghostty-grad, lokal og ekstern filudforskning, redigering i appen, browserudførelse, kildekontrolsynlighed og et supervisorlag i ét fokuseret arbejdsområde.",
+      "imux er et indfødt macOS kommandocenter til seriøst AI arbejde. Den kombinerer terminalgengivelse af Ghostty-grad, lokal og ekstern filudforskning, redigering i appen, browserudførelse, kildekontrolsynlighed og et supervisorlag i ét fokuseret arbejdsområde.",
     descriptor: "AI Kommandocenter for macOS",
     tagline: "Ét cockpit til terminal-first AI udførelse.",
     eyebrow: "Officiel side",
     heroDescription:
-      "icc er et indfødt macOS kommandocenter til seriøst AI arbejde. Hold terminaludførelse, lokale og eksterne filer, kildekontrol, browseropgaver og supervisor-drevne næste trin i ét bevidst arbejdsområde.",
+      "imux er et indfødt macOS kommandocenter til seriøst AI arbejde. Hold terminaludførelse, lokale og eksterne filer, kildekontrol, browseropgaver og supervisor-drevne næste trin i ét bevidst arbejdsområde.",
     buttons: {
       download: "Download til macOS",
       github: "Se på GitHub",
@@ -2021,13 +2021,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "arbejdsområde: /Users/operator/work/icc",
+      workspace: "arbejdsområde: /Users/operator/work/imux",
       rail: "Jernbane",
-      railItems: ["terminal / build", "repo / icc", "fjernbetjening / prod-ssh", "browser / anmeldelse"],
+      railItems: ["terminal / build", "repo / imux", "fjernbetjening / prod-ssh", "browser / anmeldelse"],
       terminal: "Terminal samtale",
       ready: "klar",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Forbundet. Læser eksternt arbejdsområde og skaltilstand.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -2047,7 +2047,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Evner",
       title: "Bygget til operatører, der ønsker konteksten synlig, mens arbejdet foregår.",
       body:
-        "icc er ikke et andet browser-dashboard, der sidder oven på en terminal. Det er et kommandocenter, der holder udførelse, filer, fjerntilstand og vejledning inden for den samme arbejdsflade.",
+        "imux er ikke et andet browser-dashboard, der sidder oven på en terminal. Det er et kommandocenter, der holder udførelse, filer, fjerntilstand og vejledning inden for den samme arbejdsflade.",
       items: [
         {
           title: "Terminal-første udførelse",
@@ -2122,7 +2122,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Åbn et arbejdsområde",
           body:
-            "Peg icc på en lokal repo eller tilslut et SSH mål. Zero-config flow udleder nok struktur til at begynde med det samme.",
+            "Peg imux på en lokal repo eller tilslut et SSH mål. Zero-config flow udleder nok struktur til at begynde med det samme.",
         },
         {
           step: "02",
@@ -2134,7 +2134,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Lad supervisoren ramme det næste træk",
           body:
-            "icc kan komprimere den aktuelle kontekst til en opstartsplan, udførelsesbrief eller operatøroverdragelse uden at omdanne arbejdsgangen til en ceremoni.",
+            "imux kan komprimere den aktuelle kontekst til en opstartsplan, udførelsesbrief eller operatøroverdragelse uden at omdanne arbejdsgangen til en ceremoni.",
         },
         {
           step: "04",
@@ -2150,32 +2150,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Produktet forbliver orienteret om workflow-kvalitet, mens det forbliver praktisk at adoptere.",
       items: [
         {
-          q: "Er icc bare en Ghostty gaffel?",
+          q: "Er imux bare en Ghostty gaffel?",
           a:
-            "Nej. icc er et indbygget macOS kommandocenter bygget på Ghostty-grade terminal rendering. Produktet udvider dette fundament med opdagelsesrejsende, redigering, browserudførelse, overvågning og orkestrering af arbejdsområde.",
+            "Nej. imux er et indbygget macOS kommandocenter bygget på Ghostty-grade terminal rendering. Produktet udvider dette fundament med opdagelsesrejsende, redigering, browserudførelse, overvågning og orkestrering af arbejdsområde.",
         },
         {
-          q: "Hvem er icc for?",
+          q: "Hvem er imux for?",
           a:
             "Operatører, ingeniører, grundlæggere og superbrugere, der allerede kører flere AI-støttede arbejdsgange og ønsker en skarpere kontrolflade i stedet for mere vinduespredning.",
         },
         {
           q: "Hvad gør arbejdsgangen anderledes?",
           a:
-            "icc holder terminalen førsteklasses, mens den tilføjer de manglende overflader omkring den: filer, fjernværter, kildekontrol, browserkontekst og en eksekveringsfokuseret supervisor.",
+            "imux holder terminalen førsteklasses, mens den tilføjer de manglende overflader omkring den: filer, fjernværter, kildekontrol, browserkontekst og en eksekveringsfokuseret supervisor.",
         },
         {
           q: "Understøtter det fjernarbejde?",
           a:
-            "Ja. icc læser SSH-konfigurationen, opretter forbindelse til fjernmål og afslører fjernfiler i den samme stifindermodel, der bruges til lokalt arbejde.",
+            "Ja. imux læser SSH-konfigurationen, opretter forbindelse til fjernmål og afslører fjernfiler i den samme stifindermodel, der bruges til lokalt arbejde.",
         },
       ],
     },
     cta: {
-      eyebrow: "Start icc",
+      eyebrow: "Start imux",
       title: "Gå fra hensigt til udførelse uden at miste værkets form.",
       body:
-        "Download den aktuelle macOS build eller spor udgivelser og kilde på GitHub. Det offentlige websted, udgivelseslinjen og lageret er nu justeret til én identitet: icc.",
+        "Download den aktuelle macOS build eller spor udgivelser og kilde på GitHub. Det offentlige websted, udgivelseslinjen og lageret er nu justeret til én identitet: imux.",
     },
     footer: {
       blurb:
@@ -2189,18 +2189,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Udgivelser",
       repository: "GitHub Repository",
       support: "Support / problemer",
-      copyright: "© {year} icc. Ét cockpit til terminal-first AI udførelse.",
+      copyright: "© {year} imux. Ét cockpit til terminal-first AI udførelse.",
     },
   },
   "pl": {
-    metaTitle: "icc — AI Centrum dowodzenia dla macOS",
+    metaTitle: "imux — AI Centrum dowodzenia dla macOS",
     metaDescription:
-      "icc to natywne centrum dowodzenia macOS do poważnych prac AI. Łączy w sobie renderowanie terminali klasy Ghostty, lokalną i zdalną eksplorację plików, edycję w aplikacji, wykonywanie w przeglądarce, widoczność kontroli źródła i warstwę nadzorczą w jednym skupionym obszarze roboczym.",
+      "imux to natywne centrum dowodzenia macOS do poważnych prac AI. Łączy w sobie renderowanie terminali klasy Ghostty, lokalną i zdalną eksplorację plików, edycję w aplikacji, wykonywanie w przeglądarce, widoczność kontroli źródła i warstwę nadzorczą w jednym skupionym obszarze roboczym.",
     descriptor: "AI Centrum dowodzenia dla macOS",
     tagline: "Jeden kokpit do wykonania AI w pierwszej kolejności na terminalu.",
     eyebrow: "Oficjalna strona",
     heroDescription:
-      "icc to natywne centrum dowodzenia macOS do poważnych prac AI. Przechowuj wykonanie terminala, pliki lokalne i zdalne, kontrolę źródła, zadania przeglądarki i kolejne kroki kierowane przez nadzorcę w jednym przemyślanym obszarze roboczym.",
+      "imux to natywne centrum dowodzenia macOS do poważnych prac AI. Przechowuj wykonanie terminala, pliki lokalne i zdalne, kontrolę źródła, zadania przeglądarki i kolejne kroki kierowane przez nadzorcę w jednym przemyślanym obszarze roboczym.",
     buttons: {
       download: "Pobierz dla macOS",
       github: "Zobacz na GitHub",
@@ -2233,13 +2233,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "obszar roboczy: /Użytkownicy/operator/praca/icc",
+      workspace: "obszar roboczy: /Użytkownicy/operator/praca/imux",
       rail: "Kolej",
-      railItems: ["terminal / kompilacja", "repozytorium / icc", "pilot / prod-ssh", "przeglądarka/recenzja"],
+      railItems: ["terminal / kompilacja", "repozytorium / imux", "pilot / prod-ssh", "przeglądarka/recenzja"],
       terminal: "Rozmowa terminalowa",
       ready: "gotowy",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Połączony. Odczytywanie zdalnego obszaru roboczego i stanu powłoki.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -2259,7 +2259,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Możliwości",
       title: "Stworzony dla operatorów, którzy chcą, aby kontekst był widoczny podczas pracy.",
       body:
-        "icc nie jest kolejnym panelem przeglądarki umieszczonym na terminalu. Jest to centrum dowodzenia, które utrzymuje wykonanie, pliki, stan zdalny i wskazówki w ramach tej samej powierzchni roboczej.",
+        "imux nie jest kolejnym panelem przeglądarki umieszczonym na terminalu. Jest to centrum dowodzenia, które utrzymuje wykonanie, pliki, stan zdalny i wskazówki w ramach tej samej powierzchni roboczej.",
       items: [
         {
           title: "Wykonanie w pierwszej kolejności na terminalu",
@@ -2334,7 +2334,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Otwórz obszar roboczy",
           body:
-            "Wskaż icc lokalne repozytorium lub podłącz cel SSH. Przepływ konfiguracji zerowej sugeruje wystarczającą strukturę, aby rozpocząć natychmiast.",
+            "Wskaż imux lokalne repozytorium lub podłącz cel SSH. Przepływ konfiguracji zerowej sugeruje wystarczającą strukturę, aby rozpocząć natychmiast.",
         },
         {
           step: "02",
@@ -2346,7 +2346,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Pozwól przełożonemu ustalić następny ruch",
           body:
-            "icc może skompresować bieżący kontekst w plan uruchomienia, wytyczne dotyczące wykonania lub przekazanie operatora bez przekształcania przepływu pracy w ceremonię.",
+            "imux może skompresować bieżący kontekst w plan uruchomienia, wytyczne dotyczące wykonania lub przekazanie operatora bez przekształcania przepływu pracy w ceremonię.",
         },
         {
           step: "04",
@@ -2362,32 +2362,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Produkt niezmiennie wyróżnia się jakością przepływu pracy, a jednocześnie jest praktyczny w zastosowaniu.",
       items: [
         {
-          q: "Czy icc to tylko widelec Ghostty?",
+          q: "Czy imux to tylko widelec Ghostty?",
           a:
-            "Nie. icc to natywne centrum dowodzenia macOS zbudowane na renderowaniu terminali klasy Ghostty. Produkt rozszerza tę podstawę o eksploratory, edycję, uruchamianie przeglądarki, nadzór i orkiestrację przestrzeni roboczej.",
+            "Nie. imux to natywne centrum dowodzenia macOS zbudowane na renderowaniu terminali klasy Ghostty. Produkt rozszerza tę podstawę o eksploratory, edycję, uruchamianie przeglądarki, nadzór i orkiestrację przestrzeni roboczej.",
         },
         {
-          q: "Dla kogo jest icc?",
+          q: "Dla kogo jest imux?",
           a:
             "Operatorzy, inżynierowie, założyciele i zaawansowani użytkownicy, którzy już realizują wiele przepływów pracy wspomaganych przez AI i chcą jednej, ostrzejszej powierzchni sterującej zamiast większej liczby okien.",
         },
         {
           q: "Co wyróżnia przepływ pracy?",
           a:
-            "icc utrzymuje terminal na najwyższym poziomie, dodając jednocześnie brakujące elementy wokół niego: pliki, zdalne hosty, kontrolę źródła, kontekst przeglądarki i nadzorcę skupionego na wykonaniu.",
+            "imux utrzymuje terminal na najwyższym poziomie, dodając jednocześnie brakujące elementy wokół niego: pliki, zdalne hosty, kontrolę źródła, kontekst przeglądarki i nadzorcę skupionego na wykonaniu.",
         },
         {
           q: "Czy wspiera pracę zdalną?",
           a:
-            "Tak. icc odczytuje konfigurację SSH, łączy się ze zdalnymi celami i udostępnia zdalne pliki w tym samym modelu eksploratora, który jest używany do pracy lokalnej.",
+            "Tak. imux odczytuje konfigurację SSH, łączy się ze zdalnymi celami i udostępnia zdalne pliki w tym samym modelu eksploratora, który jest używany do pracy lokalnej.",
         },
       ],
     },
     cta: {
-      eyebrow: "Uruchom icc",
+      eyebrow: "Uruchom imux",
       title: "Przejdź od zamierzenia do wykonania, nie tracąc kształtu dzieła.",
       body:
-        "Pobierz aktualne wersje kompilacji lub utworów macOS i źródła na GitHub. Witryna publiczna, wersja wydania i repozytorium są teraz powiązane z jedną tożsamością: icc.",
+        "Pobierz aktualne wersje kompilacji lub utworów macOS i źródła na GitHub. Witryna publiczna, wersja wydania i repozytorium są teraz powiązane z jedną tożsamością: imux.",
     },
     footer: {
       blurb:
@@ -2401,18 +2401,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Wydania",
       repository: "GitHub Repozytorium",
       support: "Wsparcie / problemy",
-      copyright: "© {year} icc. Jeden kokpit do wykonania AI w pierwszej kolejności na terminalu.",
+      copyright: "© {year} imux. Jeden kokpit do wykonania AI w pierwszej kolejności na terminalu.",
     },
   },
   "ru": {
-    metaTitle: "icc — AI Командный центр для macOS",
+    metaTitle: "imux — AI Командный центр для macOS",
     metaDescription:
-      "icc — это собственный командный центр macOS для серьезной работы AI. Он сочетает в себе рендеринг терминала уровня Ghostty, локальное и удаленное исследование файлов, редактирование в приложении, выполнение в браузере, видимость системы управления версиями и уровень супервизора в одном сфокусированном рабочем пространстве.",
+      "imux — это собственный командный центр macOS для серьезной работы AI. Он сочетает в себе рендеринг терминала уровня Ghostty, локальное и удаленное исследование файлов, редактирование в приложении, выполнение в браузере, видимость системы управления версиями и уровень супервизора в одном сфокусированном рабочем пространстве.",
     descriptor: "AI Командный центр macOS",
     tagline: "Одна панель управления для выполнения AI сначала на терминале.",
     eyebrow: "Официальный сайт",
     heroDescription:
-      "icc — это собственный командный центр macOS для серьезной работы AI. Храните выполнение терминала, локальные и удаленные файлы, систему контроля версий, задачи браузера и последующие шаги, управляемые руководителем, в одном специальном рабочем пространстве.",
+      "imux — это собственный командный центр macOS для серьезной работы AI. Храните выполнение терминала, локальные и удаленные файлы, систему контроля версий, задачи браузера и последующие шаги, управляемые руководителем, в одном специальном рабочем пространстве.",
     buttons: {
       download: "Скачать для macOS",
       github: "Посмотреть на GitHub",
@@ -2445,13 +2445,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "рабочая область: /Users/operator/work/icc",
+      workspace: "рабочая область: /Users/operator/work/imux",
       rail: "Железнодорожный",
-      railItems: ["терминал/сборка", "репо / icc", "удаленный / prod-ssh", "браузер/обзор"],
+      railItems: ["терминал/сборка", "репо / imux", "удаленный / prod-ssh", "браузер/обзор"],
       terminal: "Терминальный разговор",
       ready: "готов",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Подключено. Чтение удаленного рабочего пространства и состояния оболочки.",
         "$ git status --short",
         "М Sources/WorkspaceSupervisor.swift",
@@ -2471,7 +2471,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Возможности",
       title: "Создано для операторов, которым нужен видимый контекст во время работы.",
       body:
-        "icc — это не еще одна панель управления браузером, расположенная поверх терминала. Это командный центр, который хранит выполнение, файлы, удаленное состояние и руководство в одной рабочей поверхности.",
+        "imux — это не еще одна панель управления браузером, расположенная поверх терминала. Это командный центр, который хранит выполнение, файлы, удаленное состояние и руководство в одной рабочей поверхности.",
       items: [
         {
           title: "Выполнение сначала через терминал",
@@ -2546,7 +2546,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Открыть рабочую область",
           body:
-            "Направьте icc на локальный репозиторий или подключите цель SSH. Поток с нулевой конфигурацией предполагает достаточную структуру, чтобы начать немедленно.",
+            "Направьте imux на локальный репозиторий или подключите цель SSH. Поток с нулевой конфигурацией предполагает достаточную структуру, чтобы начать немедленно.",
         },
         {
           step: "02",
@@ -2558,7 +2558,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Пусть руководитель определит следующий шаг",
           body:
-            "icc может сжать текущий контекст в план запуска, краткое описание выполнения или передачу оператору, не превращая рабочий процесс в церемонию.",
+            "imux может сжать текущий контекст в план запуска, краткое описание выполнения или передачу оператору, не превращая рабочий процесс в церемонию.",
         },
         {
           step: "04",
@@ -2574,32 +2574,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Продукт остается самоуверенным в отношении качества рабочего процесса, оставаясь при этом практичным в использовании.",
       items: [
         {
-          q: "Является ли icc просто форком Ghostty?",
+          q: "Является ли imux просто форком Ghostty?",
           a:
-            "Нет. icc — это собственный командный центр macOS, созданный на основе рендеринга терминала уровня Ghostty. Продукт расширяет эту основу за счет средств просмотра, редактирования, выполнения в браузере, контроля и оркестрации рабочей области.",
+            "Нет. imux — это собственный командный центр macOS, созданный на основе рендеринга терминала уровня Ghostty. Продукт расширяет эту основу за счет средств просмотра, редактирования, выполнения в браузере, контроля и оркестрации рабочей области.",
         },
         {
-          q: "Для кого предназначен icc?",
+          q: "Для кого предназначен imux?",
           a:
             "Операторы, инженеры, основатели и опытные пользователи, которые уже используют несколько рабочих процессов с помощью AI и хотят иметь одну более четкую поверхность управления вместо большого количества окон.",
         },
         {
           q: "Чем отличается рабочий процесс?",
           a:
-            "icc сохраняет терминал первоклассным, добавляя вокруг него недостающие поверхности: файлы, удаленные хосты, систему контроля версий, контекст браузера и супервизор, ориентированный на выполнение.",
+            "imux сохраняет терминал первоклассным, добавляя вокруг него недостающие поверхности: файлы, удаленные хосты, систему контроля версий, контекст браузера и супервизор, ориентированный на выполнение.",
         },
         {
           q: "Поддерживает ли он удаленную работу?",
           a:
-            "Да. icc считывает конфигурацию SSH, подключается к удаленным целям и предоставляет удаленные файлы в той же модели проводника, которая используется для локальной работы.",
+            "Да. imux считывает конфигурацию SSH, подключается к удаленным целям и предоставляет удаленные файлы в той же модели проводника, которая используется для локальной работы.",
         },
       ],
     },
     cta: {
-      eyebrow: "Запустить icc",
+      eyebrow: "Запустить imux",
       title: "Двигайтесь от замысла к исполнению, не теряя формы работы.",
       body:
-        "Загрузите текущую сборку macOS или отслеживайте выпуски и исходный код на GitHub. Публичный сайт, версия выпуска и репозиторий теперь привязаны к одному идентификатору: icc.",
+        "Загрузите текущую сборку macOS или отслеживайте выпуски и исходный код на GitHub. Публичный сайт, версия выпуска и репозиторий теперь привязаны к одному идентификатору: imux.",
     },
     footer: {
       blurb:
@@ -2613,18 +2613,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Релизы",
       repository: "GitHub Репозиторий",
       support: "Поддержка/Проблемы",
-      copyright: "© {year} icc. Одна панель управления для выполнения AI сначала на терминале.",
+      copyright: "© {year} imux. Одна панель управления для выполнения AI сначала на терминале.",
     },
   },
   "bs": {
-    metaTitle: "icc — AI Komandni centar za macOS",
+    metaTitle: "imux — AI Komandni centar za macOS",
     metaDescription:
-      "icc je izvorni macOS komandni centar za ozbiljan AI posao. Kombinira renderiranje terminala Ghostty, lokalno i udaljeno istraživanje datoteka, uređivanje u aplikaciji, izvršavanje pretraživača, vidljivost izvorne kontrole i sloj supervizora u jednom fokusiranom radnom prostoru.",
+      "imux je izvorni macOS komandni centar za ozbiljan AI posao. Kombinira renderiranje terminala Ghostty, lokalno i udaljeno istraživanje datoteka, uređivanje u aplikaciji, izvršavanje pretraživača, vidljivost izvorne kontrole i sloj supervizora u jednom fokusiranom radnom prostoru.",
     descriptor: "AI Komandni centar za macOS",
     tagline: "Jedan kokpit za terminal-prvo AI izvršenje.",
     eyebrow: "Službena stranica",
     heroDescription:
-      "icc je izvorni macOS komandni centar za ozbiljan AI posao. Zadržite izvršavanje terminala, lokalne i udaljene datoteke, kontrolu izvora, zadatke pretraživača i sljedeće korake vođene supervizorom unutar jednog namjernog radnog prostora.",
+      "imux je izvorni macOS komandni centar za ozbiljan AI posao. Zadržite izvršavanje terminala, lokalne i udaljene datoteke, kontrolu izvora, zadatke pretraživača i sljedeće korake vođene supervizorom unutar jednog namjernog radnog prostora.",
     buttons: {
       download: "Preuzmite za macOS",
       github: "Pogledaj na GitHub",
@@ -2657,13 +2657,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "radni prostor: /Users/operator/work/icc",
+      workspace: "radni prostor: /Users/operator/work/imux",
       rail: "Rail",
-      railItems: ["terminal / build", "repo / icc", "daljinski / prod-ssh", "pretraživač / recenzija"],
+      railItems: ["terminal / build", "repo / imux", "daljinski / prod-ssh", "pretraživač / recenzija"],
       terminal: "Završni razgovor",
       ready: "spreman",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Povezano. Čitanje udaljenog radnog prostora i stanja ljuske.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -2683,7 +2683,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Mogućnosti",
       title: "Napravljen za operatere koji žele da kontekst bude vidljiv dok se posao odvija.",
       body:
-        "icc nije još jedna kontrolna tabla pretraživača koja se nalazi na vrhu terminala. To je komandni centar koji drži izvršenje, datoteke, udaljeno stanje i navođenje unutar iste radne površine.",
+        "imux nije još jedna kontrolna tabla pretraživača koja se nalazi na vrhu terminala. To je komandni centar koji drži izvršenje, datoteke, udaljeno stanje i navođenje unutar iste radne površine.",
       items: [
         {
           title: "Terminal-prvo izvršenje",
@@ -2758,7 +2758,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Otvorite radni prostor",
           body:
-            "Usmjerite icc na lokalni repo ili povežite SSH cilj. Tok nulte konfiguracije zaključuje dovoljnu strukturu da odmah počne.",
+            "Usmjerite imux na lokalni repo ili povežite SSH cilj. Tok nulte konfiguracije zaključuje dovoljnu strukturu da odmah počne.",
         },
         {
           step: "02",
@@ -2770,7 +2770,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Neka supervizor osmisli sljedeći korak",
           body:
-            "icc može komprimirati trenutni kontekst u plan pokretanja, sažetak izvršenja ili predaju operatera bez pretvaranja toka posla u ceremoniju.",
+            "imux može komprimirati trenutni kontekst u plan pokretanja, sažetak izvršenja ili predaju operatera bez pretvaranja toka posla u ceremoniju.",
         },
         {
           step: "04",
@@ -2786,32 +2786,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Proizvod ostaje uvjeren o kvaliteti toka rada, dok ostaje praktičan za usvajanje.",
       items: [
         {
-          q: "Je li icc samo Ghostty viljuška?",
+          q: "Je li imux samo Ghostty viljuška?",
           a:
-            "Ne. icc je izvorni macOS komandni centar izgrađen na terminalskom renderiranju Ghostty-grade. Proizvod proširuje tu osnovu pomoću istraživača, uređivanja, izvršavanja pretraživača, nadzora i orkestracije radnog prostora.",
+            "Ne. imux je izvorni macOS komandni centar izgrađen na terminalskom renderiranju Ghostty-grade. Proizvod proširuje tu osnovu pomoću istraživača, uređivanja, izvršavanja pretraživača, nadzora i orkestracije radnog prostora.",
         },
         {
-          q: "Za koga je icc?",
+          q: "Za koga je imux?",
           a:
             "Operateri, inženjeri, osnivači i napredni korisnici koji već pokreću više tokova rada uz pomoć AI i žele jednu oštriju kontrolnu površinu umjesto većeg širenja prozora.",
         },
         {
           q: "Šta čini tok rada drugačijim?",
           a:
-            "icc održava terminal prvoklasnim dok dodaje nedostajuće površine oko njega: datoteke, udaljene hostove, kontrolu izvora, kontekst pretraživača i supervizor fokusiran na izvršenje.",
+            "imux održava terminal prvoklasnim dok dodaje nedostajuće površine oko njega: datoteke, udaljene hostove, kontrolu izvora, kontekst pretraživača i supervizor fokusiran na izvršenje.",
         },
         {
           q: "Da li podržava rad na daljinu?",
           a:
-            "Da. icc čita SSH konfiguraciju, povezuje se na udaljene ciljeve i izlaže udaljene datoteke u istom modelu istraživača koji se koristi za lokalni rad.",
+            "Da. imux čita SSH konfiguraciju, povezuje se na udaljene ciljeve i izlaže udaljene datoteke u istom modelu istraživača koji se koristi za lokalni rad.",
         },
       ],
     },
     cta: {
-      eyebrow: "Pokreni icc",
+      eyebrow: "Pokreni imux",
       title: "Pređite od namjere do izvršenja bez gubljenja oblika djela.",
       body:
-        "Preuzmite trenutna macOS build ili track izdanja i izvor na GitHub. Javna stranica, linija izdanja i spremište su sada usklađeni s jednim identitetom: icc.",
+        "Preuzmite trenutna macOS build ili track izdanja i izvor na GitHub. Javna stranica, linija izdanja i spremište su sada usklađeni s jednim identitetom: imux.",
     },
     footer: {
       blurb:
@@ -2825,18 +2825,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Izdanja",
       repository: "GitHub Spremište",
       support: "Podrška / Problemi",
-      copyright: "© {year} icc. Jedan kokpit za terminal-prvo AI izvršenje.",
+      copyright: "© {year} imux. Jedan kokpit za terminal-prvo AI izvršenje.",
     },
   },
   "ar": {
-    metaTitle: "icc — AI مركز القيادة لـ macOS",
+    metaTitle: "imux — AI مركز القيادة لـ macOS",
     metaDescription:
-      "icc هو مركز قيادة macOS أصلي للعمل الجاد AI. فهو يجمع بين عرض المحطة الطرفية من فئة Ghostty، واستكشاف الملفات المحلية والبعيدة، والتحرير داخل التطبيق، وتنفيذ المتصفح، ورؤية التحكم في المصدر، وطبقة المشرف في مساحة عمل مركزة واحدة.",
+      "imux هو مركز قيادة macOS أصلي للعمل الجاد AI. فهو يجمع بين عرض المحطة الطرفية من فئة Ghostty، واستكشاف الملفات المحلية والبعيدة، والتحرير داخل التطبيق، وتنفيذ المتصفح، ورؤية التحكم في المصدر، وطبقة المشرف في مساحة عمل مركزة واحدة.",
     descriptor: "AI مركز القيادة لـ macOS",
     tagline: "قمرة قيادة واحدة لتنفيذ المحطة الأولى AI.",
     eyebrow: "الموقع الرسمي",
     heroDescription:
-      "icc هو مركز قيادة macOS أصلي للعمل الجاد AI. احتفظ بالتنفيذ الطرفي، والملفات المحلية والبعيدة، والتحكم في المصدر، ومهام المتصفح، والخطوات التالية التي يحركها المشرف داخل مساحة عمل واحدة متعمدة.",
+      "imux هو مركز قيادة macOS أصلي للعمل الجاد AI. احتفظ بالتنفيذ الطرفي، والملفات المحلية والبعيدة، والتحكم في المصدر، ومهام المتصفح، والخطوات التالية التي يحركها المشرف داخل مساحة عمل واحدة متعمدة.",
     buttons: {
       download: "تنزيل لـ macOS",
       github: "عرض على GitHub",
@@ -2869,13 +2869,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "مساحة العمل: /المستخدمون/المشغل/العمل/icc",
+      workspace: "مساحة العمل: /المستخدمون/المشغل/العمل/imux",
       rail: "السكك الحديدية",
-      railItems: ["المحطة / البناء", "الريبو / icc", "البعيد / prod-ssh", "المتصفح / المراجعة"],
+      railItems: ["المحطة / البناء", "الريبو / imux", "البعيد / prod-ssh", "المتصفح / المراجعة"],
       terminal: "محادثة نهائية",
       ready: "جاهز",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "متصل. قراءة مساحة العمل عن بعد وحالة الصدفة.",
         "$ git status --short",
         "م Sources/WorkspaceSupervisor.swift",
@@ -2895,7 +2895,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "القدرات",
       title: "مصمم للمشغلين الذين يريدون أن يكون السياق مرئيًا أثناء تنفيذ العمل.",
       body:
-        "icc ليست لوحة تحكم متصفح أخرى موجودة أعلى الوحدة الطرفية. إنه مركز قيادة يحافظ على التنفيذ والملفات والحالة البعيدة والتوجيه داخل نفس سطح العمل.",
+        "imux ليست لوحة تحكم متصفح أخرى موجودة أعلى الوحدة الطرفية. إنه مركز قيادة يحافظ على التنفيذ والملفات والحالة البعيدة والتوجيه داخل نفس سطح العمل.",
       items: [
         {
           title: "التنفيذ النهائي للمحطة الأولى",
@@ -2970,7 +2970,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "افتح مساحة عمل",
           body:
-            "قم بتوجيه icc إلى الريبو المحلي أو قم بتوصيل هدف SSH. يوفر تدفق التكوين الصفري بنية كافية للبدء على الفور.",
+            "قم بتوجيه imux إلى الريبو المحلي أو قم بتوصيل هدف SSH. يوفر تدفق التكوين الصفري بنية كافية للبدء على الفور.",
         },
         {
           step: "02",
@@ -2982,7 +2982,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "دع المشرف يحدد الخطوة التالية",
           body:
-            "يمكن لـ icc ضغط السياق الحالي في خطة بدء التشغيل، أو ملخص التنفيذ، أو تسليم المشغل دون تحويل سير العمل إلى حفل.",
+            "يمكن لـ imux ضغط السياق الحالي في خطة بدء التشغيل، أو ملخص التنفيذ، أو تسليم المشغل دون تحويل سير العمل إلى حفل.",
         },
         {
           step: "04",
@@ -2998,32 +2998,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "يظل المنتج متمسكًا بآرائه بشأن جودة سير العمل، بينما يظل عمليًا للاعتماد.",
       items: [
         {
-          q: "هل icc مجرد شوكة Ghostty؟",
+          q: "هل imux مجرد شوكة Ghostty؟",
           a:
-            "رقم icc هو مركز قيادة macOS أصلي مبني على عرض طرفي من فئة Ghostty. يقوم المنتج بتوسيع هذا الأساس من خلال المستكشفين والتحرير وتنفيذ المتصفح والإشراف وتنسيق مساحة العمل.",
+            "رقم imux هو مركز قيادة macOS أصلي مبني على عرض طرفي من فئة Ghostty. يقوم المنتج بتوسيع هذا الأساس من خلال المستكشفين والتحرير وتنفيذ المتصفح والإشراف وتنسيق مساحة العمل.",
         },
         {
-          q: "لمن icc؟",
+          q: "لمن imux؟",
           a:
             "المشغلون والمهندسون والمؤسسون ومستخدمو الطاقة الذين يقومون بالفعل بتشغيل العديد من عمليات سير العمل بمساعدة AI ويريدون سطح تحكم أكثر وضوحًا بدلاً من المزيد من امتداد النافذة.",
         },
         {
           q: "ما الذي يجعل سير العمل مختلفًا؟",
           a:
-            "icc يحافظ على الجهاز من الدرجة الأولى مع إضافة الأسطح المفقودة حوله: الملفات، والمضيفون البعيدون، والتحكم في المصدر، وسياق المتصفح، والمشرف الذي يركز على التنفيذ.",
+            "imux يحافظ على الجهاز من الدرجة الأولى مع إضافة الأسطح المفقودة حوله: الملفات، والمضيفون البعيدون، والتحكم في المصدر، وسياق المتصفح، والمشرف الذي يركز على التنفيذ.",
         },
         {
           q: "هل يدعم العمل عن بعد؟",
           a:
-            "نعم. يقرأ icc تكوين SSH ويتصل بالأهداف البعيدة ويكشف عن الملفات البعيدة في نفس نموذج المستكشف المستخدم للعمل المحلي.",
+            "نعم. يقرأ imux تكوين SSH ويتصل بالأهداف البعيدة ويكشف عن الملفات البعيدة في نفس نموذج المستكشف المستخدم للعمل المحلي.",
         },
       ],
     },
     cta: {
-      eyebrow: "إطلاق icc",
+      eyebrow: "إطلاق imux",
       title: "الانتقال من النية إلى التنفيذ دون أن يفقد شكل العمل.",
       body:
-        "قم بتنزيل النسخة الحالية من macOS أو تتبع الإصدارات والمصدر على GitHub. أصبح الموقع العام وخط الإصدار والمستودع الآن متوافقين مع هوية واحدة: icc.",
+        "قم بتنزيل النسخة الحالية من macOS أو تتبع الإصدارات والمصدر على GitHub. أصبح الموقع العام وخط الإصدار والمستودع الآن متوافقين مع هوية واحدة: imux.",
     },
     footer: {
       blurb:
@@ -3037,18 +3037,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "الإصدارات",
       repository: "GitHub المستودع",
       support: "الدعم / القضايا",
-      copyright: "© {year} icc. قمرة قيادة واحدة لتنفيذ المحطة الأولى AI.",
+      copyright: "© {year} imux. قمرة قيادة واحدة لتنفيذ المحطة الأولى AI.",
     },
   },
   "no": {
-    metaTitle: "icc — AI Kommandosenter for macOS",
+    metaTitle: "imux — AI Kommandosenter for macOS",
     metaDescription:
-      "icc er et innfødt macOS kommandosenter for seriøst AI arbeid. Den kombinerer terminalgjengivelse av Ghostty-grad, lokal og ekstern filutforskning, redigering i appen, nettleserkjøring, kildekontrollsynlighet og et supervisorlag i ett fokusert arbeidsområde.",
+      "imux er et innfødt macOS kommandosenter for seriøst AI arbeid. Den kombinerer terminalgjengivelse av Ghostty-grad, lokal og ekstern filutforskning, redigering i appen, nettleserkjøring, kildekontrollsynlighet og et supervisorlag i ett fokusert arbeidsområde.",
     descriptor: "AI Kommandosenter for macOS",
     tagline: "Én cockpit for terminal-first AI utførelse.",
     eyebrow: "Offisiell side",
     heroDescription:
-      "icc er et innfødt macOS kommandosenter for seriøst AI arbeid. Hold terminalkjøring, lokale og eksterne filer, kildekontroll, nettleseroppgaver og veilederdrevne neste trinn i ett bevisst arbeidsområde.",
+      "imux er et innfødt macOS kommandosenter for seriøst AI arbeid. Hold terminalkjøring, lokale og eksterne filer, kildekontroll, nettleseroppgaver og veilederdrevne neste trinn i ett bevisst arbeidsområde.",
     buttons: {
       download: "Last ned for macOS",
       github: "Se på GitHub",
@@ -3081,13 +3081,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "arbeidsområde: /Users/operator/work/icc",
+      workspace: "arbeidsområde: /Users/operator/work/imux",
       rail: "Jernbane",
-      railItems: ["terminal / bygg", "repo / icc", "fjernkontroll / prod-ssh", "nettleser / anmeldelse"],
+      railItems: ["terminal / bygg", "repo / imux", "fjernkontroll / prod-ssh", "nettleser / anmeldelse"],
       terminal: "Terminal samtale",
       ready: "klar",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Tilkoblet. Leser eksternt arbeidsområde og skalltilstand.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -3107,7 +3107,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Evner",
       title: "Bygget for operatører som ønsker kontekst synlig mens arbeidet pågår.",
       body:
-        "icc er ikke et annet nettleserdashbord som sitter på toppen av en terminal. Det er et kommandosenter som holder kjøring, filer, ekstern tilstand og veiledning innenfor samme arbeidsflate.",
+        "imux er ikke et annet nettleserdashbord som sitter på toppen av en terminal. Det er et kommandosenter som holder kjøring, filer, ekstern tilstand og veiledning innenfor samme arbeidsflate.",
       items: [
         {
           title: "Terminal-første utførelse",
@@ -3182,7 +3182,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Åpne et arbeidsområde",
           body:
-            "Pek icc på en lokal repo eller koble til et SSH mål. Null-konfigurasjonsflyt antyder nok struktur til å begynne umiddelbart.",
+            "Pek imux på en lokal repo eller koble til et SSH mål. Null-konfigurasjonsflyt antyder nok struktur til å begynne umiddelbart.",
         },
         {
           step: "02",
@@ -3194,7 +3194,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "La veilederen ramme neste trekk",
           body:
-            "icc kan komprimere gjeldende kontekst til en oppstartsplan, utførelsesanvisning eller operatøroverlevering uten å gjøre arbeidsflyten om til en seremoni.",
+            "imux kan komprimere gjeldende kontekst til en oppstartsplan, utførelsesanvisning eller operatøroverlevering uten å gjøre arbeidsflyten om til en seremoni.",
         },
         {
           step: "04",
@@ -3210,32 +3210,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Produktet forblir oppfattet om arbeidsflytkvalitet, samtidig som det er praktisk å ta i bruk.",
       items: [
         {
-          q: "Er icc bare en Ghostty gaffel?",
+          q: "Er imux bare en Ghostty gaffel?",
           a:
-            "Nei. icc er et innfødt macOS kommandosenter bygget på Ghostty-grade terminalgjengivelse. Produktet utvider dette grunnlaget med utforskere, redigering, nettleserkjøring, tilsyn og orkestrering av arbeidsområde.",
+            "Nei. imux er et innfødt macOS kommandosenter bygget på Ghostty-grade terminalgjengivelse. Produktet utvider dette grunnlaget med utforskere, redigering, nettleserkjøring, tilsyn og orkestrering av arbeidsområde.",
         },
         {
-          q: "Hvem er icc for?",
+          q: "Hvem er imux for?",
           a:
             "Operatører, ingeniører, grunnleggere og superbrukere som allerede kjører flere AI-assisterte arbeidsflyter og ønsker én skarpere kontrollflate i stedet for mer vindusspredning.",
         },
         {
           q: "Hva gjør arbeidsflyten annerledes?",
           a:
-            "icc holder terminalen førsteklasses mens den legger til de manglende overflatene rundt den: filer, eksterne verter, kildekontroll, nettleserkontekst og en utførelsesfokusert veileder.",
+            "imux holder terminalen førsteklasses mens den legger til de manglende overflatene rundt den: filer, eksterne verter, kildekontroll, nettleserkontekst og en utførelsesfokusert veileder.",
         },
         {
           q: "Støtter den fjernarbeid?",
           a:
-            "Ja. icc leser SSH-konfigurasjon, kobler til eksterne mål og viser eksterne filer i den samme utforskermodellen som brukes for lokalt arbeid.",
+            "Ja. imux leser SSH-konfigurasjon, kobler til eksterne mål og viser eksterne filer i den samme utforskermodellen som brukes for lokalt arbeid.",
         },
       ],
     },
     cta: {
-      eyebrow: "Start icc",
+      eyebrow: "Start imux",
       title: "Gå fra hensikt til utførelse uten å miste formen på arbeidet.",
       body:
-        "Last ned gjeldende macOS build eller spor utgivelser og kilde på GitHub. Det offentlige nettstedet, utgivelseslinjen og depotet er nå justert til én identitet: icc.",
+        "Last ned gjeldende macOS build eller spor utgivelser og kilde på GitHub. Det offentlige nettstedet, utgivelseslinjen og depotet er nå justert til én identitet: imux.",
     },
     footer: {
       blurb:
@@ -3249,18 +3249,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Utgivelser",
       repository: "GitHub Repository",
       support: "Support / problemer",
-      copyright: "© {year} icc. Én cockpit for terminal-first AI utførelse.",
+      copyright: "© {year} imux. Én cockpit for terminal-first AI utførelse.",
     },
   },
   "pt-BR": {
-    metaTitle: "icc — AI Centro de Comando para macOS",
+    metaTitle: "imux — AI Centro de Comando para macOS",
     metaDescription:
-      "icc é um centro de comando macOS nativo para trabalhos sérios de AI. Ele combina renderização de terminal de nível Ghostty, exploração de arquivos locais e remotos, edição no aplicativo, execução do navegador, visibilidade de controle de origem e uma camada de supervisor em um espaço de trabalho focado.",
+      "imux é um centro de comando macOS nativo para trabalhos sérios de AI. Ele combina renderização de terminal de nível Ghostty, exploração de arquivos locais e remotos, edição no aplicativo, execução do navegador, visibilidade de controle de origem e uma camada de supervisor em um espaço de trabalho focado.",
     descriptor: "AI Centro de Comando para macOS",
     tagline: "Um cockpit para execução AI do terminal primeiro.",
     eyebrow: "Site oficial",
     heroDescription:
-      "icc é um centro de comando macOS nativo para trabalhos sérios de AI. Mantenha a execução do terminal, os arquivos locais e remotos, o controle de origem, as tarefas do navegador e as próximas etapas orientadas pelo supervisor em um espaço de trabalho deliberado.",
+      "imux é um centro de comando macOS nativo para trabalhos sérios de AI. Mantenha a execução do terminal, os arquivos locais e remotos, o controle de origem, as tarefas do navegador e as próximas etapas orientadas pelo supervisor em um espaço de trabalho deliberado.",
     buttons: {
       download: "Baixar para macOS",
       github: "Ver em GitHub",
@@ -3293,13 +3293,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "espaço de trabalho: /Usuários/operador/trabalho/icc",
+      workspace: "espaço de trabalho: /Usuários/operador/trabalho/imux",
       rail: "Trilho",
-      railItems: ["terminal / construção", "repositório / icc", "remoto / prod-ssh", "navegador / revisão"],
+      railItems: ["terminal / construção", "repositório / imux", "remoto / prod-ssh", "navegador / revisão"],
       terminal: "Conversa terminal",
       ready: "pronto",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Conectado. Lendo o espaço de trabalho remoto e o estado do shell.",
         "$ git status --short",
         "MSources/WorkspaceSupervisor.swift",
@@ -3319,7 +3319,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Capacidades",
       title: "Criado para operadores que desejam que o contexto fique visível enquanto o trabalho está acontecendo.",
       body:
-        "icc não é outro painel do navegador colocado em cima de um terminal. É um centro de comando que mantém execução, arquivos, estado remoto e orientação na mesma superfície de trabalho.",
+        "imux não é outro painel do navegador colocado em cima de um terminal. É um centro de comando que mantém execução, arquivos, estado remoto e orientação na mesma superfície de trabalho.",
       items: [
         {
           title: "Execução primeiro no terminal",
@@ -3394,7 +3394,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Abra um espaço de trabalho",
           body:
-            "Aponte icc para um repositório local ou conecte um destino SSH. O fluxo de configuração zero infere estrutura suficiente para começar imediatamente.",
+            "Aponte imux para um repositório local ou conecte um destino SSH. O fluxo de configuração zero infere estrutura suficiente para começar imediatamente.",
         },
         {
           step: "02",
@@ -3406,7 +3406,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Deixe o supervisor definir o próximo passo",
           body:
-            "icc pode compactar o contexto atual em um plano de inicialização, resumo de execução ou transferência do operador sem transformar o fluxo de trabalho em cerimônia.",
+            "imux pode compactar o contexto atual em um plano de inicialização, resumo de execução ou transferência do operador sem transformar o fluxo de trabalho em cerimônia.",
         },
         {
           step: "04",
@@ -3422,32 +3422,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "O produto permanece opinativo sobre a qualidade do fluxo de trabalho, ao mesmo tempo que permanece prático de adotar.",
       items: [
         {
-          q: "icc é apenas um garfo Ghostty?",
+          q: "imux é apenas um garfo Ghostty?",
           a:
-            "Não. icc é um centro de comando macOS nativo construído em renderização de terminal de nível Ghostty. O produto expande essa base com exploradores, edição, execução de navegador, supervisão e orquestração de espaço de trabalho.",
+            "Não. imux é um centro de comando macOS nativo construído em renderização de terminal de nível Ghostty. O produto expande essa base com exploradores, edição, execução de navegador, supervisão e orquestração de espaço de trabalho.",
         },
         {
-          q: "Para quem é icc?",
+          q: "Para quem é imux?",
           a:
             "Operadores, engenheiros, fundadores e usuários avançados que já executam vários fluxos de trabalho assistidos por AI e desejam uma superfície de controle mais nítida em vez de mais janelas espalhadas.",
         },
         {
           q: "O que torna o fluxo de trabalho diferente?",
           a:
-            "icc mantém o terminal de primeira classe enquanto adiciona as superfícies que faltam ao seu redor: arquivos, hosts remotos, controle de origem, contexto do navegador e um supervisor focado na execução.",
+            "imux mantém o terminal de primeira classe enquanto adiciona as superfícies que faltam ao seu redor: arquivos, hosts remotos, controle de origem, contexto do navegador e um supervisor focado na execução.",
         },
         {
           q: "Suporta trabalho remoto?",
           a:
-            "Sim. icc lê a configuração de SSH, conecta-se a destinos remotos e expõe arquivos remotos no mesmo modelo de explorador usado para trabalho local.",
+            "Sim. imux lê a configuração de SSH, conecta-se a destinos remotos e expõe arquivos remotos no mesmo modelo de explorador usado para trabalho local.",
         },
       ],
     },
     cta: {
-      eyebrow: "Lançar icc",
+      eyebrow: "Lançar imux",
       title: "Passe da intenção à execução sem perder a forma do trabalho.",
       body:
-        "Baixe a versão atual do macOS ou acompanhe os lançamentos e fontes em GitHub. O site público, a linha de lançamento e o repositório agora estão alinhados a uma identidade: icc.",
+        "Baixe a versão atual do macOS ou acompanhe os lançamentos e fontes em GitHub. O site público, a linha de lançamento e o repositório agora estão alinhados a uma identidade: imux.",
     },
     footer: {
       blurb:
@@ -3461,18 +3461,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Lançamentos",
       repository: "GitHub Repositório",
       support: "Suporte/Problemas",
-      copyright: "© {year} icc. Um cockpit para execução AI do terminal primeiro.",
+      copyright: "© {year} imux. Um cockpit para execução AI do terminal primeiro.",
     },
   },
   "th": {
-    metaTitle: "icc — AI ศูนย์บัญชาการสำหรับ macOS",
+    metaTitle: "imux — AI ศูนย์บัญชาการสำหรับ macOS",
     metaDescription:
-      "icc เป็นศูนย์บัญชาการ macOS ดั้งเดิมสำหรับการทำงาน AI ที่จริงจัง โดยผสมผสานการเรนเดอร์เทอร์มินัลเกรด Ghostty การสำรวจไฟล์ในเครื่องและระยะไกล การแก้ไขในแอป การดำเนินการของเบราว์เซอร์ การมองเห็นการควบคุมแหล่งที่มา และเลเยอร์หัวหน้างานในพื้นที่ทำงานที่มุ่งเน้นที่เดียว",
+      "imux เป็นศูนย์บัญชาการ macOS ดั้งเดิมสำหรับการทำงาน AI ที่จริงจัง โดยผสมผสานการเรนเดอร์เทอร์มินัลเกรด Ghostty การสำรวจไฟล์ในเครื่องและระยะไกล การแก้ไขในแอป การดำเนินการของเบราว์เซอร์ การมองเห็นการควบคุมแหล่งที่มา และเลเยอร์หัวหน้างานในพื้นที่ทำงานที่มุ่งเน้นที่เดียว",
     descriptor: "AI ศูนย์บัญชาการสำหรับ macOS",
     tagline: "ห้องนักบินหนึ่งห้องสำหรับการดำเนินการ AI ก่อนเทอร์มินัล",
     eyebrow: "เว็บไซต์อย่างเป็นทางการ",
     heroDescription:
-      "icc เป็นศูนย์บัญชาการ macOS ดั้งเดิมสำหรับการทำงาน AI ที่จริงจัง เก็บการดำเนินการเทอร์มินัล ไฟล์ในเครื่องและระยะไกล การควบคุมแหล่งที่มา งานเบราว์เซอร์ และขั้นตอนถัดไปที่ขับเคลื่อนโดยหัวหน้างานไว้ในพื้นที่ทำงานที่ตั้งใจไว้แห่งเดียว",
+      "imux เป็นศูนย์บัญชาการ macOS ดั้งเดิมสำหรับการทำงาน AI ที่จริงจัง เก็บการดำเนินการเทอร์มินัล ไฟล์ในเครื่องและระยะไกล การควบคุมแหล่งที่มา งานเบราว์เซอร์ และขั้นตอนถัดไปที่ขับเคลื่อนโดยหัวหน้างานไว้ในพื้นที่ทำงานที่ตั้งใจไว้แห่งเดียว",
     buttons: {
       download: "ดาวน์โหลดสำหรับ macOS",
       github: "ดูบน GitHub",
@@ -3505,13 +3505,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "พื้นที่ทำงาน: /Users/operator/work/icc",
+      workspace: "พื้นที่ทำงาน: /Users/operator/work/imux",
       rail: "ราว",
-      railItems: ["เทอร์มินัล / บิลด์", "ซื้อคืน / icc", "รีโมท / prod-ssh", "เบราว์เซอร์ / บทวิจารณ์"],
+      railItems: ["เทอร์มินัล / บิลด์", "ซื้อคืน / imux", "รีโมท / prod-ssh", "เบราว์เซอร์ / บทวิจารณ์"],
       terminal: "บทสนทนาเทอร์มินัล",
       ready: "พร้อม",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "เชื่อมต่อแล้ว การอ่านพื้นที่ทำงานระยะไกลและสถานะเชลล์",
         "$ git status --short",
         "ม Sources/WorkspaceSupervisor.swift",
@@ -3531,7 +3531,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "ความสามารถ",
       title: "สร้างขึ้นสำหรับผู้ปฏิบัติงานที่ต้องการให้บริบทปรากฏในขณะที่งานกำลังดำเนินอยู่",
       body:
-        "icc ไม่ใช่แดชบอร์ดของเบราว์เซอร์อื่นที่อยู่ด้านบนของเทอร์มินัล เป็นศูนย์สั่งการที่เก็บการดำเนินการ ไฟล์ สถานะระยะไกล และคำแนะนำไว้ในพื้นที่การทำงานเดียวกัน",
+        "imux ไม่ใช่แดชบอร์ดของเบราว์เซอร์อื่นที่อยู่ด้านบนของเทอร์มินัล เป็นศูนย์สั่งการที่เก็บการดำเนินการ ไฟล์ สถานะระยะไกล และคำแนะนำไว้ในพื้นที่การทำงานเดียวกัน",
       items: [
         {
           title: "การดำเนินการเทอร์มินัลครั้งแรก",
@@ -3606,7 +3606,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "เปิดพื้นที่ทำงาน",
           body:
-            "ชี้ icc ไปที่ repo ในพื้นที่หรือเชื่อมต่อเป้าหมาย SSH โฟลว์การกำหนดค่าเป็นศูนย์อนุมานโครงสร้างเพียงพอที่จะเริ่มต้นได้ทันที",
+            "ชี้ imux ไปที่ repo ในพื้นที่หรือเชื่อมต่อเป้าหมาย SSH โฟลว์การกำหนดค่าเป็นศูนย์อนุมานโครงสร้างเพียงพอที่จะเริ่มต้นได้ทันที",
         },
         {
           step: "02",
@@ -3618,7 +3618,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "ให้ผู้บังคับบัญชาวางกรอบการเคลื่อนไหวครั้งต่อไป",
           body:
-            "icc สามารถบีบอัดบริบทปัจจุบันให้เป็นแผนเริ่มต้น สรุปการดำเนินการ หรือแฮนด์ออฟของผู้ปฏิบัติงาน โดยไม่ต้องเปลี่ยนเวิร์กโฟลว์เป็นพิธีการ",
+            "imux สามารถบีบอัดบริบทปัจจุบันให้เป็นแผนเริ่มต้น สรุปการดำเนินการ หรือแฮนด์ออฟของผู้ปฏิบัติงาน โดยไม่ต้องเปลี่ยนเวิร์กโฟลว์เป็นพิธีการ",
         },
         {
           step: "04",
@@ -3634,32 +3634,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "ผลิตภัณฑ์ยังคงให้ความสำคัญกับคุณภาพของเวิร์กโฟลว์ ในขณะที่ยังคงนำไปใช้ได้จริง",
       items: [
         {
-          q: "icc เป็นเพียงทางแยกของ Ghostty หรือไม่",
+          q: "imux เป็นเพียงทางแยกของ Ghostty หรือไม่",
           a:
-            "ไม่ icc เป็นศูนย์คำสั่งดั้งเดิม macOS ที่สร้างขึ้นบนการเรนเดอร์เทอร์มินัลระดับ Ghostty ผลิตภัณฑ์ขยายรากฐานดังกล่าวด้วยนักสำรวจ การแก้ไข การดำเนินการเบราว์เซอร์ การควบคุมดูแล และการจัดการพื้นที่ทำงาน",
+            "ไม่ imux เป็นศูนย์คำสั่งดั้งเดิม macOS ที่สร้างขึ้นบนการเรนเดอร์เทอร์มินัลระดับ Ghostty ผลิตภัณฑ์ขยายรากฐานดังกล่าวด้วยนักสำรวจ การแก้ไข การดำเนินการเบราว์เซอร์ การควบคุมดูแล และการจัดการพื้นที่ทำงาน",
         },
         {
-          q: "icc เหมาะกับใคร?",
+          q: "imux เหมาะกับใคร?",
           a:
             "ผู้ปฏิบัติงาน วิศวกร ผู้ก่อตั้ง และผู้ใช้ระดับสูงที่ใช้งานเวิร์กโฟลว์ที่ได้รับความช่วยเหลือจาก AI หลายรายการอยู่แล้ว และต้องการพื้นผิวการควบคุมที่คมชัดยิ่งขึ้นแทนที่จะขยายหน้าต่างให้กว้างขึ้น",
         },
         {
           q: "อะไรทำให้ขั้นตอนการทำงานแตกต่าง?",
           a:
-            "icc ช่วยให้เทอร์มินัลมีระดับเฟิร์สคลาสในขณะที่เพิ่มพื้นผิวที่ขาดหายไปรอบๆ เช่น ไฟล์ โฮสต์ระยะไกล การควบคุมแหล่งที่มา บริบทของเบราว์เซอร์ และผู้ดูแลที่มุ่งเน้นการดำเนินการ",
+            "imux ช่วยให้เทอร์มินัลมีระดับเฟิร์สคลาสในขณะที่เพิ่มพื้นผิวที่ขาดหายไปรอบๆ เช่น ไฟล์ โฮสต์ระยะไกล การควบคุมแหล่งที่มา บริบทของเบราว์เซอร์ และผู้ดูแลที่มุ่งเน้นการดำเนินการ",
         },
         {
           q: "รองรับการทำงานระยะไกลหรือไม่?",
           a:
-            "ใช่. icc อ่านการกำหนดค่า SSH เชื่อมต่อกับเป้าหมายระยะไกล และเปิดเผยไฟล์ระยะไกลในรูปแบบ explorer เดียวกันกับที่ใช้สำหรับงานในพื้นที่",
+            "ใช่. imux อ่านการกำหนดค่า SSH เชื่อมต่อกับเป้าหมายระยะไกล และเปิดเผยไฟล์ระยะไกลในรูปแบบ explorer เดียวกันกับที่ใช้สำหรับงานในพื้นที่",
         },
       ],
     },
     cta: {
-      eyebrow: "เปิดตัว icc",
+      eyebrow: "เปิดตัว imux",
       title: "ย้ายจากความตั้งใจไปสู่การปฏิบัติโดยไม่สูญเสียรูปทรงของงาน",
       body:
-        "ดาวน์โหลด macOS บิลด์หรือติดตามการเผยแพร่และแหล่งที่มาปัจจุบันบน GitHub ขณะนี้ไซต์สาธารณะ บรรทัดเผยแพร่ และพื้นที่เก็บข้อมูลสอดคล้องกับข้อมูลประจำตัวเดียว: icc",
+        "ดาวน์โหลด macOS บิลด์หรือติดตามการเผยแพร่และแหล่งที่มาปัจจุบันบน GitHub ขณะนี้ไซต์สาธารณะ บรรทัดเผยแพร่ และพื้นที่เก็บข้อมูลสอดคล้องกับข้อมูลประจำตัวเดียว: imux",
     },
     footer: {
       blurb:
@@ -3673,18 +3673,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "ข่าวประชาสัมพันธ์",
       repository: "GitHub พื้นที่เก็บข้อมูล",
       support: "การสนับสนุน / ปัญหา",
-      copyright: "© {year} icc. ห้องนักบินหนึ่งห้องสำหรับการดำเนินการ AI ก่อนเทอร์มินัล",
+      copyright: "© {year} imux. ห้องนักบินหนึ่งห้องสำหรับการดำเนินการ AI ก่อนเทอร์มินัล",
     },
   },
   "tr": {
-    metaTitle: "icc — AI macOS için Komuta Merkezi",
+    metaTitle: "imux — AI macOS için Komuta Merkezi",
     metaDescription:
-      "icc, ciddi AI işlerine yönelik yerel bir macOS komuta merkezidir. Ghostty düzeyinde terminal oluşturmayı, yerel ve uzaktan dosya incelemeyi, uygulama içi düzenlemeyi, tarayıcı yürütmeyi, kaynak kontrolü görünürlüğünü ve bir denetleyici katmanını odaklanmış tek bir çalışma alanında birleştirir.",
+      "imux, ciddi AI işlerine yönelik yerel bir macOS komuta merkezidir. Ghostty düzeyinde terminal oluşturmayı, yerel ve uzaktan dosya incelemeyi, uygulama içi düzenlemeyi, tarayıcı yürütmeyi, kaynak kontrolü görünürlüğünü ve bir denetleyici katmanını odaklanmış tek bir çalışma alanında birleştirir.",
     descriptor: "AI macOS için Komuta Merkezi",
     tagline: "Terminal öncelikli AI uygulaması için bir kokpit.",
     eyebrow: "Resmi site",
     heroDescription:
-      "icc, ciddi AI işlerine yönelik yerel bir macOS komuta merkezidir. Terminal yürütmeyi, yerel ve uzak dosyaları, kaynak kontrolünü, tarayıcı görevlerini ve yönetici odaklı sonraki adımları tek bir kasıtlı çalışma alanında tutun.",
+      "imux, ciddi AI işlerine yönelik yerel bir macOS komuta merkezidir. Terminal yürütmeyi, yerel ve uzak dosyaları, kaynak kontrolünü, tarayıcı görevlerini ve yönetici odaklı sonraki adımları tek bir kasıtlı çalışma alanında tutun.",
     buttons: {
       download: "macOS için indirin",
       github: "GitHub tarihinde görüntüle",
@@ -3717,13 +3717,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "çalışma alanı: /Kullanıcılar/operatör/iş/icc",
+      workspace: "çalışma alanı: /Kullanıcılar/operatör/iş/imux",
       rail: "Demiryolu",
-      railItems: ["terminal / yapı", "depo / icc", "uzak / prod-ssh", "tarayıcı / inceleme"],
+      railItems: ["terminal / yapı", "depo / imux", "uzak / prod-ssh", "tarayıcı / inceleme"],
       terminal: "Terminal görüşmesi",
       ready: "hazır",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "Bağlı. Uzak çalışma alanı ve kabuk durumu okunuyor.",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -3743,7 +3743,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "Yetenekler",
       title: "Çalışma sırasında bağlamın görünür olmasını isteyen operatörler için tasarlandı.",
       body:
-        "icc bir terminalin üstünde bulunan başka bir tarayıcı kontrol paneli değildir. Yürütme, dosyalar, uzak durum ve yönlendirmeyi aynı çalışma yüzeyinde tutan bir komuta merkezidir.",
+        "imux bir terminalin üstünde bulunan başka bir tarayıcı kontrol paneli değildir. Yürütme, dosyalar, uzak durum ve yönlendirmeyi aynı çalışma yüzeyinde tutan bir komuta merkezidir.",
       items: [
         {
           title: "Terminal-ilk yürütme",
@@ -3818,7 +3818,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "01",
           title: "Bir çalışma alanı açın",
           body:
-            "icc öğesini yerel bir depoya yönlendirin veya bir SSH hedefi bağlayın. Sıfır yapılandırma akışı, hemen başlamak için yeterli yapı anlamına gelir.",
+            "imux öğesini yerel bir depoya yönlendirin veya bir SSH hedefi bağlayın. Sıfır yapılandırma akışı, hemen başlamak için yeterli yapı anlamına gelir.",
         },
         {
           step: "02",
@@ -3830,7 +3830,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "03",
           title: "Denetçinin bir sonraki hamleyi çerçevelemesine izin verin",
           body:
-            "icc, iş akışını törene dönüştürmeden mevcut bağlamı bir başlangıç planına, yürütme özetine veya operatör devrine sıkıştırabilir.",
+            "imux, iş akışını törene dönüştürmeden mevcut bağlamı bir başlangıç planına, yürütme özetine veya operatör devrine sıkıştırabilir.",
         },
         {
           step: "04",
@@ -3846,32 +3846,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "Ürün, benimsenmesi pratik kalırken iş akışı kalitesi konusunda sabit fikirli olmaya devam ediyor.",
       items: [
         {
-          q: "icc yalnızca bir Ghostty çatalı mı?",
+          q: "imux yalnızca bir Ghostty çatalı mı?",
           a:
-            "Hayır. icc, Ghostty düzeyinde terminal oluşturma temeline dayalı yerel bir macOS komuta merkezidir. Ürün, kaşifler, düzenleme, tarayıcı yürütme, denetim ve çalışma alanı düzenlemeyle bu temeli genişletiyor.",
+            "Hayır. imux, Ghostty düzeyinde terminal oluşturma temeline dayalı yerel bir macOS komuta merkezidir. Ürün, kaşifler, düzenleme, tarayıcı yürütme, denetim ve çalışma alanı düzenlemeyle bu temeli genişletiyor.",
         },
         {
-          q: "icc kimin içindir?",
+          q: "imux kimin içindir?",
           a:
             "Halihazırda birden fazla AI destekli iş akışı çalıştıran ve daha fazla pencere yayılımı yerine daha keskin bir kontrol yüzeyi isteyen operatörler, mühendisler, kurucular ve uzman kullanıcılar.",
         },
         {
           q: "İş akışını farklı kılan nedir?",
           a:
-            "icc, etrafındaki eksik yüzeyleri eklerken terminali birinci sınıf tutar: dosyalar, uzak ana bilgisayarlar, kaynak kontrolü, tarayıcı bağlamı ve yürütme odaklı bir denetleyici.",
+            "imux, etrafındaki eksik yüzeyleri eklerken terminali birinci sınıf tutar: dosyalar, uzak ana bilgisayarlar, kaynak kontrolü, tarayıcı bağlamı ve yürütme odaklı bir denetleyici.",
         },
         {
           q: "Uzaktan çalışmayı destekliyor mu?",
           a:
-            "Evet. icc, SSH yapılandırmasını okur, uzak hedeflere bağlanır ve uzak dosyaları, yerel çalışma için kullanılan aynı explorer modelinde açığa çıkarır.",
+            "Evet. imux, SSH yapılandırmasını okur, uzak hedeflere bağlanır ve uzak dosyaları, yerel çalışma için kullanılan aynı explorer modelinde açığa çıkarır.",
         },
       ],
     },
     cta: {
-      eyebrow: "icc'ı başlat",
+      eyebrow: "imux'ı başlat",
       title: "İşin şeklini kaybetmeden niyetten uygulamaya geçin.",
       body:
-        "Geçerli macOS derlemesini indirin veya sürümleri ve kaynağı GitHub üzerinden izleyin. Genel site, sürüm satırı ve veri deposu artık tek bir kimliğe göre hizalanmıştır: icc.",
+        "Geçerli macOS derlemesini indirin veya sürümleri ve kaynağı GitHub üzerinden izleyin. Genel site, sürüm satırı ve veri deposu artık tek bir kimliğe göre hizalanmıştır: imux.",
     },
     footer: {
       blurb:
@@ -3885,18 +3885,18 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "Bültenler",
       repository: "GitHub Depo",
       support: "Destek / Sorunlar",
-      copyright: "© {year} icc. Terminal öncelikli AI uygulaması için bir kokpit.",
+      copyright: "© {year} imux. Terminal öncelikli AI uygulaması için bir kokpit.",
     },
   },
   "km": {
-    metaTitle: "icc — AI មជ្ឈមណ្ឌលបញ្ជាសម្រាប់ macOS",
+    metaTitle: "imux — AI មជ្ឈមណ្ឌលបញ្ជាសម្រាប់ macOS",
     metaDescription:
-      "icc គឺជាមជ្ឈមណ្ឌលបញ្ជាដើម macOS សម្រាប់ការងារធ្ងន់ធ្ងរ AI ។ វារួមបញ្ចូលគ្នានូវការបង្ហាញស្ថានីយកម្រិត Ghostty ការរុករកឯកសារក្នុងមូលដ្ឋាន និងពីចម្ងាយ ការកែសម្រួលក្នុងកម្មវិធី ការប្រតិបត្តិកម្មវិធីរុករកតាមអ៊ីនធឺណិត លទ្ធភាពមើលឃើញការគ្រប់គ្រងប្រភព និងស្រទាប់អ្នកគ្រប់គ្រងនៅក្នុងកន្លែងធ្វើការផ្តោតតែមួយ។",
+      "imux គឺជាមជ្ឈមណ្ឌលបញ្ជាដើម macOS សម្រាប់ការងារធ្ងន់ធ្ងរ AI ។ វារួមបញ្ចូលគ្នានូវការបង្ហាញស្ថានីយកម្រិត Ghostty ការរុករកឯកសារក្នុងមូលដ្ឋាន និងពីចម្ងាយ ការកែសម្រួលក្នុងកម្មវិធី ការប្រតិបត្តិកម្មវិធីរុករកតាមអ៊ីនធឺណិត លទ្ធភាពមើលឃើញការគ្រប់គ្រងប្រភព និងស្រទាប់អ្នកគ្រប់គ្រងនៅក្នុងកន្លែងធ្វើការផ្តោតតែមួយ។",
     descriptor: "AI មជ្ឈមណ្ឌលបញ្ជាសម្រាប់ macOS",
     tagline: "កាប៊ីនយន្ដហោះមួយសម្រាប់ការប្រតិបត្តិស្ថានីយដំបូង AI ។",
     eyebrow: "គេហទំព័រផ្លូវការ",
     heroDescription:
-      "icc គឺជាមជ្ឈមណ្ឌលបញ្ជាដើម macOS សម្រាប់ការងារធ្ងន់ធ្ងរ AI ។ រក្សាការប្រតិបត្តិស្ថានីយ ឯកសារមូលដ្ឋាន និងពីចម្ងាយ ការគ្រប់គ្រងប្រភព ភារកិច្ចកម្មវិធីរុករកតាមអ៊ីនធឺណិត និងជំហានបន្ទាប់ដែលដឹកនាំដោយអ្នកគ្រប់គ្រងនៅខាងក្នុងកន្លែងធ្វើការដោយចេតនាមួយ។",
+      "imux គឺជាមជ្ឈមណ្ឌលបញ្ជាដើម macOS សម្រាប់ការងារធ្ងន់ធ្ងរ AI ។ រក្សាការប្រតិបត្តិស្ថានីយ ឯកសារមូលដ្ឋាន និងពីចម្ងាយ ការគ្រប់គ្រងប្រភព ភារកិច្ចកម្មវិធីរុករកតាមអ៊ីនធឺណិត និងជំហានបន្ទាប់ដែលដឹកនាំដោយអ្នកគ្រប់គ្រងនៅខាងក្នុងកន្លែងធ្វើការដោយចេតនាមួយ។",
     buttons: {
       download: "ទាញយកសម្រាប់ macOS",
       github: "មើលនៅលើ GitHub",
@@ -3929,13 +3929,13 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       },
     ],
     preview: {
-      workspace: "កន្លែងធ្វើការ៖ /Users/operator/work/icc",
+      workspace: "កន្លែងធ្វើការ៖ /Users/operator/work/imux",
       rail: "ផ្លូវដែក",
-      railItems: ["ស្ថានីយ / សាងសង់", "repo / icc", "ពីចម្ងាយ / prod-ssh", "កម្មវិធីរុករក / ពិនិត្យ"],
+      railItems: ["ស្ថានីយ / សាងសង់", "repo / imux", "ពីចម្ងាយ / prod-ssh", "កម្មវិធីរុករក / ពិនិត្យ"],
       terminal: "ការសន្ទនាស្ថានីយ",
       ready: "រួចរាល់",
       lines: [
-        "$ icc connect prod-ssh",
+        "$ imux connect prod-ssh",
         "បានភ្ជាប់។ ការអានកន្លែងធ្វើការពីចម្ងាយ និងស្ថានភាពសែល។",
         "$ git status --short",
         "M Sources/WorkspaceSupervisor.swift",
@@ -3955,7 +3955,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       eyebrow: "សមត្ថភាព",
       title: "បង្កើតឡើងសម្រាប់ប្រតិបត្តិករដែលចង់ឱ្យមើលឃើញបរិបទខណៈពេលដែលការងារកំពុងកើតឡើង។",
       body:
-        "icc មិនមែនជាផ្ទាំងគ្រប់គ្រងកម្មវិធីរុករកផ្សេងទៀតដែលអង្គុយនៅលើកំពូលនៃស្ថានីយនោះទេ។ វាគឺជាមជ្ឈមណ្ឌលបញ្ជាដែលរក្សាការប្រតិបត្តិ ឯកសារ ស្ថានភាពពីចម្ងាយ និងការណែនាំក្នុងផ្ទៃការងារដូចគ្នា។",
+        "imux មិនមែនជាផ្ទាំងគ្រប់គ្រងកម្មវិធីរុករកផ្សេងទៀតដែលអង្គុយនៅលើកំពូលនៃស្ថានីយនោះទេ។ វាគឺជាមជ្ឈមណ្ឌលបញ្ជាដែលរក្សាការប្រតិបត្តិ ឯកសារ ស្ថានភាពពីចម្ងាយ និងការណែនាំក្នុងផ្ទៃការងារដូចគ្នា។",
       items: [
         {
           title: "ការប្រតិបត្តិដំបូងរបស់ស្ថានីយ",
@@ -4030,7 +4030,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "០១",
           title: "បើកកន្លែងធ្វើការ",
           body:
-            "ចំណុច icc នៅ repo មូលដ្ឋាន ឬភ្ជាប់គោលដៅ SSH ។ Zero-config flow បង្ហាញពីរចនាសម្ព័ន្ធគ្រប់គ្រាន់ដើម្បីចាប់ផ្តើមភ្លាមៗ។",
+            "ចំណុច imux នៅ repo មូលដ្ឋាន ឬភ្ជាប់គោលដៅ SSH ។ Zero-config flow បង្ហាញពីរចនាសម្ព័ន្ធគ្រប់គ្រាន់ដើម្បីចាប់ផ្តើមភ្លាមៗ។",
         },
         {
           step: "០២",
@@ -4042,7 +4042,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
           step: "០៣",
           title: "ទុក​ឱ្យ​អ្នក​ត្រួត​ពិនិត្យ​ធ្វើ​ជា​ជំហាន​បន្ទាប់",
           body:
-            "icc អាចបង្រួមបរិបទបច្ចុប្បន្នទៅក្នុងផែនការចាប់ផ្តើម ការសង្ខេបការប្រតិបត្តិ ឬការប្រគល់ប្រតិបត្តិករដោយមិនបង្វែរលំហូរការងារទៅជាពិធី។",
+            "imux អាចបង្រួមបរិបទបច្ចុប្បន្នទៅក្នុងផែនការចាប់ផ្តើម ការសង្ខេបការប្រតិបត្តិ ឬការប្រគល់ប្រតិបត្តិករដោយមិនបង្វែរលំហូរការងារទៅជាពិធី។",
         },
         {
           step: "០៤",
@@ -4058,32 +4058,32 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       body: "ផលិតផលរក្សាការយល់ឃើញអំពីគុណភាពលំហូរការងារ ខណៈពេលដែលនៅសល់ការអនុវត្តជាក់ស្តែង។",
       items: [
         {
-          q: "តើ icc គ្រាន់តែជាផ្លូវបំបែក Ghostty មែនទេ?",
+          q: "តើ imux គ្រាន់តែជាផ្លូវបំបែក Ghostty មែនទេ?",
           a:
-            "លេខ icc គឺជាមជ្ឈមណ្ឌលបញ្ជាដើម macOS ដែលបានបង្កើតឡើងនៅលើការបង្ហាញស្ថានីយកម្រិត Ghostty។ ផលិតផលនេះពង្រីកមូលដ្ឋាននោះជាមួយអ្នករុករក ការកែសម្រួល ការប្រតិបត្តិកម្មវិធីរុករកតាមអ៊ីនធឺណិត ការគ្រប់គ្រង និងការរៀបចំកន្លែងធ្វើការ។",
+            "លេខ imux គឺជាមជ្ឈមណ្ឌលបញ្ជាដើម macOS ដែលបានបង្កើតឡើងនៅលើការបង្ហាញស្ថានីយកម្រិត Ghostty។ ផលិតផលនេះពង្រីកមូលដ្ឋាននោះជាមួយអ្នករុករក ការកែសម្រួល ការប្រតិបត្តិកម្មវិធីរុករកតាមអ៊ីនធឺណិត ការគ្រប់គ្រង និងការរៀបចំកន្លែងធ្វើការ។",
         },
         {
-          q: "តើ icc សម្រាប់អ្នកណា?",
+          q: "តើ imux សម្រាប់អ្នកណា?",
           a:
             "ប្រតិបត្តិករ វិស្វករ ស្ថាបនិក និងអ្នកប្រើប្រាស់ថាមពលដែលដំណើរការដំណើរការការងារដែលមានជំនួយ AI រួចហើយ ហើយចង់បានផ្ទៃគ្រប់គ្រងដ៏មុតស្រួចមួយ ជំនួសឱ្យការពង្រីកបង្អួចបន្ថែមទៀត។",
         },
         {
           q: "តើអ្វីធ្វើឱ្យលំហូរការងារខុសគ្នា?",
           a:
-            "icc រក្សាស្ថានីយលំដាប់ទីមួយ ខណៈពេលដែលបន្ថែមផ្ទៃដែលបាត់នៅជុំវិញវា៖ ឯកសារ ម៉ាស៊ីនពីចម្ងាយ ការគ្រប់គ្រងប្រភព បរិបទកម្មវិធីរុករក និងអ្នកគ្រប់គ្រងដែលផ្តោតលើការប្រតិបត្តិ។",
+            "imux រក្សាស្ថានីយលំដាប់ទីមួយ ខណៈពេលដែលបន្ថែមផ្ទៃដែលបាត់នៅជុំវិញវា៖ ឯកសារ ម៉ាស៊ីនពីចម្ងាយ ការគ្រប់គ្រងប្រភព បរិបទកម្មវិធីរុករក និងអ្នកគ្រប់គ្រងដែលផ្តោតលើការប្រតិបត្តិ។",
         },
         {
           q: "តើវាគាំទ្រការងារពីចម្ងាយទេ?",
           a:
-            "បាទ។ icc អានការកំណត់ SSH ភ្ជាប់ទៅគោលដៅពីចម្ងាយ និងបង្ហាញឯកសារពីចម្ងាយនៅក្នុងគំរូកម្មវិធីរុករកដូចគ្នាដែលប្រើសម្រាប់ការងារក្នុងតំបន់។",
+            "បាទ។ imux អានការកំណត់ SSH ភ្ជាប់ទៅគោលដៅពីចម្ងាយ និងបង្ហាញឯកសារពីចម្ងាយនៅក្នុងគំរូកម្មវិធីរុករកដូចគ្នាដែលប្រើសម្រាប់ការងារក្នុងតំបន់។",
         },
       ],
     },
     cta: {
-      eyebrow: "បើកដំណើរការ icc",
+      eyebrow: "បើកដំណើរការ imux",
       title: "ផ្លាស់ទីពីចេតនាទៅការប្រតិបត្តិដោយមិនបាត់បង់រូបរាងការងារ។",
       body:
-        "ទាញយក macOS បច្ចុប្បន្ន ឬតាមដានការចេញផ្សាយ និងប្រភពនៅលើ GitHub ។ គេហទំព័រសាធារណៈ បន្ទាត់ចេញផ្សាយ និងឃ្លាំងឥឡូវនេះត្រូវបានតម្រឹមទៅអត្តសញ្ញាណតែមួយ៖ icc ។",
+        "ទាញយក macOS បច្ចុប្បន្ន ឬតាមដានការចេញផ្សាយ និងប្រភពនៅលើ GitHub ។ គេហទំព័រសាធារណៈ បន្ទាត់ចេញផ្សាយ និងឃ្លាំងឥឡូវនេះត្រូវបានតម្រឹមទៅអត្តសញ្ញាណតែមួយ៖ imux ។",
     },
     footer: {
       blurb:
@@ -4097,7 +4097,7 @@ const copy: Partial<Record<Locale, MarketingCopy>> = {
       releases: "ការចេញផ្សាយ",
       repository: "GitHub ឃ្លាំង",
       support: "ការគាំទ្រ / បញ្ហា",
-      copyright: "© {year} icc ។ កាប៊ីនយន្ដហោះមួយសម្រាប់ការប្រតិបត្តិស្ថានីយដំបូង AI ។",
+      copyright: "© {year} imux ។ កាប៊ីនយន្ដហោះមួយសម្រាប់ការប្រតិបត្តិស្ថានីយដំបូង AI ។",
     },
   }
 };

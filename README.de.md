@@ -1,12 +1,12 @@
-# icc
+# imux
 
-`icc` ist eine native macOS-Kommandozentrale fuer KI-Arbeit. Es verbindet Ghostty-nahe Terminaldarstellung, lokale und entfernte Explorer, Dateiansicht und -bearbeitung in der App sowie eine Supervisor-Ebene fuer Planung und Nachverfolgung.
+`imux` ist eine native macOS-Kommandozentrale fuer KI-Arbeit. Es verbindet Ghostty-nahe Terminaldarstellung, lokale und entfernte Explorer, Dateiansicht und -bearbeitung in der App sowie eine Supervisor-Ebene fuer Planung und Nachverfolgung.
 
 Repository: <https://github.com/mycode699/imux>
 
 Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
-## Was `icc` ist
+## Was `imux` ist
 
 - ein natives macOS-Terminal-Workspace auf Basis von `libghostty`
 - lokaler und entfernter SSH-Explorer mit Oeffnen, Bearbeiten und Speichern von Dateien
@@ -17,7 +17,7 @@ Docs: [English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](RE
 - [README.md](README.md): vollstaendige Produktuebersicht, Installation und Workflows
 - [README.zh-CN.md](README.zh-CN.md): Release-Leitfaden auf vereinfachtem Chinesisch
 - [README.zh-TW.md](README.zh-TW.md): Release-Leitfaden auf traditionellem Chinesisch
-- [docs/brand-guidelines.md](docs/brand-guidelines.md): ICC-Regeln fuer Benennung, Positionierung und Ton
+- [docs/brand-guidelines.md](docs/brand-guidelines.md): IMUX-Regeln fuer Benennung, Positionierung und Ton
 
 ## Schnellzugriffe
 

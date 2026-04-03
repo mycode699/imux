@@ -11159,7 +11159,7 @@ class TerminalController {
             NSApp.unhide(nil)
             let hasMainTerminalWindow = NSApp.windows.contains { window in
                 guard let raw = window.identifier?.rawValue else { return false }
-                return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+                return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
             }
 
             if !hasMainTerminalWindow {
@@ -11170,7 +11170,7 @@ class TerminalController {
                 ?? NSApp.keyWindow
                 ?? NSApp.windows.first(where: { win in
                     guard let raw = win.identifier?.rawValue else { return false }
-                    return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+                    return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
                 })
                 ?? NSApp.windows.first {
                 window.makeKeyAndOrderFront(nil)
@@ -11512,7 +11512,7 @@ class TerminalController {
                 ?? NSApp.keyWindow
                 ?? NSApp.windows.first(where: { win in
                     guard let raw = win.identifier?.rawValue else { return false }
-                    return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+                    return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
                 }),
                   let contentView = window.contentView,
                   let themeFrame = contentView.superview else { return }
@@ -11553,7 +11553,7 @@ class TerminalController {
                 ?? NSApp.keyWindow
                 ?? NSApp.windows.first(where: { win in
                     guard let raw = win.identifier?.rawValue else { return false }
-                    return raw == "icc.main" || raw == "iatlas.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("iatlas.main.") || raw.hasPrefix("icc.main.")
+                    return raw == "icc.main" || raw == "imux.main" || raw == "icc.main" || raw.hasPrefix("icc.main.") || raw.hasPrefix("imux.main.") || raw.hasPrefix("icc.main.")
                 }),
                   let contentView = window.contentView,
                   let themeFrame = contentView.superview else { return }

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="icc STAGING"
-BUNDLE_ID="com.icc.app.staging"
+APP_NAME="imux STAGING"
+BUNDLE_ID="com.imux.app.staging"
 BASE_APP_NAME="icc"
 DERIVED_DATA=""
 NAME_SET=0
@@ -23,7 +23,7 @@ usage() {
   cat <<'EOF'
 Usage: ./scripts/reloads.sh [options]
 
-Release build with isolated "icc STAGING" identity. Runs side-by-side with
+Release build with isolated "imux STAGING" identity. Runs side-by-side with
 the production icc app.
 
 Options:
@@ -109,10 +109,10 @@ if [[ -n "$TAG" ]]; then
   TAG_ID="$(sanitize_bundle "$TAG")"
   TAG_SLUG="$(sanitize_path "$TAG")"
   if [[ "$NAME_SET" -eq 0 ]]; then
-    APP_NAME="icc STAGING ${TAG}"
+    APP_NAME="imux STAGING ${TAG}"
   fi
   if [[ "$BUNDLE_SET" -eq 0 ]]; then
-    BUNDLE_ID="com.icc.app.staging.${TAG_ID}"
+    BUNDLE_ID="com.imux.app.staging.${TAG_ID}"
   fi
   if [[ "$DERIVED_SET" -eq 0 ]]; then
     DERIVED_DATA="/tmp/icc-staging-${TAG_SLUG}"

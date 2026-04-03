@@ -782,7 +782,7 @@ class TabManager: ObservableObject {
     private let panelTitleUpdateCoalescer = NotificationBurstCoalescer(delay: 1.0 / 30.0)
     private var recentlyClosedBrowsers = RecentlyClosedBrowserStack(capacity: 20)
     private let initialWorkspaceGitProbeQueue = DispatchQueue(
-        label: "com.iatlas.initial-workspace-git-probe",
+        label: "com.imux.initial-workspace-git-probe",
         qos: .utility
     )
     private var workspaceGitProbeGenerationByKey: [WorkspaceGitProbeKey: UUID] = [:]
@@ -1156,7 +1156,7 @@ class TabManager: ObservableObject {
            terminalPanel.surface.surface != nil {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 UserDefaults.standard.set(true, forKey: WelcomeSettings.shownKey)
-                terminalPanel.sendText("icc welcome\n")
+                terminalPanel.sendText("imux welcome\n")
             }
             return
         }
@@ -1176,7 +1176,7 @@ class TabManager: ObservableObject {
             panelsCancellable?.cancel()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 UserDefaults.standard.set(true, forKey: WelcomeSettings.shownKey)
-                terminalPanel.sendText("icc welcome\n")
+                terminalPanel.sendText("imux welcome\n")
             }
         }
 

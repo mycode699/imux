@@ -2,11 +2,11 @@
 
 Last updated: 2026-03-25
 
-This document summarizes the browser automation surface shipped with `icc`.
+This document summarizes the browser automation surface shipped with `imux`.
 
 Historical note:
 
-- The executable users install is `icc`.
+- The executable users install is `imux`.
 - Some implementation files, protocols, and legacy tests still refer to `icc` because the browser automation layer was ported from that codebase and remains backward compatible.
 
 ## Goals
@@ -40,6 +40,6 @@ For new documentation and operator examples, prefer `surface` and `pane`.
 
 ## Product-facing guidance
 
-- Document the browser feature as an `icc` capability.
+- Document the browser feature as an `imux` capability.
 - Keep legacy protocol names only where they are part of the actual API or compatibility layer.
-- When adding examples, prefer the current CLI binary name `icc` even if the underlying source file is still `CLI/icc.swift`.
+- When adding examples, prefer the current CLI binary name `imux` even if the underlying source file is still `CLI/icc.swift`.
