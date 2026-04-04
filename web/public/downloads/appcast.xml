@@ -1,15 +1,15 @@
 <?xml version="1.0" standalone="yes"?>
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
-        <title>icc</title>
+        <title>imux</title>
         <item>
-            <title>1.5.1</title>
-            <pubDate>Fri, 03 Apr 2026 16:00:34 +0800</pubDate>
-            <sparkle:fullReleaseNotesLink>https://www.iccjk.com/changelog/v1.5.1</sparkle:fullReleaseNotesLink>
-            <sparkle:version>94</sparkle:version>
-            <sparkle:shortVersionString>1.5.1</sparkle:shortVersionString>
+            <title>1.5.2</title>
+            <pubDate>Sat, 04 Apr 2026 08:12:14 +0800</pubDate>
+            <sparkle:fullReleaseNotesLink>https://www.iccjk.com/changelog/v1.5.2</sparkle:fullReleaseNotesLink>
+            <sparkle:version>95</sparkle:version>
+            <sparkle:shortVersionString>1.5.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://www.iccjk.com/downloads/archive/v1.5.1/icc-v1.5.1-macos.dmg" length="46204632" type="application/octet-stream" sparkle:edSignature="WB6p882/yDx59uqBSZmVJIU/iGLUv3aXzC+/VXo1hmOYx/OpOXUF89wyJNtxbyCrv2pcA6FIT1CKbMjj9AjMBA=="/>
+            <enclosure url="https://www.iccjk.com/downloads/archive/v1.5.2/imux-v1.5.2-macos.dmg" length="37242264" type="application/octet-stream" sparkle:edSignature="S+DFrAib9zLrVMbg3nEw0DtB9Jm5NB/a+kUNUIPKDSZOXl/M2YE1G+g5t3r+K1Hhf61UE4ubpwWPwz0lcV3jDg=="/>
         </item>
     </channel>
 </rss>

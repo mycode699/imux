@@ -99,7 +99,7 @@ fi
 # --- Build app (Release, unsigned) ---
 echo "Building app..."
 rm -rf build/
-xcodebuild -scheme icc -configuration Release -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -5
+xcodebuild -scheme icc -configuration Release -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
 echo "Build succeeded"
 
 APP_PLIST="$APP_PATH/Contents/Info.plist"

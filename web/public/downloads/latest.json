@@ -3,31 +3,31 @@
   "downloads": {
     "macos": {
       "appcastUrl": "https://www.iccjk.com/downloads/appcast.xml",
-      "archiveUrl": "https://www.iccjk.com/downloads/archive/v1.5.1/icc-v1.5.1-macos.dmg",
+      "archiveUrl": "https://www.iccjk.com/downloads/archive/v1.5.2/imux-v1.5.2-macos.dmg",
       "artifactType": "dmg",
-      "bundleId": "com.icc.app",
-      "sha256": "c00ce1db7d23c42ef0ed8992973741dff45804a58499953ddd69c0ad2039fc95",
-      "size": 46204632,
-      "url": "https://www.iccjk.com/downloads/icc-v1.5.1-macos.dmg"
+      "bundleId": "com.imux.app",
+      "sha256": "5e920e5b45d70c73f32f57cb3523f93288493d5f2b1e8d5bc24e4cd757502dd8",
+      "size": 37242264,
+      "url": "https://www.iccjk.com/downloads/imux-v1.5.2-macos.dmg"
     },
     "windows": {
       "available": false,
-      "reason": "icc currently ships as a native macOS AppKit application and does not have a real Windows desktop build target yet."
+      "reason": "imux currently ships as a native macOS AppKit application and does not have a real Windows desktop build target yet."
     }
   },
   "notesUrl": "https://www.iccjk.com/changelog",
-  "product": "icc",
-  "publishedAt": "2026-04-03T08:02:04Z",
+  "product": "imux",
+  "publishedAt": "2026-04-04T00:16:23Z",
   "remoteDaemon": {
-    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v1.5.1",
+    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v1.5.2",
     "available": true,
     "manifestUrl": "https://www.iccjk.com/downloads/remote/iccd-remote-manifest.json"
   },
   "schemaVersion": 1,
-  "tag": "v1.5.1",
+  "tag": "v1.5.2",
   "update": {
     "feedUrl": "https://www.iccjk.com/downloads/appcast.xml",
     "manifestUrl": "https://www.iccjk.com/downloads/latest.json"
   },
-  "version": "1.5.1"
+  "version": "1.5.2"
 }

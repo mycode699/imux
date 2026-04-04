@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: t("metaTitle"),
     description: t("metaDescription"),
     keywords: [
-      "icc", "Show HN", "Hacker News", "terminal", "macOS", "Ghostty",
+      "imux", "Show HN", "Hacker News", "terminal", "macOS", "Ghostty",
       "libghostty", "AI coding agents", "Claude Code", "Codex", "launch",
       "vertical tabs", "notification rings",
     ],
@@ -142,7 +142,7 @@ export default function ShowHNLaunchPage() {
       <div className="my-6">
         <Image
           src={starHistory}
-          alt="icc GitHub star history showing growth from near 0 to 900+ stars after the Show HN launch"
+          alt="imux GitHub star history showing growth from near 0 to 900+ stars after the Show HN launch"
           placeholder="blur"
           className="w-full rounded-xl"
         />

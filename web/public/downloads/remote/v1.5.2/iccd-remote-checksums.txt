@@ -1,0 +1,4 @@
+c8303ac3f79729a400b15c1c47ca5f3c440aa64e3f3f23346f167757303d706e  iccd-remote-darwin-arm64
+ccb9c7aa452d8b8e6199fa3fa29cdc99ec10158dbebfa3caf4b2d4b33fe3b3bc  iccd-remote-darwin-amd64
+4a9e9674340861f665dc801422d29ade35d1efee142905d2420c9cad47835b16  iccd-remote-linux-arm64
+02d6d00ce6f0f4161acba65a4bd938d75c518164fd3e4d5139be2272ef7722e1  iccd-remote-linux-amd64
