@@ -3,12 +3,12 @@
   "downloads": {
     "macos": {
       "appcastUrl": "https://www.iccjk.com/downloads/appcast.xml",
-      "archiveUrl": "https://www.iccjk.com/downloads/archive/v1.5.2/imux-v1.5.2-macos.dmg",
+      "archiveUrl": "https://www.iccjk.com/downloads/archive/v1.5.3/imux-v1.5.3-macos.dmg",
       "artifactType": "dmg",
       "bundleId": "com.imux.app",
-      "sha256": "5e920e5b45d70c73f32f57cb3523f93288493d5f2b1e8d5bc24e4cd757502dd8",
-      "size": 37242264,
-      "url": "https://www.iccjk.com/downloads/imux-v1.5.2-macos.dmg"
+      "sha256": "a09664639ad8ae4a9783841223c573f392b735c6940a96f4b274f2b9e9b00be1",
+      "size": 42935125,
+      "url": "https://www.iccjk.com/downloads/imux-v1.5.3-macos.dmg"
     },
     "windows": {
       "available": false,
@@ -17,17 +17,17 @@
   },
   "notesUrl": "https://www.iccjk.com/changelog",
   "product": "imux",
-  "publishedAt": "2026-04-04T00:16:23Z",
+  "publishedAt": "2026-04-04T12:14:17Z",
   "remoteDaemon": {
-    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v1.5.2",
+    "archiveBaseUrl": "https://www.iccjk.com/downloads/remote/v1.5.3",
     "available": true,
     "manifestUrl": "https://www.iccjk.com/downloads/remote/iccd-remote-manifest.json"
   },
   "schemaVersion": 1,
-  "tag": "v1.5.2",
+  "tag": "v1.5.3",
   "update": {
     "feedUrl": "https://www.iccjk.com/downloads/appcast.xml",
     "manifestUrl": "https://www.iccjk.com/downloads/latest.json"
   },
-  "version": "1.5.2"
+  "version": "1.5.3"
 }

@@ -3,13 +3,13 @@
     <channel>
         <title>imux</title>
         <item>
-            <title>1.5.2</title>
-            <pubDate>Sat, 04 Apr 2026 08:12:14 +0800</pubDate>
-            <sparkle:fullReleaseNotesLink>https://www.iccjk.com/changelog/v1.5.2</sparkle:fullReleaseNotesLink>
-            <sparkle:version>95</sparkle:version>
-            <sparkle:shortVersionString>1.5.2</sparkle:shortVersionString>
+            <title>1.5.3</title>
+            <pubDate>Sat, 04 Apr 2026 20:11:16 +0800</pubDate>
+            <sparkle:fullReleaseNotesLink>https://www.iccjk.com/changelog/v1.5.3</sparkle:fullReleaseNotesLink>
+            <sparkle:version>96</sparkle:version>
+            <sparkle:shortVersionString>1.5.3</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://www.iccjk.com/downloads/archive/v1.5.2/imux-v1.5.2-macos.dmg" length="37242264" type="application/octet-stream" sparkle:edSignature="S+DFrAib9zLrVMbg3nEw0DtB9Jm5NB/a+kUNUIPKDSZOXl/M2YE1G+g5t3r+K1Hhf61UE4ubpwWPwz0lcV3jDg=="/>
+            <enclosure url="https://www.iccjk.com/downloads/archive/v1.5.3/imux-v1.5.3-macos.dmg" length="42935125" type="application/octet-stream" sparkle:edSignature="+LArRGLWs1UdceYZJ+K/jgYsx9MhTClESrl6G3xev2/mNHgT5k+acPObfN/Gf8Rk4ENedrvbWZ64AIrzQo5oAw=="/>
         </item>
     </channel>
 </rss>
